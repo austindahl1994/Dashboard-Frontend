@@ -1,2 +1,2 @@
-# Widgets
- Widgets Project for Dash
+# Dashboard App
+Dashboard application with widgets
