@@ -12,9 +12,10 @@ const EditTraits = ({
   const [isEditing, setIsEditing] = useState(false);
   const [position, setPosition] = useState([]);
   const [newTraits, setNewTraits] = useState([]);
-  const [maxDimensions, setMaxDimensions] = useState([-1, -1]);
+  const [maxDimensions, setMaxDimensions] = useState([]);
 
   useEffect(() => {
+    //console.log("Traits updated, need to update table")
     setNewTraits(generateNewTable(traits));
   }, [traits]);
 
@@ -87,7 +88,6 @@ const EditTraits = ({
     }
 
     if (text.includes(",")) {
-      //TODO: need to add a check to see if it's a number
       // console.log("Has a comma");
       const trait = text.split(",")[0];
       const percent = parseInt(text.split(",")[1]);
@@ -107,7 +107,7 @@ const EditTraits = ({
 
     if (tabbed) {
       if (position[0] + 1 <= maxDimensions[0] + 1) {
-        console.log("Should tab over");
+        //console.log("Should tab over");
         setPosition([position[0] + 1, position[1]]);
       }
     } else {
@@ -117,14 +117,13 @@ const EditTraits = ({
   };
 
   const newHeader = () => {
-    console.log("Creating new header");
+    //console.log("Creating new header");
     setPosition([0, maxDimensions[1] - 1]);
     setIsEditing(true);
   };
 
   return (
     <>
-      <h1>Edit Table</h1>
       <table>
         <tbody>
           {newTraits.map((yArr, yIndex) => (

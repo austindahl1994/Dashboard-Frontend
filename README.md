@@ -1,2 +1,3 @@
 # Dashboard App
-Dashboard application with widgets
+
+Dashboard application with Dashboard

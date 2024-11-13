@@ -4,7 +4,6 @@ import PropTypes from "prop-types";
 const ShowTable = ({ traits, editButtonFunc }) => {
   return (
     <>
-      <h1>All Traits</h1>
       <table>
         <tbody>
           {Object.entries(traits).map(([k, v], i) => (

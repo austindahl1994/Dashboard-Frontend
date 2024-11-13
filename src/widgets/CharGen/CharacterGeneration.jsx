@@ -10,6 +10,9 @@ const fileData = [
   ["height", "tall", "short", "medium", 25, "very tall", 15],
 ];
 
+//TODO: separate addTrait, addHeader, updateTrait?, updateHeader, deleteTrait, deleteHeader into another file
+//MYSQL working next, along with localStorage to test
+
 // templates /favorite settings
 // You could have different %s set up. Like one 'template' has a higher % of
 //tall people with blue eyes and one template has a higher percent of short people with red eyes.
@@ -18,7 +21,8 @@ const fileData = [
 
 const CharacterGeneration = () => {
   const [traits, setTraits] = useState({}); //just holds initial traits object without changes
-  const [randomTraits, setRandomTraits] = useState({});
+  const [title, setTitle] = useState("");
+  const [randomTraits, setRandomTraits] = useState([]); //array of objects {header, randomTrait}
   const [isEditing, setIsEditing] = useState(false);
 
   //update later to be a function and take in data to parse
@@ -72,6 +76,7 @@ const CharacterGeneration = () => {
 
   useEffect(() => {
     generateRandomTraits(updateRandomTraitsFunc, traits);
+    //console.log("Traits changed in CG")
   }, [traits]);
 
   const handleRandomizeClick = () => {
@@ -86,10 +91,16 @@ const CharacterGeneration = () => {
     setIsEditing(value);
   };
 
-  //do check if position.y is zero, or should be a traitName header
-  //need to add a check if there is no trait header, set it to none
-  //add a check if there is no object at that position of array, push new object on
+  const updateTitle = (event) => {
+    setTitle(event.target.value);
+  };
+
+  //position is array for [x, y], newTrait is an object of {trait, percent}
   const addNewTrait = (newTrait, position) => {
+    newTrait = {
+      trait: capitalizeFirstLetter(newTrait.trait),
+      percent: newTrait.percent,
+    };
     let traitAtLocation = {};
     const newTraits = { ...traits };
     const keys = Object.keys(traits);
@@ -116,8 +127,9 @@ const CharacterGeneration = () => {
     // console.log(traits[traitHeader]);
     // console.log(traits[traitHeader][position[0] - 1]); //-1 due to the header, should
     //do a check to see if there is no header, to force them to add one? Or just set it to none
-    if (traits[traitHeader][position[0] - 1] !== undefined) {
-      traitAtLocation = traits[traitHeader][position[0] - 1];
+    if (newTraits[traitHeader][position[0] - 1] !== undefined) {
+      //console.log("Updating existing trait with new one");
+      traitAtLocation = newTraits[traitHeader][position[0] - 1];
     } else {
       traitAtLocation = { trait: null, percent: null };
     }
@@ -130,14 +142,14 @@ const CharacterGeneration = () => {
       return;
     } else if (traitAtLocation.trait === newTrait.trait) {
       //update trait at location with new percentage
-      console.log("updating with new percent");
-      traits[traitHeader][position[0] - 1] = newTrait;
+      //console.log("updating with new percent");
+      newTraits[traitHeader][position[0] - 1] = newTrait;
     } else {
       //push object onto the array
       //console.log("pushing onto array instead since nothing there");
-      traits[traitHeader].push(newTrait);
+      newTraits[traitHeader].push(newTrait);
     }
-    setTraits(traits);
+    setTraits(newTraits);
   };
 
   const deleteTrait = (x, y) => {
@@ -152,32 +164,35 @@ const CharacterGeneration = () => {
 
   //update later on to have buttons along with the components as a whole
   return (
-    <div>
-      {!isEditing ? (
-        <ShowTable traits={traits} editButtonFunc={changeEditState} />
-      ) : (
-        <EditTraits
-          traits={traits}
-          addTraitFunc={addNewTrait}
-          deleteTraitFunc={deleteTrait}
-          saveButtonFunc={changeEditState}
-        />
-      )}
-      <br />
-      <h2>Randomized Traits</h2>
-      <table>
-        <tbody>
-          {Object.entries(randomTraits).map(([k, v], i) => (
-            <tr key={i}>
-              <td>
-                {k}: {v}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <button onClick={handleRandomizeClick}>Randomize</button>
-    </div>
+    <>
+    <h1>{isEditing ? "Editing: " : null}{title ? title : "New Template"}</h1>
+      <div>
+        {!isEditing ? (
+          <ShowTable traits={traits} editButtonFunc={changeEditState} />
+        ) : (
+          <EditTraits
+            traits={traits}
+            addTraitFunc={addNewTrait}
+            deleteTraitFunc={deleteTrait}
+            saveButtonFunc={changeEditState}
+          />
+        )}
+        <br />
+        <h2>Randomized Traits</h2>
+        <table>
+          <tbody>
+            {randomTraits.map((arrayObj, i) => (
+              <tr key={i}>
+                <td>
+                  {arrayObj.header}: {arrayObj.randomTrait}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <button onClick={handleRandomizeClick}>Randomize</button>
+      </div>
+    </>
   );
 };
 
