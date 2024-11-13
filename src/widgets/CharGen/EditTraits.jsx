@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import ShowCell from "./ShowCell";
 import EditCell from "./EditCell";
+import { Button, Table } from "react-bootstrap";
+import { capitalizeFirstLetter } from "./utilityFunctions";
 
 const EditTraits = ({
   traits,
-  addTraitFunc,
-  deleteTraitFunc,
   saveButtonFunc,
+  title,
+  updateTitleFunc,
+  modifyTraitsFunc,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [position, setPosition] = useState([]);
@@ -62,25 +65,33 @@ const EditTraits = ({
   const changeEditState = (pos) => {
     setIsEditing(true);
     setPosition(pos);
-    console.log(pos);
+    //console.log(pos);
   };
 
-  //called from child component when editing is completed
-  //tabbed only needs to be checked here to move onto next value
   const finishUpdating = (value, tabbed) => {
-    let text = value.trim();
+    //Must always have top row of "Traits"
+    if (position[1] === 0) {
+      //console.log("Cannot change traits row!");
+      setIsEditing(false);
+      setPosition(null);
+      return;
+    }
+
+    let text = capitalizeFirstLetter(value.trim());
     let newTraitObj = {};
     if (text.length === 0) {
-      //console.log(`position of ${position}`);
-      //do a check if there is any object at that location already
+      //checking if in first column of headers and y is less than max y position (don't delete undefined)
       if (position[0] === 0 && position[1] < maxDimensions[1]) {
-        deleteTraitFunc(position[0], position[1]);
-      } else if (traits[Object.keys(traits)[position[1]]][position[0] - 1] && position[0] !== 0) {
-        // console.log("There was something here but nothing was typed");
-        // console.log(traits[Object.keys(traits)[position[1]]][position[0] - 1]);
-        deleteTraitFunc(position[0], position[1]);
+        modifyTraitsFunc("delete", "header", position[1]);
+      }
+      //checks if not trying to delete header (x == 0), if there's a trait at [x, y] delete it
+      else if (
+        position[0] !== 0 &&
+        traits[Object.keys(traits)[position[1]]][position[0] - 1]
+      ) {
+        modifyTraitsFunc("delete", "trait", [position[0], position[1]]);
       } else {
-        //console.log("Nothing was typed!");
+        console.log("Nothing was typed!");
       }
       setIsEditing(false);
       setPosition(null);
@@ -102,8 +113,50 @@ const EditTraits = ({
       };
     }
     //tab check here
+    //console.log(`Text was: ${text} as string? ${typeof text === 'string'}`);
     //console.log(`Tabbed: ${tabbed}`);
-    addTraitFunc(newTraitObj, position);
+    // -------------------- Header --------------------
+    if (position[0] === 0) {
+      console.log(traits[Object.keys(traits)[position[1]]]);
+      if (traits[Object.keys(traits)[position[1]]]) {
+        modifyTraitsFunc("update", "header", {
+          header: newTraitObj.trait,
+          yPos: position[1],
+        });
+      } else {
+        modifyTraitsFunc("create", "header", text);
+      }
+      if (tabbed) {
+        if (position[0] + 1 <= maxDimensions[0] + 1) {
+          setPosition([position[0] + 1, position[1]]);
+        }
+      } else {
+        setIsEditing(false);
+        setPosition(null);
+      }
+      return;
+    }
+    // -------------------- Traits --------------------
+    const traitObj = traits[Object.keys(traits)[position[1]]][position[0] - 1];
+    const header = traits[Object.keys(traits)[position[1]]];
+    if (traitObj === undefined) {
+      //console.log("creating new trait!");
+      modifyTraitsFunc("create", "trait", {
+        header: header,
+        trait: newTraitObj,
+      });
+    } else if (
+      traitObj.trait === newTraitObj.trait &&
+      traitObj.percent === newTraitObj.percent
+    ) {
+      console.log("Exact same trait is there!");
+    } else {
+      console.log("There is already a trait there!");
+      modifyTraitsFunc("update", "trait", {
+        object: newTraitObj,
+        index: [position[0], position[1]],
+      });
+    }
 
     if (tabbed) {
       if (position[0] + 1 <= maxDimensions[0] + 1) {
@@ -116,6 +169,7 @@ const EditTraits = ({
     }
   };
 
+  //If no header exists for the trait, must add a new header
   const newHeader = () => {
     //console.log("Creating new header");
     setPosition([0, maxDimensions[1] - 1]);
@@ -124,7 +178,15 @@ const EditTraits = ({
 
   return (
     <>
-      <table>
+      <div className="title-wrapper">
+        <h1 style={{ margin: 0, display: "inline" }}>Title: </h1>
+        <input
+          className="input-title"
+          placeholder={title}
+          onChange={(e) => updateTitleFunc(e)}
+        />
+      </div>
+      <Table striped bordered hover>
         <tbody>
           {newTraits.map((yArr, yIndex) => (
             <tr key={yIndex}>
@@ -154,6 +216,7 @@ const EditTraits = ({
                       editFunc={changeEditState}
                       dimensions={maxDimensions}
                       newHeaderFunc={newHeader}
+                      sameColumn={position?.[0] === xIndex ? true : false}
                     />
                   )}
                 </React.Fragment>
@@ -161,8 +224,8 @@ const EditTraits = ({
             </tr>
           ))}
         </tbody>
-      </table>
-      <button onClick={() => saveButtonFunc(false)}>Save</button>
+      </Table>
+      <Button onClick={() => saveButtonFunc(false)}>Save</Button>
     </>
   );
 };
@@ -185,9 +248,10 @@ EditTraits.propTypes = {
       ),
     ])
   ),
-  addTraitFunc: PropTypes.func,
-  deleteTraitFunc: PropTypes.func,
   saveButtonFunc: PropTypes.func,
+  title: PropTypes.string,
+  updateTitleFunc: PropTypes.func,
+  modifyTraitsFunc: PropTypes.func,
 };
 
 export default EditTraits;

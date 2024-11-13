@@ -2,20 +2,21 @@ import PropTypes from "prop-types";
 import { useState } from "react";
 
 export const ShowCell = ({
-  xArrElement,
-  index,
-  editFunc,
-  dimensions,
-  newHeaderFunc,
+  xArrElement, //{trait, percent} object
+  index, //[x, y] array
+  editFunc, //fn that updates trait state of CG
+  dimensions, //maxDimensions possible to see if needing to update initial column
+  newHeaderFunc, //fn to update header
+  sameColumn, //bool if it is the same column as selected trait
 }) => {
-  const [isHovering, setIsHovering] = useState(false);
+  const [isHovering, setIsHovering] = useState(sameColumn || false);
   const [xIndex, yIndex] = index;
 
   const handleTDClick = (event, index) => {
     const [x, y] = index;
     //console.log(`Clicked at [${x},${y}] with maxDim of ${dimensions}`);
     if (y === dimensions[1] - 1) {
-      console.log("Trying to update cell that has no header!");
+      //console.log("Trying to update cell that has no header!");
       newHeaderFunc();
     } else {
       editFunc([x, y]);
@@ -30,10 +31,22 @@ export const ShowCell = ({
     setIsHovering(false);
   };
 
+  const getSize = () => {
+    let returnValue = 1;
+    if (sameColumn) {
+      returnValue = 1;
+    } else if (isHovering && typeof xArrElement !== "string") {
+      returnValue = 2;
+    } else {
+      returnValue = 1;
+    }
+    return returnValue;
+  };
+
   return (
     <>
       <td
-        colSpan={isHovering && typeof xArrElement !== "string" ? 2 : 1}
+        colSpan={getSize()}
         onClick={(event) => {
           handleTDClick(event, [xIndex, yIndex]);
         }}
@@ -44,13 +57,13 @@ export const ShowCell = ({
           ? xArrElement
           : xArrElement.trait
           ? `${xArrElement.trait}${
-              xArrElement.percent && isHovering
+              xArrElement.percent && (isHovering || sameColumn)
                 ? `, ${xArrElement.percent}`
                 : ""
             }`
           : " "}
       </td>
-      {typeof xArrElement !== "string" && !isHovering && (
+      {typeof xArrElement !== "string" && (!isHovering && !sameColumn) && (
         <td
           colSpan={1}
           onClick={(event) => {
@@ -78,6 +91,7 @@ ShowCell.propTypes = {
   editFunc: PropTypes.func,
   dimensions: PropTypes.arrayOf(PropTypes.number),
   newHeaderFunc: PropTypes.func,
+  sameColumn: PropTypes.bool,
 };
 
 export default ShowCell;

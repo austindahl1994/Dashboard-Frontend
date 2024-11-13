@@ -22,6 +22,7 @@ const EditCell = ({ trait, percent, finishFunc }) => {
 
   return (
     <td>
+      <label htmlFor="newTrait"></label>
       <input
         type="text"
         value={text}
@@ -29,6 +30,8 @@ const EditCell = ({ trait, percent, finishFunc }) => {
         onKeyDown={handleKeyDown}
         onBlur={() => finishFunc(text, false)}
         placeholder={text}
+        id="newTrait"
+        name="newTrait"
         autoFocus
       />
     </td>

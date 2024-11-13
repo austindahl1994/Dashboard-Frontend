@@ -1,10 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
-
+import { Button, Table } from "react-bootstrap";
 const ShowTable = ({ traits, editButtonFunc }) => {
   return (
     <>
-      <table>
+      <Table striped bordered hover responsive='sm' size="sm">
         <tbody>
           {Object.entries(traits).map(([k, v], i) => (
             <tr key={i}>
@@ -26,8 +26,8 @@ const ShowTable = ({ traits, editButtonFunc }) => {
             </tr>
           ))}
         </tbody>
-      </table>
-      <button onClick={() => editButtonFunc(true)}>Edit</button>
+      </Table>
+      <Button onClick={() => editButtonFunc(true)}>Edit</Button>
     </>
   );
 };
