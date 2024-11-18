@@ -1,3 +1,2 @@
 # Dashboard App
-
-Dashboard application with Dashboard
+Frontend react web page for a dashboard application 
