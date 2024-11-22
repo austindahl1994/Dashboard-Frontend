@@ -6,6 +6,7 @@ const importCSV = (importTraitsFunc, file) => {
         Papa.parse(file, {
             header: false,
             skipEmptyLines: true,
+            dynamicTyping: true,
             complete: (result) => {
                 importTraitsFunc(result.data);
             },
