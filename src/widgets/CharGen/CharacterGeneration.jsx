@@ -21,10 +21,6 @@ const fileData = [
   ["height", "tall", "short", "medium", 25, "very tall", 15],
 ];
 
-//TODO: separate addTrait, addHeader, updateTrait?, updateHeader, deleteTrait, deleteHeader into another file
-//MYSQL working next, along with localStorage to test
-//Show percents as checkmark
-
 // templates /favorite settings
 // You could have different %s set up. Like one 'template' has a higher % of
 //tall people with blue eyes and one template has a higher percent of short people with red eyes.
