@@ -14,6 +14,7 @@ import {
 } from "./updateCharacter";
 import importCSV from "./importCSV";
 import "./characterGeneration.css";
+import { getProfile } from "./charGenApi";
 
 const fileData = [
   ["Traits"],
@@ -29,7 +30,7 @@ const fileData = [
 
 const CharacterGeneration = () => {
   const [traits, setTraits] = useState({}); //just holds initial traits object without changes
-  const [title, setTitle] = useState(""); //character title
+  const [title, setTitle] = useState("New Template"); //character title
   const [randomTraits, setRandomTraits] = useState([]); //array of objects {header, randomTrait}
   const [isEditing, setIsEditing] = useState(false);
 
@@ -156,6 +157,18 @@ const CharacterGeneration = () => {
           <label htmlFor="checkPercent">Show Percents?</label>
           <input type="checkbox" id="checkPercent" name="checkPercent" />
         </div>
+        <Button
+          onClick={async () => {
+            const tester = await getProfile("testProfile");
+            console.log(`Test name: ${tester.name}`);
+            if (tester && tester.properties !== undefined) {
+              setTitle(tester.name)
+              setTraits(tester.properties)
+            }
+          }}
+        >
+          Get Profile
+        </Button>
       </div>
     </>
   );
