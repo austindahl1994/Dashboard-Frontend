@@ -32,15 +32,11 @@ export const ShowCell = ({
   };
 
   const getSize = () => {
-    let returnValue = 1;
-    if (sameColumn) {
-      returnValue = 1;
-    } else if (isHovering && typeof xArrElement !== "string") {
-      returnValue = 2;
+    if (isHovering && typeof xArrElement !== "string") {
+      return 2
     } else {
-      returnValue = 1;
+      return 1
     }
-    return returnValue;
   };
 
   return (
