@@ -43,6 +43,7 @@ export const deleteHeader = (index, oldTraits, updateTraitsFn) => {
   updateTraitsFn(newObj);
 };
 
+//Changes Object of arrays {k: [v]} {traitName: [traits]} into an array of sets so it cannot have duplicates [traitName: Set(traits)], then into an array of arrays for use [traitName: [traits]]
 export const transformTraits = (data, updateTraitsFn) => {
   const uniqueTraits = {};
   let lastElement; //keeps track of the last element, so when there is a percentage after it can delete the last set string and add as an array of [trait, percent]
