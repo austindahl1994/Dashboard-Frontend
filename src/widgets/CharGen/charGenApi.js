@@ -1,35 +1,37 @@
-import axios from "axios";
-const endpoint = "http://localhost:3131/api";
+import axios from 'axios'
+
+const endpoint = process.env.API_URL + '/profile' || "http://localhost:3131/api/profile"
 
 const createProfile = async (name, properties) => {
-  try {
-    const response = await axios.post(
-      `${endpoint}/profile/create`,
-      {
-        name: name,
-        properties: properties,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response.data.message;
+	try {
+		const response = await axios.post(`${endpoint}/createProfile`, { 
+      name, 
+      properties 
+    })
+    return response.data	
   } catch (error) {
-    console.error(`There was an error of: ${error}`);
-    throw error;
+	  console.log('Some error msg')
   }
-};
-
-const getProfile = async (name) => {
-    try {
-        const response = await axios.get(`${endpoint}/profile/${name}`)
-        console.log(``)
-        return response.data;
-    } catch (error) {
-        console.error(`Error fetching data from backend: ${error.mess}`)
-    }
 }
 
-export { createProfile, getProfile };
+const getProfile = async (name, id) => {
+	try {
+  	const response = await axios.get(`${endpoint}/${name}/${id}`)
+	  return response.data
+  } catch (error) {
+	  console.error(`Error getting profile: ${error}`)
+  }
+}
+
+const getRecentProfiles = async (limit) => {
+	try {
+		const response = await axios.get(`${endpoint}/recent`, {
+      params: { limit }
+    })
+	    return response.data
+    } catch (error) {
+	    console.error(error)
+  }
+}
+
+export { createProfile, getProfile }
