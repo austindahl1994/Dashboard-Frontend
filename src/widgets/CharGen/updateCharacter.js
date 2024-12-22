@@ -43,7 +43,11 @@ export const deleteHeader = (index, oldTraits, updateTraitsFn) => {
   updateTraitsFn(newObj);
 };
 
-//Changes Object of arrays {k: [v]} {traitName: [traits]} into an array of sets so it cannot have duplicates [traitName: Set(traits)], then into an array of arrays for use [traitName: [traits]]
+//TODO: 
+//Error checking elsewhere for duplicate traits? Currently adding into a set serves no purpose due to strings and array comparisons not mattering, duplicates with percents will mess this up
+//OR
+//Add a check when adding into the set to check previous strings and arrays if they contain the trait already? 
+//Changes Array of arrays [[k, v, v, v], [k, v, v]] where k is object key (header) and v is value (traits) to Object {k: Set(traits)}
 export const transformTraits = (data, updateTraitsFn) => {
   const uniqueTraits = {};
   let lastElement; //keeps track of the last element, so when there is a percentage after it can delete the last set string and add as an array of [trait, percent]
