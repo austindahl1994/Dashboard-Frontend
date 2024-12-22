@@ -30,10 +30,11 @@ const fileData = [
 
 const CharacterGeneration = () => {
   const [traits, setTraits] = useState({}); //just holds initial traits object without changes
-  const [title, setTitle] = useState("New Template"); //character title
-  const [randomTraits, setRandomTraits] = useState([]); //array of objects {header, randomTrait}
-  const [isEditing, setIsEditing] = useState(false);
-
+  const [title, setTitle] = useState("New Template"); //character title, have in separate component
+  const [randomTraits, setRandomTraits] = useState([]); //array of objects [{header, randomTrait}...]
+  const [isEditing, setIsEditing] = useState(false); //Won't need this after Title is separate component, both table and title will have their own editing states
+  const [toasts, setToasts] = useState([]) //Array of toast objects
+  
   //update later to be a function and take in data to parse
   useEffect(() => {
     transformTraits(fileData, updateTraitsfn);
@@ -98,18 +99,47 @@ const CharacterGeneration = () => {
         console.log("Invalid operation or entity");
     }
   };
+  
+  //ADDED WHILE AT WORK
+  //Import from separate utility file that returns an object? 
+  const triggerToast = (status, message) => {
+    let color;
+    switch(status) {
+      case 1: color = "primary"
+        break
+      case 2: color = "warning"
+        break
+      case 3: color = "danger"
+        break
+      default: color = "primary"
+    }
 
-  // const deleteTrait = (x, y) => {
-  //   let afterRemoval = { ...traits };
-  //   if (x === 0) {
-  //     delete afterRemoval[Object.keys(traits)[y]];
-  //   } else {
-  //     afterRemoval[Object.keys(traits)[y]].splice(x - 1, 1);
-  //   }
-  //   setTraits(afterRemoval);
-  // };
+    const newToast = {
+      id: Date.now(),
+      status: color,
+      message: message
+    }
 
-  //update later on to have buttons along with the components as a whole
+    setToasts((prevToasts) => [...prevToasts, newToast])
+
+    setTimeout(() => {
+      handleToastClose(newToast.id)
+    }, 3000)
+  }
+
+  const handleCloseToast = (id) => {
+    setToasts((prevTosts) => {
+        prevToasts.filter((toast) => {
+          toast.id !== id
+        })
+      })
+  }
+  
+  //Add title component, remove showTable, only use EditTraits as accordian
+  //Add RandomizedTraits component to render the table of traits
+  //Add component that holds buttons - create (modal with tabs), save, clear, settings (modal)
+  //Move and import modify traits to separate utility file
+  //Comments for each portion of the code for readability (JSDoc?), eventual testing
   return (
     <>
       <h1>{!isEditing && (title || "New Template")}</h1>
