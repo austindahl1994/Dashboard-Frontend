@@ -123,12 +123,12 @@ const CharacterGeneration = () => {
     setToasts((prevToasts) => [...prevToasts, newToast])
 
     setTimeout(() => {
-      handleToastClose(newToast.id)
+      handleCloseToast(newToast.id)
     }, 3000)
   }
 
   const handleCloseToast = (id) => {
-    setToasts((prevTosts) => {
+    setToasts((prevToasts) => {
         prevToasts.filter((toast) => {
           toast.id !== id
         })
@@ -189,7 +189,7 @@ const CharacterGeneration = () => {
         </div>
         <Button
           onClick={async () => {
-            const tester = await getProfile("testProfile");
+            const tester = await getProfile(2, "testProfile");
             console.log(`Test name: ${tester.name}`);
             if (tester && tester.properties !== undefined) {
               setTitle(tester.name)
