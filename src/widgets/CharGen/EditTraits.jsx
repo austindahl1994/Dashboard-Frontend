@@ -38,7 +38,7 @@ const EditTraits = ({
     //console.log(`Width of ${maxWidth} and height of ${maxHeight}`);
 
     //Creates a 2D array as an array of arrays containing strings if first element (what the trait is) or objects if it's a trait.
-    //If the rowIndex is 0, it means that the trait name should be along the left side of the table
+    //If the rowIndex is 0, it means that the property name should be along the left side of the table
     //If index is not 0, checks to see if something exists at that location in the traits, if null (nothing there), then it returns empty string
     const generatedTable = Array.from(
       { length: maxHeight + 1 },
