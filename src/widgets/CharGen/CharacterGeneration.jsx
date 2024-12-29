@@ -15,6 +15,7 @@ import {
 import importCSV from "./importCSV";
 import "./characterGeneration.css";
 import { getProfile } from "./charGenApi";
+import { ToastContext } from '../ToastContext'
 
 const fileData = [
   ["Traits"],
@@ -33,7 +34,7 @@ const CharacterGeneration = () => {
   const [title, setTitle] = useState("New Template"); //character title, have in separate component
   const [randomTraits, setRandomTraits] = useState([]); //array of objects [{header, randomTrait}...]
   const [isEditing, setIsEditing] = useState(false); //Won't need this after Title is separate component, both table and title will have their own editing states
-  const [toasts, setToasts] = useState([]) //Array of toast objects
+  const {createToast} = useContext(ToastContext)
   
   //update later to be a function and take in data to parse
   useEffect(() => {
@@ -69,6 +70,43 @@ const CharacterGeneration = () => {
     setTitle(event.target.value);
   };
 
+  const handleAPI = async (reqType, data) => {
+    try {
+      let response;
+      let resType = '';
+      switch (reqType) {
+        case 'get':
+          response = await getProfile(data.id, data.name)
+          resType = 'get'
+          break;
+        case: 'post':
+          response = await createProfile(data.name, data.properties)
+          resType = 'create'
+          break;
+        case 'put':
+          response = await updateProfile(data.id, data.name, data.properties)
+          resType = 'update'
+          break;
+        case 'delete':
+          response = await deleteProfile(data.id, data.name)
+          resType = 'delete'
+          break;
+        default: 
+          console.error('A correct api type was not passed in')
+          throw new Error('Invalid request type')
+      }
+
+      if (response.success) {
+        createToast(`Successfully ${reqType === 'get' ? 'got' : resType + 'd'} profile`, 1)
+      } else {
+        createToast(`Could not ${resType} profile`)
+      }
+    } catch (error) {
+      createToast(`There was an error for request: ${resType} profile, error: ${error}`)
+      console.error(error)
+    }
+  }
+
   //position is array for [x, y], newTrait is an object of {trait, percent}
 
   //---------------MODIFY TRAITS ----------------------
@@ -99,42 +137,7 @@ const CharacterGeneration = () => {
         console.log("Invalid operation or entity");
     }
   };
-  
-  //ADDED WHILE AT WORK
-  //Import from separate utility file that returns an object? 
-  const triggerToast = (status, message) => {
-    let color;
-    switch(status) {
-      case 1: color = "primary"
-        break
-      case 2: color = "warning"
-        break
-      case 3: color = "danger"
-        break
-      default: color = "primary"
-    }
 
-    const newToast = {
-      id: Date.now(),
-      status: color,
-      message: message
-    }
-
-    setToasts((prevToasts) => [...prevToasts, newToast])
-
-    setTimeout(() => {
-      handleCloseToast(newToast.id)
-    }, 3000)
-  }
-
-  const handleCloseToast = (id) => {
-    setToasts((prevToasts) => {
-        prevToasts.filter((toast) => {
-          toast.id !== id
-        })
-      })
-  }
-  
   //Add title component, remove showTable, only use EditTraits as accordian
   //Add RandomizedTraits component to render the table of traits
   //Add component that holds buttons - create (modal with tabs), save, clear, settings (modal)
@@ -198,6 +201,9 @@ const CharacterGeneration = () => {
           }}
         >
           Get Profile
+        </Button>
+        <Button onClick(() => {handleAPI('get', 'testProfile')})>
+          Test Handle API
         </Button>
       </div>
     </>
