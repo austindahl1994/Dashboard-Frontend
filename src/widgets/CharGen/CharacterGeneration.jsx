@@ -194,9 +194,9 @@ const CharacterGeneration = () => {
           onClick={async () => {
             const tester = await getProfile(2, "testProfile");
             console.log(`Test name: ${tester.name}`);
-            if (tester && tester.properties !== undefined) {
-              setTitle(tester.name)
-              setTraits(tester.properties)
+            if (tester.success && tester.data.properties !== undefined) {
+              setTitle(tester.data.name)
+              setTraits(tester.data.properties)
             }
           }}
         >
