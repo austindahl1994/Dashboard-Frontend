@@ -12,8 +12,9 @@ const createProfile = async (name, properties) => {
       name,
       properties,
     });
-    return response.data;
+    return {success: true, data: response.data};
   } catch (error) {
+    return {sucess: false, error: error}
     console.log("Some error msg: " + error);
   }
 };
@@ -26,8 +27,9 @@ const getProfile = async (id, name) => {
   try {
     const response = await axios.get(`${endpoint}/${encodeURIComponent(name)}`);
     // ${encodeURIComponent(id)}
-    return response.data;
+    return {success: true, data: response.data};
   } catch (error) {
+    return {sucess: false, error: error}
     console.error(`Error getting profile: ${error}`);
   }
 };
@@ -39,8 +41,9 @@ const getRecentProfiles = async (limit) => {
     const response = await axios.get(`${endpoint}/recent`, {
       params: { limit },
     });
-    return response.data;
+    return {success: true, data: response.data};
   } catch (error) {
+    return {sucess: false, error: error}
     console.error(error);
   }
 };
@@ -52,8 +55,9 @@ const updateProfile = async (id, name) => {
     const response = await axios.put(
       `${endpoint}/update/${encodeURIComponent(id)}/${encodeURIComponent(name)}`
     );
-    return response.data;
+    return {success: true, data: response.data};
   } catch (error) {
+    return {sucess: false, error: error}
     console.error(error);
   }
 };
@@ -65,8 +69,9 @@ const deleteProfile = async (id, name) => {
     const response = await axios.put(
       `${endpoint}/update/${encodeURIComponent(id)}/${encodeURIComponent(name)}`
     );
-    return response.data;
+    return {success: true, data: response.data};
   } catch (error) {
+    return {sucess: false, error: error}
     console.error(error);
   }
 };
