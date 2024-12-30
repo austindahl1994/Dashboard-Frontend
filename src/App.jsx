@@ -5,9 +5,7 @@ import CharacterGeneration from "./widgets/CharGen/CharacterGeneration";
 function App() {
   return (
     <ToastProvider>
-      <div>
-        <Toasts />
-      </div>
+      <Toasts />
       <CharacterGeneration />
     </ToastProvider>
   );

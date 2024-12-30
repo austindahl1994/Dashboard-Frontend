@@ -2,17 +2,12 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import ShowCell from "./ShowCell";
 import EditCell from "./EditCell";
-import { Button, Table } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 import { capitalizeFirstLetter } from "./utilityFunctions";
 
-const EditTraits = ({
-  traits,
-  saveButtonFunc,
-  title,
-  updateTitleFunc,
-  modifyTraitsFunc,
-}) => {
+const EditTraits = ({ traits, title, updateTitleFunc, modifyTraitsFunc }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [editingTitle, setEditingTitle] = useState(false);
   const [position, setPosition] = useState([]);
   const [newTraits, setNewTraits] = useState([]);
   const [maxDimensions, setMaxDimensions] = useState([]);
@@ -179,12 +174,22 @@ const EditTraits = ({
   return (
     <>
       <div className="title-wrapper">
-        <h1 style={{ margin: 0, display: "inline" }}>Title: </h1>
-        <input
-          className="input-title"
-          placeholder={title}
-          onChange={(e) => updateTitleFunc(e)}
-        />
+        {!editingTitle ? (
+          <h1
+            style={{ margin: 0, display: "inline" }}
+            onClick={() => setEditingTitle(true)}
+          >
+            {title}
+          </h1>
+        ) : (
+          <input
+            className="input-title"
+            placeholder={title}
+            onChange={(e) => updateTitleFunc(e)}
+            onBlur={() => setEditingTitle(false)}
+            autoFocus
+          />
+        )}
       </div>
       <Table striped bordered hover>
         <tbody>
@@ -192,11 +197,6 @@ const EditTraits = ({
             <tr key={yIndex}>
               {yArr.map((xArrElement, xIndex) => (
                 <React.Fragment key={xIndex}>
-                  {/*Add a check here if editing, show the td as a single td (span of 2) and have state "text" as trait, percent (if not null) at index [xpos, ypos]*/}
-                  {/*EDGE CASE: if clicking first element of array, should update it to just be a string, no percent. So same edit but don't look for comma with split or add a percent value after, keep as string */}
-                  {/*On unfocus/return key, update and generate new table with updated data (check previous object in array if null, move it to front)*/}
-                  {/*On tab, as if clicking on next cell, check if exists lengthwise, if not then create it/edit it (push new obj onto array of null, null, then as if clicking on it)*/}
-                  {/*Along the lines of isEditing ? <EditingTD /> : CURRENT FRAGMENTS*/}
                   {isEditing &&
                   position[0] === xIndex &&
                   position[1] === yIndex ? (
@@ -225,7 +225,6 @@ const EditTraits = ({
           ))}
         </tbody>
       </Table>
-      <Button onClick={() => saveButtonFunc(false)}>Save</Button>
     </>
   );
 };
@@ -248,7 +247,6 @@ EditTraits.propTypes = {
       ),
     ])
   ),
-  saveButtonFunc: PropTypes.func,
   title: PropTypes.string,
   updateTitleFunc: PropTypes.func,
   modifyTraitsFunc: PropTypes.func,

@@ -15,22 +15,21 @@ const createProfile = async (name, properties) => {
     return {success: true, data: response.data};
   } catch (error) {
     return {sucess: false, error: error}
-    console.log("Some error msg: " + error);
   }
 };
 
 //Get a profile by id or name
 //Returns single object of profile record {id, name, properties (JSON), time_updated}
-const getProfile = async (id, name) => {
-  console.log(`API: ${endpoint}`);
-  console.log(`name:${name}`);
+const getProfile = async (user_id, name) => {
   try {
-    const response = await axios.get(`${endpoint}/${encodeURIComponent(name)}`);
-    // ${encodeURIComponent(id)}
+    //console.log(`Sending ${name} and ${user_id}`);
+    const response = await axios.get(
+      `${endpoint}/${encodeURIComponent(user_id)}/${encodeURIComponent(name)}`
+    );
+    //console.log(`${response.data.name}`)
     return {success: true, data: response.data};
   } catch (error) {
     return {sucess: false, error: error}
-    console.error(`Error getting profile: ${error}`);
   }
 };
 
@@ -44,7 +43,6 @@ const getRecentProfiles = async (limit) => {
     return {success: true, data: response.data};
   } catch (error) {
     return {sucess: false, error: error}
-    console.error(error);
   }
 };
 
@@ -58,7 +56,6 @@ const updateProfile = async (id, name) => {
     return {success: true, data: response.data};
   } catch (error) {
     return {sucess: false, error: error}
-    console.error(error);
   }
 };
 
@@ -72,7 +69,6 @@ const deleteProfile = async (id, name) => {
     return {success: true, data: response.data};
   } catch (error) {
     return {sucess: false, error: error}
-    console.error(error);
   }
 };
 

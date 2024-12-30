@@ -1,0 +1,12 @@
+.toast-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1050;
+  width: auto;
+  pointer-events: none;
+}
+
+.toast-container .toast {
+  pointer-events: all;
+}

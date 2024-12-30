@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import EditTraits from "./EditTraits";
-import ShowTable from "./ShowTable";
 import generateRandomTraits from "./generateRandomTraits";
-import { Button, Table } from "react-bootstrap";
+import { Accordion, Button, Table } from "react-bootstrap";
 import {
   addHeader,
   addTrait,
@@ -14,8 +13,13 @@ import {
 } from "./updateCharacter";
 import importCSV from "./importCSV";
 import "./characterGeneration.css";
-import { getProfile } from "./charGenApi";
-import { ToastContext } from '../ToastContext'
+import {
+  getProfile,
+  createProfile,
+  updateProfile,
+  deleteProfile,
+} from "./charGenApi";
+import { ToastContext } from "../../ToastContext";
 
 const fileData = [
   ["Traits"],
@@ -33,9 +37,8 @@ const CharacterGeneration = () => {
   const [traits, setTraits] = useState({}); //just holds initial traits object without changes
   const [title, setTitle] = useState("New Template"); //character title, have in separate component
   const [randomTraits, setRandomTraits] = useState([]); //array of objects [{header, randomTrait}...]
-  const [isEditing, setIsEditing] = useState(false); //Won't need this after Title is separate component, both table and title will have their own editing states
-  const {createToast} = useContext(ToastContext)
-  
+  const { createToast } = useContext(ToastContext);
+
   //update later to be a function and take in data to parse
   useEffect(() => {
     transformTraits(fileData, updateTraitsfn);
@@ -62,50 +65,52 @@ const CharacterGeneration = () => {
     setRandomTraits(traitsObj);
   };
 
-  const changeEditState = (value) => {
-    setIsEditing(value);
-  };
-
   const updateTitle = (event) => {
     setTitle(event.target.value);
   };
 
-  const handleAPI = async (reqType, data) => {
+  const handleAPI = async (reqType, profile) => {
+    let resType = "";
     try {
       let response;
-      let resType = '';
       switch (reqType) {
-        case 'get':
-          response = await getProfile(data.id, data.name)
-          resType = 'get'
+        case "get":
+          response = await getProfile(1, profile.name);
+          resType = "get";
           break;
-        case: 'post':
-          response = await createProfile(data.name, data.properties)
-          resType = 'create'
+        case "post":
+          response = await createProfile(profile.name, profile.properties);
+          resType = "create";
           break;
-        case 'put':
-          response = await updateProfile(data.id, data.name, data.properties)
-          resType = 'update'
+        case "put":
+          response = await updateProfile(
+            profile.id,
+            profile.name,
+            profile.properties
+          );
+          resType = "update";
           break;
-        case 'delete':
-          response = await deleteProfile(data.id, data.name)
-          resType = 'delete'
+        case "delete":
+          response = await deleteProfile(profile.id, profile.name);
+          resType = "delete";
           break;
-        default: 
-          console.error('A correct api type was not passed in')
-          throw new Error('Invalid request type')
+        default:
+          console.error("A correct api type was not passed in");
+          throw new Error("Invalid request type");
       }
 
       if (response.success) {
         createToast(`Successfully ${reqType === 'get' ? 'got' : resType + 'd'} profile`, 1)
       } else {
-        createToast(`Could not ${resType} profile`)
+        console.log(`No Toast Success for ${resType}!`);
+        createToast(`Could not ${resType} profile`, 0)
+        throw new Error(response.error)
       }
     } catch (error) {
       createToast(`There was an error for request: ${resType} profile, error: ${error}`)
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   //position is array for [x, y], newTrait is an object of {trait, percent}
 
@@ -145,19 +150,20 @@ const CharacterGeneration = () => {
   //Comments for each portion of the code for readability (JSDoc?), eventual testing
   return (
     <>
-      <h1>{!isEditing && (title || "New Template")}</h1>
       <div>
-        {!isEditing ? (
-          <ShowTable traits={traits} editButtonFunc={changeEditState} />
-        ) : (
-          <EditTraits
-            traits={traits}
-            saveButtonFunc={changeEditState}
-            title={title}
-            updateTitleFunc={updateTitle}
-            modifyTraitsFunc={modifyTraits}
-          />
-        )}
+      <Accordion>
+        <Accordion.Item eventKey="0">
+          <Accordion.Header>{title}</Accordion.Header>
+          <Accordion.Body>
+            <EditTraits
+              traits={traits}
+              title={title}
+              updateTitleFunc={updateTitle}
+              modifyTraitsFunc={modifyTraits}
+            />
+          </Accordion.Body>
+        </Accordion.Item>
+      </Accordion>
         <div>
           <label htmlFor="csvFile">Select a CSV file</label>
           <input
@@ -186,23 +192,25 @@ const CharacterGeneration = () => {
         </Table>
         <Button onClick={handleRandomizeClick}>Randomize</Button>
         <br />
-        <div>
-          <label htmlFor="checkPercent">Show Percents?</label>
-          <input type="checkbox" id="checkPercent" name="checkPercent" />
-        </div>
+        <br />
         <Button
           onClick={async () => {
-            const tester = await getProfile(2, "testProfile");
-            console.log(`Test name: ${tester.name}`);
+            console.log(`Testing get`);
+            const tester = await getProfile(1, "testProfile");
+            console.log(`Test name: ${tester.data.name}`);
             if (tester.success && tester.data.properties !== undefined) {
-              setTitle(tester.data.name)
-              setTraits(tester.data.properties)
+              setTitle(tester.data.name);
+              setTraits(tester.data.properties);
             }
           }}
         >
           Get Profile
         </Button>
-        <Button onClick(() => {handleAPI('get', 'testProfile')})>
+        <Button
+          onClick={() => {
+            handleAPI("get", { name: "test1Profile" });
+          }}
+        >
           Test Handle API
         </Button>
       </div>

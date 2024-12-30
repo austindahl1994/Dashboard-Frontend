@@ -1,36 +1,34 @@
-import { useContext, useState } from 'react'
-import Toast from 'react-bootstrap/Toast';
-import { ToastContext } from './ToastContext'
-
+import { useContext, useEffect } from "react";
+import { ToastContext } from "./ToastContext";
+import Toast from "react-bootstrap/Toast";
+import './toasts.css'
 const Toasts = () => {
-  const {toasts, removeToast} = useContext(ToastContext)
+  const { toasts, removeToast } = useContext(ToastContext);
 
   useEffect(() => {
     const timeoutIds = toasts.map((toast) => {
       setTimeout(() => {
-        removeToast(toast.id)
-      }, 5000)
-    })
+        removeToast(toast.id);
+      }, 5000);
+    });
 
     return () => {
-      timeoutIds.forEach(clearTimeout)
-    }
-  }, [toasts, removeToast])
+      timeoutIds.forEach(clearTimeout);
+    };
+  }, [toasts, removeToast]);
 
   return (
-    <div className='toast-container'>
-      {toasts.map((toast, index) => (
-        <Toast key={toast.id} bg={toast.status}>
-            <Toast.Header>
-              Notification:
-            </Toast.Header>
-          <Toast.body>
-            {toast.message}
-          </Toast.body>
+    <div className="toast-container">
+      {toasts.map((toast) => (
+        <Toast key={toast.id} bg={toast.status} position={"top-end"} onClose={() => {removeToast(toast.id)}}>
+          <Toast.Header>
+            <strong className='w-100'>Notification:</strong>
+          </Toast.Header>
+          <Toast.Body style={{color: 'white'}}>{toast.message}</Toast.Body>
         </Toast>
       ))}
     </div>
-  )
-}
+  );
+};
 
-export default Toasts
+export default Toasts;
