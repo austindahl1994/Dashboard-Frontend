@@ -19,7 +19,7 @@ import {
   updateProfile,
   deleteProfile,
 } from "./charGenApi";
-import { ToastContext } from "../../ToastContext";
+import { ToastContext } from "../../main-components/ToastContext";
 
 const fileData = [
   ["Traits"],
@@ -100,14 +100,19 @@ const CharacterGeneration = () => {
       }
 
       if (response.success) {
-        createToast(`Successfully ${reqType === 'get' ? 'got' : resType + 'd'} profile`, 1)
+        createToast(
+          `Successfully ${reqType === "get" ? "got" : resType + "d"} profile`,
+          1
+        );
       } else {
         console.log(`No Toast Success for ${resType}!`);
-        createToast(`Could not ${resType} profile`, 0)
-        throw new Error(response.error)
+        createToast(`Could not ${resType} profile`, 0);
+        throw new Error(response.error);
       }
     } catch (error) {
-      createToast(`There was an error for request: ${resType} profile, error: ${error}`)
+      createToast(
+        `There was an error for request: ${resType} profile, error: ${error}`
+      );
       console.error(error);
     }
   };
@@ -151,19 +156,19 @@ const CharacterGeneration = () => {
   return (
     <>
       <div>
-      <Accordion>
-        <Accordion.Item eventKey="0">
-          <Accordion.Header>{title}</Accordion.Header>
-          <Accordion.Body>
-            <EditTraits
-              traits={traits}
-              title={title}
-              updateTitleFunc={updateTitle}
-              modifyTraitsFunc={modifyTraits}
-            />
-          </Accordion.Body>
-        </Accordion.Item>
-      </Accordion>
+        <Accordion>
+          <Accordion.Item eventKey="0">
+            <Accordion.Header>{title}</Accordion.Header>
+            <Accordion.Body>
+              <EditTraits
+                traits={traits}
+                title={title}
+                updateTitleFunc={updateTitle}
+                modifyTraitsFunc={modifyTraits}
+              />
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
         <div>
           <label htmlFor="csvFile">Select a CSV file</label>
           <input

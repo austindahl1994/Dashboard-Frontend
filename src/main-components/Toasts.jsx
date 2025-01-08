@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
 import { ToastContext } from "./ToastContext";
 import Toast from "react-bootstrap/Toast";
-import './toasts.css'
+import "../main-styles/toasts.css";
 const Toasts = () => {
   const { toasts, removeToast } = useContext(ToastContext);
 
@@ -20,11 +20,18 @@ const Toasts = () => {
   return (
     <div className="toast-container">
       {toasts.map((toast) => (
-        <Toast key={toast.id} bg={toast.status} position={"top-end"} onClose={() => {removeToast(toast.id)}}>
+        <Toast
+          key={toast.id}
+          bg={toast.status}
+          position={"top-end"}
+          onClose={() => {
+            removeToast(toast.id);
+          }}
+        >
           <Toast.Header>
-            <strong className='w-100'>Notification:</strong>
+            <strong className="w-100">Notification:</strong>
           </Toast.Header>
-          <Toast.Body style={{color: 'white'}}>{toast.message}</Toast.Body>
+          <Toast.Body style={{ color: "white" }}>{toast.message}</Toast.Body>
         </Toast>
       ))}
     </div>
