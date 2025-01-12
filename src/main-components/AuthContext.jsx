@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import { login, logout, checkSession } from "./authApi";
-
+import { PropTypes } from "prop-types"
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
@@ -39,5 +39,9 @@ const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+const AuthProvider.propTypes = {
+  chilred: PropTypes.node.required
+}
 
 export {AuthContext, AuthProvider};
