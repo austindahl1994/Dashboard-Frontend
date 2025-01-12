@@ -1,16 +1,28 @@
-import { useContext } from "react";
-import Dashboard from "./main-components/Dashboard";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom"
 import { AuthContext } from "./main-components/AuthContext";
+import ProtectedRoutes from "./main-components/ProtectedRoutes"
+import Dashboard from "./main-components/Dashboard";
 import Login from "./main-components/Login";
-import "./main-styles/app.css";
+import Home from "./main-components/Home"
 
 function App() {
-  const { isAuthenticated } = useContext(AuthContext);
-
   return (
-      <div className="main-container">
-        {isAuthenticated ? <Dashboard /> : <Login />}
-      </div>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoutes>
+                <Dashboard />
+              </ProtectedRoutes>
+            } 
+          />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 
