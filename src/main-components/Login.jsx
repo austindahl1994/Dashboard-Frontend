@@ -2,23 +2,23 @@ import { Form, Button } from "react-bootstrap";
 import { login, logout } from "./authApi";
 import { useContext, useState } from "react";
 import { AuthContext } from "./AuthContext";
+import { useNavigate } from "react-router-dom"
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-    const {checkForSession} = useContext(AuthContext)
+  const { authLogin, authLogout, redirectPath } = useContext(AuthContext)
+  const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const userData = await login(email, password);
-      if (userData) {
-        console.log(
-          `${userData.user_id}, ${userData.username} ${userData.email}, ${userData.role}`
-        );
-      }
+      console.log(`${userData.user_id}, ${userData.username} ${userData.email}, ${userData.role}`);
+      navigate(redirectPath || '/', { replace: true })
     } catch (error) {
       console.error(`Error: ${error}`)
+      //Show error for wrong username and password on the form
     }
   };
 
