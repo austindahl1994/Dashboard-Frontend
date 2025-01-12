@@ -12,9 +12,13 @@ const login = async (email, password) => {
         withCredentials: true,
       }
     );
+    if (response.status !== 200) {
+      throw new Error('Invalid credentials')
+    } 
     return response.data;
   } catch (error) {
     console.error(`Login error: ${error}`);
+    throw error
   }
 };
 
@@ -23,6 +27,9 @@ const logout = async () => {
     const response = await axios.post("http://localhost:3131/api/logout", {
       withCredentials: true,
     });
+    if (response.status !== 200) {
+      throw new Error('Error logging out')
+    }
     return response.data.message;
   } catch (error) {
     console.error(`Error: ${error}`);
