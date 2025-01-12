@@ -15,20 +15,15 @@ const Login = () => {
     try {
       const userData = await login(email, password);
       console.log(`${userData.user_id}, ${userData.username} ${userData.email}, ${userData.role}`);
-      navigate(redirectPath || '/', { replace: true })
+      navigate(redirectPath || '/dashboard', { replace: true })
     } catch (error) {
       console.error(`Error: ${error}`)
       //Show error for wrong username and password on the form
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      const response = await logout();
-      console.log(response)
-    } catch (error) {
-      console.error(`Error: ${error}`)
-    }
+  const handleLogout = () => { //wont be needed since logout button not here
+    authLogout()
   };
 
   return (
@@ -59,9 +54,8 @@ const Login = () => {
         </Form>
       </div>
       <Button onClick={handleLogout}>Logout</Button>
-      <Button onClick={checkForSession}>Check Session</Button>
     </div>
   );
 };
-
+//      <Button onClick={checkForSession}>Check Session</Button>
 export default Login;
