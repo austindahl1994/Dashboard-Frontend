@@ -7,21 +7,18 @@ import { useNavigate } from "react-router-dom"
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { authLogin, authLogout, redirectPath } = useContext(AuthContext)
+  const { authLogin, authLogout } = useContext(AuthContext)
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const userData = await login(email, password);
-      console.log(`${userData.user_id}, ${userData.username} ${userData.email}, ${userData.role}`);
-      navigate(redirectPath || '/dashboard', { replace: true })
+      await authLogin(email, password)
     } catch (error) {
-      console.error(`Error: ${error}`)
       //Show error for wrong username and password on the form
     }
   };
-
+  //still show a confirmation that user has logged out though
   const handleLogout = () => { //wont be needed since logout button not here
     authLogout()
   };
