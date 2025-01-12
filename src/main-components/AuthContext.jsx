@@ -17,7 +17,7 @@ const AuthProvider = ({ children }) => {
     setUser(user)
   };
 
-  const authLogout = async () => {
+  const authLogout = () => {
     setIsAuthenticated(false)
     setUser({})
   };
@@ -26,12 +26,10 @@ const AuthProvider = ({ children }) => {
     try {
       const response = await checkSession()
       console.log(response.message)
-      setIsAuthenticated(true)
-      setUser(response.user)
+      authLogin(response.user)
     } catch (error) {
       console.error(`Error: ${error}`)
-      setIsAuthenticated(false)
-      setUser({})
+      authLogout()
     }
   }
 
