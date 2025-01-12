@@ -1,50 +1,42 @@
 import { createContext, useState, useEffect } from "react";
 import { login, logout, checkSession } from "./authApi";
+
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [redirectPath, setRedirectPath] = useState('/')
   const [user, setUser] = useState({});
-  const [loading, setLoading] = useState(true);
 
-  const handleLogin = async (email, password) => {
-    try {
-      const userData = await login(email, password);
-      if (userData) {
-        console.log(
-          `${userData.user_id}, ${userData.username} ${userData.email}, ${userData.role}`
-        );
-        setIsAuthenticated(true);
-        setUser(userData);
-      }
-    } catch (error) {
-      console.error(`Error: ${error}`);
-      setIsAuthenticated(false);
-    }
+  useEffect(() => {
+    authCheck()
+  }, [])
+  
+  const authLogin = (user) => {
+    setIsAuthenticated(true)
+    setUser(user)
   };
 
-  const handleLogout = async () => {
-    try {
-      const response = await logout();
-      console.log(response);
-      setIsAuthenticated(false);
-    } catch (error) {
-      console.error(`Error: ${error}`);
-      setIsAuthenticated(false);
-    }
+  const authLogout = async () => {
+    setIsAuthenticated(false)
+    setUser({})
   };
 
-  const checkForSession = async () => {
+  const authCheck = async () => {
     try {
       const response = await checkSession()
-      console.log(response.data.message)
+      console.log(response.message)
+      setIsAuthenticated(true)
+      setUser(response.user)
     } catch (error) {
       console.error(`Error: ${error}`)
+      setIsAuthenticated(false)
+      setUser({})
     }
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, handleLogin, handleLogout, checkForSession }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, authLogin, authLogout, redirectPath, setRedirectPath }}>
       {children}
     </AuthContext.Provider>
   );
