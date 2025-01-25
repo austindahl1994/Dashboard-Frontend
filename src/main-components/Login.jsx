@@ -1,5 +1,4 @@
 import { Form, Button } from "react-bootstrap";
-import { login, logout } from "./authApi";
 import { useContext, useState } from "react";
 import { AuthContext } from "./AuthContext";
 import { useNavigate } from "react-router-dom"
@@ -16,6 +15,7 @@ const Login = () => {
       await authLogin(email, password)
     } catch (error) {
       //Show error for wrong username and password on the form
+      console.error(`Error: ${error}`)
     }
   };
   //still show a confirmation that user has logged out though
