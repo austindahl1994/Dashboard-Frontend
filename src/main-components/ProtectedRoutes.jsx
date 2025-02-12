@@ -8,7 +8,7 @@ const ProtectedRoutes = ({ children }) => {
   const location = useLocation()
   
   if (!isAuthenticated) {
-    setRedirectPath(location.pathname)
+    setRedirection(location.pathname)
     return <Navigate to='/login' replace />
   }
   

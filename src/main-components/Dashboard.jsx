@@ -1,8 +1,8 @@
 //List all widget objects saved in DB, iterate through and show cards for each, the card content dependent on content
 import { Route, Routes } from "react-router-dom";
-import { useState, useEffect } from 'react'
+//import { useState, useEffect } from 'react'
 import { ToastProvider } from "./ToastContext";
-import { AuthProvider } from "./AuthContext"
+//import { AuthProvider } from "./AuthContext"
 import Navbar from "./Navbar";
 import Toasts from "./Toasts";
 import CharacterGeneration from "../widgets/CharGen/CharacterGeneration"; //elsewhere
@@ -51,14 +51,10 @@ Still need to define the routes for each widget
 //where to store individual widget settings? each their own table like profiles/chargen
 //remove user_profile table, just store the info in profile for chgen settings
 const Dashboard = () => {
-  const [widgets, setWidgets] = useState({})
-  const [loading, setLoading] = useState(true)
+  //const [widgets, setWidgets] = useState({})
+  //const [loading, setLoading] = useState(true)
   
   //async to get user information, setWigets to json object
-
-  useEffect(async () => {
-    
-  }, [])
   
   return (
     <div>

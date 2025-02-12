@@ -1,13 +1,13 @@
 import { Form, Button } from "react-bootstrap";
 import { useContext, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import { useNavigate } from "react-router-dom"
+//import { useNavigate } from "react-router-dom"
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { authLogin, authLogout } = useContext(AuthContext)
-  const navigate = useNavigate()
+  //const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
