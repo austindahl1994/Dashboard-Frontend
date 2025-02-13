@@ -28,7 +28,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           {/* map through allWidgets, each surrounded by ProtectedRoutes */}
           <Route
-            path="/dashboard"
+            path="/dashboard/*"
             element={
               <ProtectedRoutes>
                 <Dashboard />

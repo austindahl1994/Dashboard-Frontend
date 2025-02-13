@@ -2,10 +2,12 @@
 import { Route, Routes } from "react-router-dom";
 //import { useState, useEffect } from 'react'
 import { ToastProvider } from "./ToastContext";
-//import { AuthProvider } from "./AuthContext"
+import { AuthContext } from "./AuthContext"
 import Navbar from "./Navbar";
 import Toasts from "./Toasts";
 import CharacterGeneration from "../widgets/CharGen/CharacterGeneration"; //elsewhere
+import { Button } from "react-bootstrap";
+import { useContext } from "react";
 /*
 widgets table
 [{
@@ -53,7 +55,7 @@ Still need to define the routes for each widget
 const Dashboard = () => {
   //const [widgets, setWidgets] = useState({})
   //const [loading, setLoading] = useState(true)
-  
+  const {authLogout} = useContext(AuthContext)
   //async to get user information, setWigets to json object
   
   return (
@@ -70,6 +72,7 @@ const Dashboard = () => {
               element={<CharacterGeneration />}
             />
           </Routes>
+          <Button onClick={authLogout}>Logout</Button>
         </ToastProvider>
       </div>
     </div>

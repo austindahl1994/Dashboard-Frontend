@@ -2,11 +2,13 @@ import { createContext, useState, useEffect, useCallback } from "react";
 import { login, logout, checkSession } from "./authApi";
 import { PropTypes } from "prop-types";
 import { useNavigate } from "react-router-dom";
+
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [redirectPath, setRedirectPath] = useState("/dashboard"); //remove home file
+  const [logging, setLogging] = useState(false)
+  const [redirectPath, setRedirectPath] = useState("/dashboard");
   const [user, setUser] = useState({});
   const navigate = useNavigate();
 
@@ -26,38 +28,57 @@ const AuthProvider = ({ children }) => {
   };
 
   const authLogout = useCallback(async () => {
+    setLogging(true);
     try {
-      const response = await logout();
-      console.log(response);
-    } catch (error) {
-      console.error(`Error: ${error}`);
-    } finally {
+      await logout(); // Backend should clear session properly
       setIsAuthenticated(false);
       setUser({});
       navigate("/login");
+
+      // ✅ Double-check session is gone
+      setTimeout(async () => {
+        try {
+          const response = await checkSession();
+          if (response.user) {
+            console.warn("Logout failed, user still exists:", response.user);
+          } else {
+            console.log("Logout successful, no user detected.");
+          }
+        } catch (error) {
+          console.log("Session check confirmed logout.");
+        }
+      }, 500); // Slight delay to ensure backend processes request
+    } catch (error) {
+      console.error(`Logout Error: ${error}`);
+    } finally {
+      setLogging(false);
     }
   }, [navigate]);
 
-  const authCheck = useCallback(async () => {
-    try {
-      const response = await checkSession();
-      console.log(response.message);
-      if (response.user) {
-        setUser(response.user);
-        setIsAuthenticated(true);
-        navigate(redirectPath, { replace: true });
-      } else {
-        authLogout();
-      }
-    } catch (error) {
-      console.error(`Error: ${error}`);
-      authLogout();
-    }
-  }, [redirectPath, navigate, authLogout]);
-
   useEffect(() => {
-    authCheck();
-  }, [authCheck]);
+    const authCheck = async () => {
+      try {
+        const response = await checkSession();
+        if (response.user) {
+          setUser(response.user);
+          setIsAuthenticated(true);
+        } else {
+          console.log("No user response so logging out");
+          setIsAuthenticated(false);
+          setUser({});
+        }
+      } catch (error) {
+        console.error(`Error: ${error}`);
+        setIsAuthenticated(false);
+        setUser({});
+      }
+    };
+
+    if (!logging && !isAuthenticated) {
+      authCheck();
+    }
+  }, [navigate, redirectPath, logging, isAuthenticated]);
+
 
   return (
     <AuthContext.Provider

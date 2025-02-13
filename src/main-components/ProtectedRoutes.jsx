@@ -1,26 +1,27 @@
-import { useContext } from 'react'
-import { Navigate, useLocation } from 'react-router-dom'
-import { AuthContext } from './AuthContext'
-import PropTypes from 'prop-types'
+import { useContext, useEffect } from "react";
+import { Navigate, useLocation } from "react-router-dom";
+import { AuthContext } from "./AuthContext";
+import PropTypes from "prop-types";
 
 const ProtectedRoutes = ({ children }) => {
-  const { isAuthenticated, setRedirection } = useContext(AuthContext)
-  const location = useLocation()
-  
+  const { isAuthenticated, setRedirectPath } = useContext(AuthContext);
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setRedirectPath(location.pathname);
+    }
+  }, [isAuthenticated, location, setRedirectPath]);
+
   if (!isAuthenticated) {
-    setRedirection(location.pathname)
-    return <Navigate to='/login' replace />
+    return <Navigate to="/login" replace />;
   }
-  
-  return (
-    <>
-      {children}
-    </>
-  )
-}
+
+  return <>{children}</>;
+};
 
 ProtectedRoutes.propTypes = {
-  children: PropTypes.node
-}
+  children: PropTypes.node,
+};
 
-export default ProtectedRoutes
+export default ProtectedRoutes;

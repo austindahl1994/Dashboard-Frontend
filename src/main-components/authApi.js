@@ -33,14 +33,14 @@ const logout = async () => {
 const checkSession = async () => {
   try {
     const response = await axios.get(
-      "http://localhost:3131/api/test/check-session",
+      "http://localhost:3131/api/check-session",
       {
         withCredentials: true,
       }
     );
-    return response;
+    return response.data;
   } catch (error) {
-    console.error(`There was an error of: ${error}`);
+    console.log(`There was an error of: ${error}`);
     throw error;
   }
 };
