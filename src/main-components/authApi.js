@@ -3,7 +3,7 @@ import axios from "axios";
 const login = async (email, password) => {
   try {
     const response = await axios.post(
-      "http://localhost:3131/api",
+      import.meta.env.VITE_API_URL,
       {
         email: email,
         password: password,
