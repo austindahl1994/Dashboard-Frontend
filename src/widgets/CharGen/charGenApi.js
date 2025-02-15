@@ -24,7 +24,7 @@ const getProfile = async (user_id, name) => {
   try {
     //console.log(`Sending ${name} and ${user_id}`);
     const response = await axios.get(
-      `${endpoint}/${encodeURIComponent(user_id)}/${encodeURIComponent(name)}`
+      `${endpoint}/${encodeURIComponent(user_id)}/${encodeURIComponent(name)}`, {withCredentials: true}
     );
     //console.log(`${response.data.name}`)
     return {success: true, data: response.data};

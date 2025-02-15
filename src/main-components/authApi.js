@@ -21,7 +21,7 @@ const login = async (email, password) => {
 
 const logout = async () => {
   try {
-    const response = await axios.post("http://localhost:3131/api/logout", {
+    const response = await axios.post("http://localhost:3131/api/logout", {}, {
       withCredentials: true,
     });
     return response.data.message;
@@ -38,11 +38,17 @@ const checkSession = async () => {
         withCredentials: true,
       }
     );
-    return response.data;
+    return response.data; 
   } catch (error) {
-    console.log(`There was an error of: ${error}`);
-    throw error;
+    if (error.response && error.response.status === 401) {
+      //console.log("User is not authenticated, redirecting to login.");
+      throw new Error("No user logged in.");
+    } else {
+      //console.error("Error during session check:", error.message);
+      throw error; 
+    }
   }
 };
+
 
 export { login, logout, checkSession };

@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useCallback } from "react";
+import { createContext, useState, useEffect, useRef } from "react";
 import { login, logout, checkSession } from "./authApi";
 import { PropTypes } from "prop-types";
 import { useNavigate } from "react-router-dom";
@@ -7,8 +7,7 @@ const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [logging, setLogging] = useState(false)
-  const [redirectPath, setRedirectPath] = useState("/dashboard");
+  const isCheckingRef = useRef(false);
   const [user, setUser] = useState({});
   const navigate = useNavigate();
 
@@ -20,65 +19,51 @@ const AuthProvider = ({ children }) => {
       );
       setIsAuthenticated(true);
       setUser(userData);
-      navigate(redirectPath, { replace: true });
+      navigate("/dashboard", { replace: true });
     } catch (error) {
       console.error(`Error: ${error}`);
       throw error;
     }
   };
 
-  const authLogout = useCallback(async () => {
-    setLogging(true);
+  const authLogout = async () => {
     try {
       await logout(); // Backend should clear session properly
       setIsAuthenticated(false);
       setUser({});
       navigate("/login");
-
-      // ✅ Double-check session is gone
-      setTimeout(async () => {
-        try {
-          const response = await checkSession();
-          if (response.user) {
-            console.warn("Logout failed, user still exists:", response.user);
-          } else {
-            console.log("Logout successful, no user detected.");
-          }
-        } catch (error) {
-          console.log("Session check confirmed logout.");
-        }
-      }, 500); // Slight delay to ensure backend processes request
     } catch (error) {
       console.error(`Logout Error: ${error}`);
-    } finally {
-      setLogging(false);
     }
-  }, [navigate]);
+  };
 
   useEffect(() => {
     const authCheck = async () => {
+      if (isCheckingRef.current) return;
+      isCheckingRef.current = true;
+
       try {
         const response = await checkSession();
-        if (response.user) {
-          setUser(response.user);
+        if (response?.message === "Authenticated") {
+          console.log("User is authenticated");
           setIsAuthenticated(true);
+          setUser(response.user); 
+          navigate("/dashboard", { replace: true });
         } else {
-          console.log("No user response so logging out");
-          setIsAuthenticated(false);
-          setUser({});
+          throw new Error("Invalid session");
         }
-      } catch (error) {
-        console.error(`Error: ${error}`);
+      } catch (e) {
+        console.log(e.message);
         setIsAuthenticated(false);
         setUser({});
+        navigate("/login", { replace: true });
+      } finally {
+        isCheckingRef.current = false;
       }
     };
 
-    if (!logging && !isAuthenticated) {
-      authCheck();
-    }
-  }, [navigate, redirectPath, logging, isAuthenticated]);
-
+    authCheck();
+  }, [navigate]); // This effect runs when `navigate` changes
 
   return (
     <AuthContext.Provider
@@ -87,8 +72,6 @@ const AuthProvider = ({ children }) => {
         user,
         authLogin,
         authLogout,
-        redirectPath,
-        setRedirectPath,
       }}
     >
       {children}

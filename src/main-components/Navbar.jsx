@@ -3,7 +3,7 @@ const Navbar = () => {
   return (
     <div>
         <Nav defaultActiveKey="/home" className="flex-column">
-            <Nav.Link href='/home'>Active</Nav.Link>
+            <Nav.Link href='/home'>Eventual Navbar</Nav.Link>
         </Nav>
     </div>
   )

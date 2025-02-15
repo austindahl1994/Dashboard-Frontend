@@ -64,6 +64,7 @@ const Dashboard = () => {
       <div>
         <ToastProvider>
           <Toasts />
+          <CharacterGeneration />
           {/* iterate widgets state, passing info to <Widget /> component */}
           {/* Widget component will display correct widget information as a card */}
           <Routes>
@@ -72,6 +73,7 @@ const Dashboard = () => {
               element={<CharacterGeneration />}
             />
           </Routes>
+          <br />
           <Button onClick={authLogout}>Logout</Button>
         </ToastProvider>
       </div>

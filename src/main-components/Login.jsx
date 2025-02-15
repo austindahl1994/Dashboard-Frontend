@@ -6,7 +6,7 @@ import { AuthContext } from "./AuthContext";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { authLogin, authLogout } = useContext(AuthContext)
+  const { authLogin } = useContext(AuthContext)
   //const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
@@ -17,10 +17,6 @@ const Login = () => {
       //Show error for wrong username and password on the form
       console.error(`Error: ${error}`)
     }
-  };
-  //still show a confirmation that user has logged out though
-  const handleLogout = () => { //wont be needed since logout button not here
-    authLogout()
   };
 
   return (
@@ -50,7 +46,6 @@ const Login = () => {
           </Button>
         </Form>
       </div>
-      <Button onClick={handleLogout}>Logout</Button>
     </div>
   );
 };

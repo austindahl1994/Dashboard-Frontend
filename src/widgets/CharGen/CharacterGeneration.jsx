@@ -104,6 +104,7 @@ const CharacterGeneration = () => {
           `Successfully ${reqType === "get" ? "got" : resType + "d"} profile`,
           1
         );
+        return response
       } else {
         console.log(`No Toast Success for ${resType}!`);
         createToast(`Could not ${resType} profile`, 0);
@@ -201,22 +202,15 @@ const CharacterGeneration = () => {
         <Button
           onClick={async () => {
             console.log(`Testing get`);
-            const tester = await getProfile(1, "testProfile");
-            console.log(`Test name: ${tester.data.name}`);
+            const tester = await handleAPI("get", { name: "testProfile" });
             if (tester.success && tester.data.properties !== undefined) {
+              console.log(`Test name: ${tester.data.name}`);
               setTitle(tester.data.name);
               setTraits(tester.data.properties);
             }
           }}
         >
           Get Profile
-        </Button>
-        <Button
-          onClick={() => {
-            handleAPI("get", { name: "test1Profile" });
-          }}
-        >
-          Test Handle API
         </Button>
       </div>
     </>
