@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const endpoint = "http://localhost:3131/api/profile";
+const endpoint = import.meta.env.VITE_API_URL + "/profile";
 //   import.meta.env.API_URL + "/profile" ||
 //Pass both id and name to server for all requests to try either one
 

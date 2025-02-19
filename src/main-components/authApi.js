@@ -1,11 +1,11 @@
 import axios from "axios";
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const login = async (email, password) => {
-  const apiUrl = import.meta.env.VITE_API_URL;
-  console.log(apiUrl);
+  console.log(`trying login`)
   try {
     const response = await axios.post(
-      import.meta.env.VITE_API_URL,
+      apiUrl + "/auth/login",
       {
         email: email,
         password: password,
@@ -23,9 +23,13 @@ const login = async (email, password) => {
 
 const logout = async () => {
   try {
-    const response = await axios.post("http://localhost:3131/api/logout", {}, {
-      withCredentials: true,
-    });
+    const response = await axios.post(
+      apiUrl + "/auth/logout",
+      {},
+      {
+        withCredentials: true,
+      }
+    );
     return response.data.message;
   } catch (error) {
     console.error(`Error: ${error}`);
@@ -33,13 +37,11 @@ const logout = async () => {
 };
 
 const checkSession = async () => {
+  console.log(`trying session check`)
   try {
-    const response = await axios.get(
-      "http://localhost:3131/api/check-session",
-      {
-        withCredentials: true,
-      }
-    );
+    const response = await axios.get(apiUrl + "/check-session", {
+      withCredentials: true,
+    });
     return response.data; 
   } catch (error) {
     if (error.response && error.response.status === 401) {
