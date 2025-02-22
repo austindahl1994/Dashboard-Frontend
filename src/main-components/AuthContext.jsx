@@ -7,7 +7,6 @@ const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const isCheckingRef = useRef(false);
   const [user, setUser] = useState({});
   const navigate = useNavigate();
 
@@ -37,38 +36,12 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    const authCheck = async () => {
-      if (isCheckingRef.current) return;
-      isCheckingRef.current = true;
-
-      try {
-        const response = await checkSession();
-        if (response?.message === "Authenticated") {
-          console.log("User is authenticated");
-          setIsAuthenticated(true);
-          setUser(response.user); 
-          navigate("/dashboard", { replace: true });
-        } else {
-          throw new Error("Invalid session");
-        }
-      } catch (e) {
-        console.log(e.message);
-        setIsAuthenticated(false);
-        setUser({});
-        navigate("/login", { replace: true });
-      } finally {
-        isCheckingRef.current = false;
-      }
-    };
-
-    authCheck();
-  }, [navigate]); // This effect runs when `navigate` changes
-
   return (
     <AuthContext.Provider
       value={{
+        setIsAuthenticated,
         isAuthenticated,
+        setUser,
         user,
         authLogin,
         authLogout,

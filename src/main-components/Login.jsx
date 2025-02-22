@@ -1,13 +1,45 @@
 import { Form, Button } from "react-bootstrap";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "./AuthContext";
+import { useNavigate } from "react-router-dom";
+import { checkSession } from "./authApi";
 //import { useNavigate } from "react-router-dom"
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { authLogin } = useContext(AuthContext)
+  const { setIsAuthenticated, setUser } =
+    useContext(AuthContext);
+  const isCheckingRef = useRef(false);
+  const navigate = useNavigate();
   //const navigate = useNavigate()
+useEffect(() => {
+  const authCheck = async () => {
+    if (isCheckingRef.current) return;
+    isCheckingRef.current = true;
+
+    try {
+      const response = await checkSession();
+      if (response?.message === "Authenticated") {
+        console.log("User is authenticated");
+        setIsAuthenticated(true);
+        setUser(response.user);
+        navigate("/dashboard", { replace: true });
+      } else {
+        throw new Error("Invalid session");
+      }
+    } catch (e) {
+      console.log(e.message);
+      setIsAuthenticated(false);
+      setUser({});
+      navigate("/login", { replace: true });
+    } finally {
+      isCheckingRef.current = false;
+    }
+  };
+
+  authCheck();
+}, [navigate, setIsAuthenticated, setUser]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

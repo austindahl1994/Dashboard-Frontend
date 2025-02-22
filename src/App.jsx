@@ -4,6 +4,7 @@ import ProtectedRoutes from "./main-components/ProtectedRoutes";
 import Dashboard from "./main-components/Dashboard";
 import Login from "./main-components/Login";
 import Home from "./main-components/Home";
+import Bingo from "./bingo/Bingo";
 
 /*
 // routes.js
@@ -26,6 +27,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/bingo" element={<Bingo />} />
           {/* map through allWidgets, each surrounded by ProtectedRoutes */}
           <Route
             path="/dashboard/*"

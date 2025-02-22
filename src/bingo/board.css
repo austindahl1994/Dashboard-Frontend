@@ -1,0 +1,26 @@
+.holder {
+    display: flex;
+    flex-direction: column;
+    margin: 1em;
+    justify-content: center;
+    background-color: lightgreen;
+    width: 75%;
+    height: 100%;
+}
+
+.hex-row {
+    margin-top: -15px;
+    margin-bottom: -20px;
+    display: flex;
+    justify-content: center;
+}
+
+.info-box {
+    background-color: lightgray;
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+    height: 100%;
+    justify-content: center;
+    text-align: center;
+}
