@@ -1,6 +1,6 @@
 import Papa from "papaparse";
 import { HexTile } from "./HexTile";
-
+const csvFile = "./tempBingo.csv";
 const ringLocations = [
   //center
   [[4, 4]],
@@ -92,8 +92,11 @@ const updateFile = (e, updateTiles) => {
 };
 
 const startFile = async () => {
+  if (!csvFile || csvFile === undefined) {
+    return []
+  }
   try {
-    const response = await fetch("./tempBingo.csv");
+    const response = await fetch(csvFile);
     const textData = await response.text();
     const result = await new Promise((resolve) => {
       Papa.parse(textData, {
