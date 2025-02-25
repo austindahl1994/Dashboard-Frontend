@@ -4,8 +4,8 @@
     margin: 1em;
     justify-content: center;
     background-color: lightgreen;
-    width: 75%;
-    height: 100%;
+    width: 99%;
+    height: 98%;
 }
 
 .hex-row {
@@ -22,5 +22,9 @@
     width: 20%;
     height: 100%;
     justify-content: center;
+    text-align: center;
+}
+
+.offcanvas-body {
     text-align: center;
 }
