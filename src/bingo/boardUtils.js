@@ -92,9 +92,6 @@ const updateFile = (e, updateTiles) => {
 };
 
 const startFile = async () => {
-  if (!csvFile || csvFile === undefined) {
-    return []
-  }
   try {
     const response = await fetch(csvFile);
     const textData = await response.text();
@@ -245,13 +242,9 @@ const complete = (tile, boardData) => {
     return { ...obj };
   });
 
-  if (tile.id === 0) {
-    const newBoard = unlock(tile, updatedBoard);
-    const newSelectedTile = newBoard[0]
-    return [newBoard, newSelectedTile]
-  } else {
-    return [updatedBoard, updatedBoard[tile.id]]; //also return the new selectedTile
-  }
+  const newBoard = unlock(tile, updatedBoard);
+  const newSelectedTile = newBoard[tile.id];
+  return [newBoard, newSelectedTile];
 
   //console.log(updatedBoard)
 };

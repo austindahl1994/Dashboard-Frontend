@@ -27,18 +27,18 @@ const Board = () => {
   const isFirstLoad = useRef(true);
 
   useEffect(() => {
-    const loadCSV = async () => {
-      try {
-        const data = await startFile();
-        setTiles(data || []);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    if (isFirstLoad.current) {
-      loadCSV();
-      isFirstLoad.current = false;
-    }
+    // const loadCSV = async () => {
+    //   try {
+    //     const data = await startFile();
+    //     setTiles(data || []);
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // };
+    // if (isFirstLoad.current) {
+    //   loadCSV();
+    //   isFirstLoad.current = false;
+    // }
   }, []);
 
   const updateTiles = (data) => {
