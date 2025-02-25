@@ -53,7 +53,7 @@ const Tile = ({ tile, selectTile, selectedTile, updateShowInfo, updateUnlock }) 
                 tile.unlocked && !tile.unlockable
                   ? `url(${tile.url})`
                   : `https://oldschool.runescape.wiki/images/Cabbage_detail.png?08f34`,
-              backgroundColor: tile.complete
+              backgroundColor: tile.completed
                 ? "green"
                 : tile.unlocked
                 ? "yellow"

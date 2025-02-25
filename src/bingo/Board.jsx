@@ -108,7 +108,7 @@ const Board = () => {
           />
         </div>
         {/* If the tile is already unlocked, show all details */}
-        {!needsUnlock && showInfo ? (
+        {showInfo && (
           <Offcanvas
             show={showInfo}
             placement="end"
@@ -135,6 +135,7 @@ const Board = () => {
                 onClick={() => {
                   completions(1);
                   completeTask();
+                  setShowInfo(false)
                 }}
                 disabled={selectedTile.completed}
               >
@@ -142,48 +143,7 @@ const Board = () => {
               </Button>
             </Offcanvas.Body>
           </Offcanvas>
-        ) : //If the task is able to be unlocked, display other info
-        showInfo &&
-          tiles.length > 0 &&
-          selectedTile?.task !== undefined &&
-          needsUnlock ? (
-          <Offcanvas
-            show={showInfo}
-            placement="end"
-            onHide={() => {
-              setShowInfo(false);
-              setSelectedTile({});
-            }}
-          >
-            <Offcanvas.Header closeButton>
-              <Offcanvas.Title>{selectedTile.task}</Offcanvas.Title>
-            </Offcanvas.Header>
-            <Offcanvas.Body>
-              <div className="m-3">
-                <img src={selectedTile.url} width="150" />
-              </div>
-              <div>
-                <p>Completed: {selectedTile.completed ? "Yes" : "No"}</p>
-              </div>
-              <div className="pt-3">
-                {/* On click for unlock */}
-                <Button
-                  onClick={() => {
-                    setNeedsUnlock(false);
-                    setTiles(unlock(selectedTile, tiles));
-                    completions(-1);
-                  }}
-                  disabled={unlocksAvailable <= 0 || selectedTile.completed}
-                >
-                  Unlock
-                </Button>
-              </div>
-              <div>
-                <p>Unlocks available: {unlocksAvailable}</p>
-              </div>
-            </Offcanvas.Body>
-          </Offcanvas>
-        ) : null}{" "}
+        )}
       </div>
     </div>
   );
