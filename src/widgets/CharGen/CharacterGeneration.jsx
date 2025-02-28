@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import EditTraits from "./EditTraits";
 import generateRandomTraits from "./generateRandomTraits";
-import { Accordion, Button, Table } from "react-bootstrap";
+import { Accordion, Button, Modal, Tab, Table, Tabs } from "react-bootstrap";
 import {
   addHeader,
   addTrait,
@@ -37,6 +37,9 @@ const CharacterGeneration = () => {
   const [traits, setTraits] = useState({}); //just holds initial traits object without changes
   const [title, setTitle] = useState("New Template"); //character title, have in separate component
   const [randomTraits, setRandomTraits] = useState([]); //array of objects [{header, randomTrait}...]
+  const [profileTitle, setProfileTitle] = useState("");
+  const [deleteTitle, setDeleteTitle] = useState("")
+  const [showModal, setShowModal] = useState(false)
   const { createToast } = useContext(ToastContext);
 
   //update later to be a function and take in data to parse
@@ -69,13 +72,25 @@ const CharacterGeneration = () => {
     setTitle(event.target.value);
   };
 
+  const updateProfileTitle = (e) => {
+    setProfileTitle(e.target.value);
+  };
+
+  const updateDeleteTitle = (e) => {
+    setDeleteTitle(e.target.value)
+  }
+
+  const updateModal = (v) => {
+    setShowModal(v)
+  }
+
   const handleAPI = async (reqType, profile) => {
     let resType = "";
     try {
       let response;
       switch (reqType) {
         case "get":
-          response = await getProfile(1, profile.name);
+          response = await getProfile(profile.name);
           resType = "get";
           break;
         case "post":
@@ -84,14 +99,13 @@ const CharacterGeneration = () => {
           break;
         case "put":
           response = await updateProfile(
-            profile.id,
             profile.name,
             profile.properties
           );
           resType = "update";
           break;
         case "delete":
-          response = await deleteProfile(profile.id, profile.name);
+          response = await deleteProfile(profile.name);
           resType = "delete";
           break;
         default:
@@ -104,9 +118,9 @@ const CharacterGeneration = () => {
           `Successfully ${reqType === "get" ? "got" : resType + "d"} profile`,
           1
         );
-        return response
+        return response;
       } else {
-        console.log(`No Toast Success for ${resType}!`);
+        console.log(`Operation was not successful: ${resType}!`);
         createToast(`Could not ${resType} profile`, 0);
         throw new Error(response.error);
       }
@@ -157,6 +171,33 @@ const CharacterGeneration = () => {
   return (
     <>
       <div>
+        <Modal
+          show={showModal}
+          onHide={() => updateModal(false)}
+          centered
+          size="lg"
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Variable modal setting</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Tabs defaultActiveKey="first" justify fill>
+              <Tab eventKey="first" title="First">
+                First tab
+              </Tab>
+              <Tab eventKey="second" title="Second">
+                Second tab
+              </Tab>
+              <Tab eventKey="third" title="Third">
+                Third tab
+              </Tab>
+              <Tab eventKey="fourth" title="Fourth">
+                Fourth tab
+              </Tab>
+            </Tabs>
+          </Modal.Body>
+          <Modal.Footer>Test</Modal.Footer>
+        </Modal>
         <Accordion>
           <Accordion.Item eventKey="0">
             <Accordion.Header>{title}</Accordion.Header>
@@ -180,10 +221,6 @@ const CharacterGeneration = () => {
             onChange={(e) => importCSV(importTraits, e.target.files[0])}
           />
         </div>
-        <div style={{ display: "flex" }}>
-          <Button>Import from google sheets</Button>
-          <Button>Export to sheets</Button>
-        </div>
         <h2>Randomized Traits</h2>
         <Table striped bordered hover responsive>
           <tbody>
@@ -199,19 +236,70 @@ const CharacterGeneration = () => {
         <Button onClick={handleRandomizeClick}>Randomize</Button>
         <br />
         <br />
+        <div className="w-25">
+          <label htmlFor="profileTitle"></label>
+          <input
+            id="profileTitle"
+            name="profileTitle"
+            type="text"
+            onChange={(e) => updateProfileTitle(e)}
+          />
+        </div>
         <Button
           onClick={async () => {
             console.log(`Testing get`);
-            const tester = await handleAPI("get", { name: "testProfile" });
-            if (tester.success && tester.data.properties !== undefined) {
-              console.log(`Test name: ${tester.data.name}`);
-              setTitle(tester.data.name);
-              setTraits(tester.data.properties);
+            const profileData = await handleAPI("get", { name: profileTitle });
+            if (
+              profileData.success &&
+              profileData.data.properties !== undefined
+            ) {
+              console.log(`Profile name: ${profileData.data.name}`);
+              setTitle(profileData.data.name);
+              setTraits(profileData.data.properties);
             }
           }}
         >
           Get Profile
         </Button>
+        <div>
+          <Button
+            onClick={async () => {
+              console.log(`Testing create`);
+              const profileData = await handleAPI("post", {
+                name: title,
+                properties: traits,
+              });
+              if (profileData.success) {
+                console.log(`Profile created successfully`);
+              }
+            }}
+          >
+            Create Profile
+          </Button>
+        </div>
+        <div className="w-25">
+          <label htmlFor="deleteTitle"></label>
+          <input
+            id="deleteTitle"
+            name="deleteTitle"
+            type="text"
+            onChange={(e) => updateDeleteTitle(e)}
+          />
+        </div>
+        <Button
+          onClick={async () => {
+            console.log(`Testing delete`);
+            const profileData = await handleAPI("delete", {
+              name: deleteTitle,
+            });
+            if (profileData.success) {
+              console.log(`Profile deleted successfully`);
+            }
+          }}
+        >
+          Delete Profile
+        </Button>
+        <Button onClick={() => updateModal(true)}>Modal Test</Button>
       </div>
     </>
   );

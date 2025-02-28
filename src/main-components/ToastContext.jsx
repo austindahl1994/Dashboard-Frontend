@@ -1,4 +1,5 @@
 import { createContext, useState } from "react";
+import { v4 as uuid4 } from 'uuid'
 import PropTypes from "prop-types";
 
 const ToastContext = createContext();
@@ -26,7 +27,7 @@ const ToastProvider = ({ children }) => {
     }
 
     const newToast = {
-      id: Date.now(),
+      id: uuid4(),
       message: message,
       status: color,
     };

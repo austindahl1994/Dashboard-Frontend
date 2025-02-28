@@ -6,7 +6,7 @@ const GeneralToast = ({ id, status, message, closeToastFn }) => {
   return (
     <>
       <ToastContainer position='top-right'>
-        <Toast bg={status} animation={false} delay={3000} onClose={() => closeToastFn(id)}>
+        <Toast bg={status} animation={false} delay={5000} onClose={() => closeToastFn(id)}>
           <Toast.body>
             {message}
           </Toast.body>

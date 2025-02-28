@@ -1,5 +1,5 @@
-import { createContext, useState, useEffect, useRef } from "react";
-import { login, logout, checkSession } from "./authApi";
+import { createContext, useState } from "react";
+import { login, logout } from "./authApi";
 import { PropTypes } from "prop-types";
 import { useNavigate } from "react-router-dom";
 

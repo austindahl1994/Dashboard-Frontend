@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 // import { Button } from "react-bootstrap";
-import { updateFile, unlock, complete, startFile } from "./boardUtils";
+import { updateFile, complete } from "./boardUtils";
 import Tile from "./Tile";
 
 import "./board.css";
@@ -21,10 +21,8 @@ const Board = () => {
   const hexTotal = [5, 6, 7, 8, 9, 8, 7, 6, 5];
   const [selectedTile, setSelectedTile] = useState({});
   const [showInfo, setShowInfo] = useState(false);
-  const [needsUnlock, setNeedsUnlock] = useState(false);
   const [unlocksAvailable, setUnlocksAvailable] = useState(10);
   const [tiles, setTiles] = useState([]);
-  const isFirstLoad = useRef(true);
 
   useEffect(() => {
     // const loadCSV = async () => {
@@ -57,10 +55,6 @@ const Board = () => {
     setShowInfo(v);
   };
 
-  const updateUnlock = (v) => {
-    setNeedsUnlock(v);
-  };
-
   const completeTask = () => {
     const boardData = complete(selectedTile, tiles);
     setTiles(boardData[0]);
@@ -91,7 +85,6 @@ const Board = () => {
                       selectTile={selectTile}
                       selectedTile={selectedTile}
                       updateShowInfo={updateShowInfo}
-                      updateUnlock={updateUnlock}
                     />
                   </div>
                 );

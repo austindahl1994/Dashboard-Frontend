@@ -74,6 +74,7 @@ const Dashboard = () => {
             />
           </Routes>
           <br />
+          {/* Remove logout button */}
           <Button onClick={authLogout}>Logout</Button>
         </ToastProvider>
       </div>

@@ -8,28 +8,33 @@ const endpoint = import.meta.env.VITE_API_URL + "/profile";
 //Returns object {affectedRows: int (1 if successful), insertId}
 const createProfile = async (name, properties) => {
   try {
-    const response = await axios.post(`${endpoint}/createProfile`, {
-      name,
-      properties,
-    });
-    return {success: true, data: response.data};
+    const response = await axios.post(
+      `${endpoint}/createProfile/${encodeURIComponent(name)}`,
+      {
+        properties,
+      },
+      { withCredentials: true }
+    );
+    return { success: true, data: response.data };
   } catch (error) {
-    return {sucess: false, error: error}
+    console.log(`Could not create profile`);
+    return { sucess: false, error: error };
   }
 };
 
 //Get a profile by id or name
-//Returns single object of profile record {id, name, properties (JSON), time_updated}
-const getProfile = async (user_id, name) => {
+//Returns single object of profile record {name, properties (JSON), time_updated}
+const getProfile = async (name) => {
   try {
-    //console.log(`Sending ${name} and ${user_id}`);
+    console.log(`Sending ${name}`);
     const response = await axios.get(
-      `${endpoint}/${encodeURIComponent(user_id)}/${encodeURIComponent(name)}`, {withCredentials: true}
+      `${endpoint}/${encodeURIComponent(name)}`,
+      { withCredentials: true }
     );
-    //console.log(`${response.data.name}`)
-    return {success: true, data: response.data};
+    console.log(`${response.data}`);
+    return { success: true, data: response.data };
   } catch (error) {
-    return {sucess: false, error: error}
+    return { sucess: false, error: error };
   }
 };
 
@@ -40,35 +45,46 @@ const getRecentProfiles = async (limit) => {
     const response = await axios.get(`${endpoint}/recent`, {
       params: { limit },
     });
-    return {success: true, data: response.data};
+    return { success: true, data: response.data };
   } catch (error) {
-    return {sucess: false, error: error}
+    return { sucess: false, error: error };
   }
 };
 
 //Updates entire character profile, will update name or entire properties JSON so PUT instead of PATCH
 //returns object { affectedRows: int (1 if successful) }
-const updateProfile = async (id, name) => {
+const updateProfile = async (name, data) => {
   try {
-    const response = await axios.put(
-      `${endpoint}/update/${encodeURIComponent(id)}/${encodeURIComponent(name)}`
+    const response = await axios.put(`${endpoint}/${encodeURIComponent(name)}`,
+      {
+        properties: data
+      },
+      {
+        withCredentials: true
+      }
     );
-    return {success: true, data: response.data};
+    console.log(`Error updating`)
+    return { success: true, data: response.data };
   } catch (error) {
-    return {sucess: false, error: error}
+    console.log(`Successfully updated profile`)
+    return { sucess: false, error: error };
   }
 };
 
 //Deletes character profile based on id or name
 //returns object { affectedRows: int (1 if successful) }
-const deleteProfile = async (id, name) => {
+const deleteProfile = async (name) => {
+  console.log(`Tried deleting with name: ${name}`)
   try {
-    const response = await axios.put(
-      `${endpoint}/update/${encodeURIComponent(id)}/${encodeURIComponent(name)}`
+    const response = await axios.delete(
+      `${endpoint}/delete/${encodeURIComponent(name)}`,
+      { withCredentials: true }
     );
-    return {success: true, data: response.data};
+    console.log(`Successfully deleted on axios`);
+    return { success: true, data: response.data };
   } catch (error) {
-    return {sucess: false, error: error}
+    console.log(`Could not delete on axios`);
+    return { sucess: false, error: error };
   }
 };
 

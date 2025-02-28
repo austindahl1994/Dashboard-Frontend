@@ -2,8 +2,8 @@ import { Nav } from "react-bootstrap"
 const Navbar = () => {
   return (
     <div>
-        <Nav defaultActiveKey="/home" className="flex-column">
-            <Nav.Link href='/home'>Eventual Navbar</Nav.Link>
+        <Nav defaultActiveKey="/dashboard" className="flex-column">
+            {/* <Nav.Link href='/dashboard'>Eventual Navbar</Nav.Link> */}
         </Nav>
     </div>
   )

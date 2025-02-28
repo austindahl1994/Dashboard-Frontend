@@ -8,7 +8,7 @@ import { checkSession } from "./authApi";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { setIsAuthenticated, setUser } =
+  const { setIsAuthenticated, setUser, authLogin } =
     useContext(AuthContext);
   const isCheckingRef = useRef(false);
   const navigate = useNavigate();
