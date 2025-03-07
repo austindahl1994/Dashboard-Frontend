@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import "./tile.css";
 import { FaLock } from "react-icons/fa";
 
-const Tile = ({ tile, selectTile, selectedTile, updateShowInfo, updateUnlock }) => {
+const Tile = ({ tile, selectTile, selectedTile, updateShowInfo }) => {
   const isEmpty = !tile || Object.keys(tile).length === 0;
   const currentTile = () => {
     return tile.id === selectedTile.id;
@@ -14,20 +14,17 @@ const Tile = ({ tile, selectTile, selectedTile, updateShowInfo, updateUnlock }) 
         //if tile is already unlocked, display its information
         if (tile.unlocked) {
           //console.log(`Tile unlocked, display all`);
-          updateUnlock(false);
           updateShowInfo(true);
           selectTile(tile);
           //if tile isnt unlocked but can be, show name? but also unlock button
         } else if (tile.unlockable) {
           //console.log(`Tile unlockable, showing unlock button`);
           selectTile(tile);
-          updateUnlock(true);
           updateShowInfo(true);
           //tile cannot be unlocked, don't show anything
         } else {
           //console.log(`Tile locked and far, dont show any`);
           updateShowInfo(false);
-          updateUnlock(true);
         }
       }}
     >
@@ -87,7 +84,6 @@ Tile.propTypes = {
   selectTile: PropTypes.func,
   selectedTile: PropTypes.object,
   updateShowInfo: PropTypes.func,
-  updateUnlock: PropTypes.func
 };
 
 export default Tile;

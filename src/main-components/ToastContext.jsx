@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 
 const ToastContext = createContext();
 
+// //blue - 'primary', green - 'success', red - 'danger', yellow - 'warning'
 const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
 

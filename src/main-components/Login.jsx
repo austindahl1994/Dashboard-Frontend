@@ -2,7 +2,7 @@ import { Form, Button } from "react-bootstrap";
 import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "./AuthContext";
 import { useNavigate } from "react-router-dom";
-import { checkSession } from "./authApi";
+import { checkSession } from '../api.js';
 //import { useNavigate } from "react-router-dom"
 
 const Login = () => {
@@ -20,7 +20,7 @@ useEffect(() => {
 
     try {
       const response = await checkSession();
-      if (response?.message === "Authenticated") {
+      if (response?.data.message === "Authenticated") {
         console.log("User is authenticated");
         setIsAuthenticated(true);
         setUser(response.user);

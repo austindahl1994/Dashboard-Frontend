@@ -1,45 +1,252 @@
-import { useState, useEffect, useContext } from "react";
-import EditTraits from "./EditTraits";
-import generateRandomTraits from "./generateRandomTraits";
-import { Accordion, Button, Modal, Tab, Table, Tabs } from "react-bootstrap";
-import {
-  addHeader,
-  addTrait,
-  deleteHeader,
-  deleteTrait,
-  transformTraits,
-  updateHeader,
-  updateTrait,
-} from "./updateCharacter";
-import importCSV from "./importCSV";
-import "./characterGeneration.css";
-import {
-  getProfile,
-  createProfile,
-  updateProfile,
-  deleteProfile,
-} from "./charGenApi";
+import { useContext, useEffect, useState } from "react";
+import { Accordion, Button, Table } from "react-bootstrap";
 import { ToastContext } from "../../main-components/ToastContext";
+import Cell from "./Cell";
+import generateRandomTraits from "./generateRandomTraits";
+import "./characterGeneration.css";
+import { createProfile, deleteProfile } from "../../api";
 
-const fileData = [
-  ["Traits"],
-  ["eye-color", "blue", 50, "red", "orange", 7],
-  ["height", "tall", "short", "medium", 25, "very tall", 15],
+const defaultProfile = [
+  {
+    trait: "eye-color",
+    properties: [
+      {
+        property: "blue",
+        percent: 0,
+      },
+      {
+        property: "red",
+        percent: 7,
+      },
+    ],
+  },
+  {
+    trait: "hair-color",
+    properties: [
+      {
+        property: "brown",
+        percent: 7,
+      },
+      {
+        property: "pink",
+        percent: 12,
+      },
+      {
+        property: "black",
+        percent: 15,
+      },
+      {
+        property: "teal",
+        percent: 11,
+      },
+    ],
+  },
 ];
 
-// templates /favorite settings
-// You could have different %s set up. Like one 'template' has a higher % of
-//tall people with blue eyes and one template has a higher percent of short people with red eyes.
-//that way if I need a character from a certain region, I can switch templates and not have to mess
-//with the individual traits%s and just hit randomize and get what I need
+//on creation of a new property, if percent === zero, show it as remaining percent / zeros
+
+//EditCell displays as 2 tds when not hovered, when hovered/clicked is a single td colspan2
+//When hovered, if zero, then just show trait, same with when clicked, put at end of trait
 
 const CharacterGeneration = () => {
-  const [traits, setTraits] = useState({}); //just holds initial traits object without changes
+  //Table - Array of objects
+  const { createToast } = useContext(ToastContext);
+  const [table, setTable] = useState(defaultProfile); //Get locally, if nothing set as default
+  const [title, setTitle] = useState("New Profile");
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [newTrait, setNewTrait] = useState("");
+  const [editingTrait, setEditingTrait] = useState(false);
+  const [randomizedTraits, setRandomizedTraits] = useState([]);
+
+  useEffect(() => generateRandomTraits(updateRandomTraits, table), [table]);
+
+  const updateRandomTraits = (data) => {
+    setRandomizedTraits(data);
+  };
+
+  const handleRandomizeClick = () => {
+    generateRandomTraits(updateRandomTraits, table);
+  };
+
+  const handleSave = async () => {
+    try {
+      const response = await createProfile(title, table);
+      if (response?.data) {
+        console.log(`Successfully created profile`)
+        createToast(`Successfully saved profile: ${title}`, 1)
+      }
+    } catch (error) {
+      console.error(`Error: ${error}`)
+      createToast("Could not save profile", 0)
+    }
+  }
+
+  // const handleLoad = async () => {
+    
+  // };
+
+  const handleDelete = async () => {
+    try {
+      const response = await deleteProfile(title)
+      if (response?.data) {
+        console.log(response.data.message)
+        createToast("Successfully deleted profile", 1)
+      }
+    } catch (error) {
+      createToast("Could not delete profile", 0);
+      console.error(`Error: ${error}`)
+    }
+  }
+
+  //Updates title from input
+  const handleTitleChange = (e) => {
+    setTitle(e.target.value);
+  };
+
+  //Creates new trait name from input
+  const handleTraitChange = (e) => {
+    setNewTrait(e.target.value);
+  };
+
+  //When a cell is updated, update table with new data
+  const modifyTable = (index, newProfileObj) => {
+    setTable((prevTable) => {
+      const newTable = structuredClone(prevTable);
+      newTable[index] = newProfileObj;
+      return newTable;
+    });
+  };
+
+  //When trait is done being made in input, create new object and add to table array
+  const createTrait = () => {
+    if (newTrait === "") {
+      return;
+    }
+    setTable((prevTable) => {
+      const newTable = structuredClone(prevTable);
+      const newObj = {
+        trait: newTrait,
+        properties: [],
+        saved: false,
+      };
+      newTable.push(newObj);
+      return newTable;
+    });
+    setNewTrait("");
+  };
+
+  return (
+    <div>
+      <Accordion defaultActiveKey={["1"]} alwaysOpen>
+        <Accordion.Item eventKey="0">
+          <Accordion.Header>{title}</Accordion.Header>
+          <Accordion.Body>
+            {editingTitle ? (
+              <input
+                type="text"
+                autoFocus
+                className="form-control m-2 w-50"
+                value={title}
+                onBlur={() => {
+                  setEditingTitle(false);
+                }}
+                onChange={(e) => {
+                  handleTitleChange(e);
+                }}
+              />
+            ) : (
+              <h1
+                onClick={() => {
+                  setEditingTitle(true);
+                }}
+              >
+                {title}
+              </h1>
+            )}
+            <Table striped bordered>
+              <tbody>
+                {table.map((profileObj, index) => (
+                  <tr key={index}>
+                    <Cell
+                      profileObject={profileObj}
+                      index={index}
+                      modifyTable={modifyTable}
+                    />
+                  </tr>
+                ))}
+                <tr>
+                  {editingTrait ? (
+                    <td>
+                      <input
+                        type="text"
+                        className="form-control"
+                        autoFocus
+                        onBlur={() => {
+                          setEditingTrait(false);
+                          createTrait();
+                        }}
+                        onChange={(e) => {
+                          handleTraitChange(e);
+                        }}
+                      />
+                    </td>
+                  ) : (
+                    <td
+                      onClick={() => {
+                        setEditingTrait(true);
+                      }}
+                    >
+                      <Button variant="success" className="w-100">
+                        New Trait
+                      </Button>
+                    </td>
+                  )}
+                </tr>
+              </tbody>
+            </Table>
+            <div className="d-flex justify-content-center align-items-center">
+              <Button className="custom-btn" onClick={handleSave}>Save Profile</Button>
+              <Button className="custom-btn" variant="success">New Profile</Button>
+              <Button className="custom-btn" variant="info">
+                Load Profile
+              </Button>
+              <Button className="custom-btn" variant="danger" onClick={handleDelete}>
+                Delete Profile
+              </Button>
+            </div>
+          </Accordion.Body>
+        </Accordion.Item>
+        <Accordion.Item eventKey="1">
+          <Accordion.Header>Randomized Traits</Accordion.Header>
+          <Accordion.Body>
+            <Table className="w-25" striped bordered>
+              <tbody>
+                {randomizedTraits.map((obj, index) => (
+                  <tr key={index}>
+                    <td>{obj.trait}</td>
+                    <td>{obj.property}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+            <Button onClick={handleRandomizeClick}>Randomize</Button>
+          </Accordion.Body>
+        </Accordion.Item>
+      </Accordion>
+    </div>
+  );
+};
+
+export default CharacterGeneration;
+
+/*
+
+const [traits, setTraits] = useState({}); //just holds initial traits object without changes
   const [title, setTitle] = useState("New Template"); //character title, have in separate component
   const [randomTraits, setRandomTraits] = useState([]); //array of objects [{header, randomTrait}...]
   const [profileTitle, setProfileTitle] = useState("");
-  const [deleteTitle, setDeleteTitle] = useState("")
-  const [showModal, setShowModal] = useState(false)
+  const [deleteTitle, setDeleteTitle] = useState("");
+  const [showModal, setShowModal] = useState(false);
   const { createToast } = useContext(ToastContext);
 
   //update later to be a function and take in data to parse
@@ -56,9 +263,9 @@ const CharacterGeneration = () => {
     setTraits(newTraits);
   };
 
-  const importTraits = (newTraits) => {
-    transformTraits(newTraits, updateTraitsfn);
-  };
+  // const importTraits = (newTraits) => {
+  //   transformTraits(newTraits, updateTraitsfn);
+  // };
 
   const handleRandomizeClick = () => {
     generateRandomTraits(updateRandomTraitsFunc, traits);
@@ -77,12 +284,12 @@ const CharacterGeneration = () => {
   };
 
   const updateDeleteTitle = (e) => {
-    setDeleteTitle(e.target.value)
-  }
+    setDeleteTitle(e.target.value);
+  };
 
   const updateModal = (v) => {
-    setShowModal(v)
-  }
+    setShowModal(v);
+  };
 
   const handleAPI = async (reqType, profile) => {
     let resType = "";
@@ -98,10 +305,7 @@ const CharacterGeneration = () => {
           resType = "create";
           break;
         case "put":
-          response = await updateProfile(
-            profile.name,
-            profile.properties
-          );
+          response = await updateProfile(profile.name, profile.properties);
           resType = "update";
           break;
         case "delete":
@@ -168,9 +372,8 @@ const CharacterGeneration = () => {
   //Add component that holds buttons - create (modal with tabs), save, clear, settings (modal)
   //Move and import modify traits to separate utility file
   //Comments for each portion of the code for readability (JSDoc?), eventual testing
-  return (
-    <>
-      <div>
+
+<div>
         <Modal
           show={showModal}
           onHide={() => updateModal(false)}
@@ -211,7 +414,7 @@ const CharacterGeneration = () => {
             </Accordion.Body>
           </Accordion.Item>
         </Accordion>
-        <div>
+        {/* <div>
           <label htmlFor="csvFile">Select a CSV file</label>
           <input
             type="file"
@@ -220,7 +423,7 @@ const CharacterGeneration = () => {
             name="csvFile"
             onChange={(e) => importCSV(importTraits, e.target.files[0])}
           />
-        </div>
+        </div> }
         <h2>Randomized Traits</h2>
         <Table striped bordered hover responsive>
           <tbody>
@@ -249,13 +452,22 @@ const CharacterGeneration = () => {
           onClick={async () => {
             console.log(`Testing get`);
             const profileData = await handleAPI("get", { name: profileTitle });
+            console.log(`New Test`);
             if (
               profileData.success &&
               profileData.data.properties !== undefined
             ) {
               console.log(`Profile name: ${profileData.data.name}`);
+              // Object.entries(profileData).forEach(([k,v], i) => {
+              //   console.log(`Key is: ${k}`)
+              //   let tempArr = v.map((e) => {return e})
+              //   console.log(`Values: ${tempArr}`)
+              // })
+              let ta = Object.entries(profileData.data);
+              console.log(ta);
               setTitle(profileData.data.name);
-              setTraits(profileData.data.properties);
+              // setTraits(profileData.data.properties);
+              transformTraits(profileData.properties, updateTraitsfn);
             }
           }}
         >
@@ -301,8 +513,5 @@ const CharacterGeneration = () => {
         </Button>
         <Button onClick={() => updateModal(true)}>Modal Test</Button>
       </div>
-    </>
-  );
-};
 
-export default CharacterGeneration;
+*/

@@ -2,9 +2,7 @@
   display: flex;
 }
 
-table,
-tr,
-td {
+.table, tr, td {
   border: 1px solid black;
 }
 
@@ -16,13 +14,8 @@ td {
 }
 
 td:hover {
-  background-color: gray;
+  background-color: lightgray !important;
   cursor: pointer;
-}
-
-button {
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
 }
 
 input {
@@ -33,24 +26,15 @@ input {
   box-sizing: border-box;
 }
 
-.title-wrapper {
-  display: flex;
-  align-items: center;
-}
-
-.title-wrapper h1 {
-  display: inline;
-
-  margin: 0;
-}
-
-.title-wrapper input {
-  height: 2em;
-  width: 50%;
-  margin-left: 0.5em;
-}
-
 .accordion-button {
   color: lightblue !important;
   background-color: navy !important;
+}
+
+.accordion-body {
+  overflow: auto;
+}
+
+.custom-btn {
+  margin: 0rem 0.5rem;
 }

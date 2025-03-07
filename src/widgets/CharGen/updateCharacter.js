@@ -25,7 +25,7 @@ export const deleteTrait = (index, oldTraits, updateTraitsFn) => {
 
 export const addHeader = (header, oldTraits, updateTraitsFn) => {
   const newObj = { ...oldTraits };
-  newObj[header] = new Array();
+  newObj[header] = [];
   updateTraitsFn(newObj);
 };
 
@@ -43,12 +43,16 @@ export const deleteHeader = (index, oldTraits, updateTraitsFn) => {
   updateTraitsFn(newObj);
 };
 
-//TODO: 
+//TODO:
 //Error checking elsewhere for duplicate traits? Currently adding into a set serves no purpose due to strings and array comparisons not mattering, duplicates with percents will mess this up
 //OR
-//Add a check when adding into the set to check previous strings and arrays if they contain the trait already? 
+//Add a check when adding into the set to check previous strings and arrays if they contain the trait already?
 //Changes Array of arrays [[k, v, v, v], [k, v, v]] where k is object key (header) and v is value (traits) to Object {k: Set(traits)}
 export const transformTraits = (data, updateTraitsFn) => {
+  // if (!Array.isArray(data)) {
+  //   console.log(`Did not pass in an array`);
+  //   return data
+  // }
   const uniqueTraits = {};
   let lastElement; //keeps track of the last element, so when there is a percentage after it can delete the last set string and add as an array of [trait, percent]
   data.forEach((arr) => {
@@ -92,6 +96,22 @@ export const transformTraits = (data, updateTraitsFn) => {
       percent: Array.isArray(trait) ? trait[1] : 0, //auto assigns value of 0 for any trait that doesnt have a percent
     }));
   });
-
   updateTraitsFn(newArrObj);
 };
+
+//DATA IN:
+//two different ways to import, an array of arrays, or is a single object
+//[["eye-color", "blue", 50, "red", "orange", 7],["height", "tall", "short", "medium", 25, "very tall", 15]];
+//RETURN: new object
+//{
+// eye-color: [{trait: blue, percent: 0}, {trait: red, percent: 0}...],
+// height: [{trait: "tall", percent: 0}],
+// Weight: [...]
+//}
+
+//want to return an object, kv pairs of trait: []
+const importObject = (data) => {
+  let newObj = {};
+};
+
+const importArray = (data) => {};

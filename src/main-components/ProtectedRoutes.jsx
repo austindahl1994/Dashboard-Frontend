@@ -2,7 +2,7 @@ import { useContext, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "./AuthContext";
 import PropTypes from "prop-types";
-import { checkSession } from "./authApi";
+import { checkSession } from "../api";
 
 const ProtectedRoutes = ({ children }) => {
   const { isAuthenticated, setIsAuthenticated, setUser } = useContext(AuthContext);
@@ -22,7 +22,7 @@ const ProtectedRoutes = ({ children }) => {
   
         try {
           const response = await checkSession();
-          if (response?.message === "Authenticated") {
+          if (response?.data.message === "Authenticated") {
             console.log("User is authenticated");
             setIsAuthenticated(true);
             setUser(response.user); 

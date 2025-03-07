@@ -1,7 +1,7 @@
 import { createContext, useState } from "react";
-import { login, logout } from "./authApi";
 import { PropTypes } from "prop-types";
 import { useNavigate } from "react-router-dom";
+import { login, logout } from "../api";
 
 const AuthContext = createContext();
 
@@ -14,12 +14,13 @@ const AuthProvider = ({ children }) => {
     try {
       const userData = await login(email, password);
       console.log(
-        `${userData.user_id}, ${userData.username} ${userData.email}, ${userData.role}`
+        `${userData.data.user_id}, ${userData.data.username} ${userData.data.email}, ${userData.data.role}`
       );
       setIsAuthenticated(true);
       setUser(userData);
       navigate("/dashboard", { replace: true });
     } catch (error) {
+      console.log(`Error logging in`)
       console.error(`Error: ${error}`);
       throw error;
     }

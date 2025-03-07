@@ -17,6 +17,7 @@ const EditTraits = ({ traits, title, updateTitleFunc, modifyTraitsFunc }) => {
     setNewTraits(generateNewTable(traits));
   }, [traits]);
 
+  //generates an array of arrays?
   const generateNewTable = (traits) => {
     const traitKeys = Object.keys(traits);
     const maxHeight = traitKeys.length;
@@ -54,6 +55,7 @@ const EditTraits = ({ traits, title, updateTitleFunc, modifyTraitsFunc }) => {
     );
 
     //console.log(generatedTable); //Shows the entire table
+    console.log(generatedTable)
     return generatedTable;
   };
 
@@ -193,6 +195,11 @@ const EditTraits = ({ traits, title, updateTitleFunc, modifyTraitsFunc }) => {
       </div>
       <Table striped bordered hover>
         <tbody>
+          <tr>
+            <th>
+              Traits
+            </th>
+          </tr>
           {newTraits.map((yArr, yIndex) => (
             <tr key={yIndex}>
               {yArr.map((xArrElement, xIndex) => (
