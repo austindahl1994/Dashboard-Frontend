@@ -2,7 +2,7 @@
 import { Route, Routes } from "react-router-dom";
 //import { useState, useEffect } from 'react'
 import { ToastProvider } from "./ToastContext";
-import { AuthContext } from "./AuthContext"
+import { AuthContext } from "./AuthContext";
 import Navbar from "./Navbar";
 import Toasts from "./Toasts";
 import CharacterGeneration from "../widgets/CharGen/CharacterGeneration"; //elsewhere
@@ -55,29 +55,26 @@ Still need to define the routes for each widget
 const Dashboard = () => {
   //const [widgets, setWidgets] = useState({})
   //const [loading, setLoading] = useState(true)
-  const {authLogout} = useContext(AuthContext)
+  const { authLogout } = useContext(AuthContext);
   //async to get user information, setWigets to json object
-  
+
   return (
     <div>
       <Navbar />
-      <div>
-        <ToastProvider>
-          <Toasts />
-          <CharacterGeneration />
-          {/* iterate widgets state, passing info to <Widget /> component */}
-          {/* Widget component will display correct widget information as a card */}
-          <Routes>
-            <Route
-              path="/characterGeneration"
-              element={<CharacterGeneration />}
-            />
-          </Routes>
-          <br />
-          {/* Remove logout button */}
-          <Button onClick={authLogout}>Logout</Button>
-        </ToastProvider>
-      </div>
+      <ToastProvider>
+        <Toasts />
+        {/* iterate widgets state, passing info to <Widget /> component */}
+        {/* Widget component will display correct widget information as a card */}
+        <Routes>
+          <Route
+            path="/characterGeneration"
+            element={<CharacterGeneration />}
+          />
+        </Routes>
+        <br />
+        {/* Remove logout button */}
+        <Button onClick={authLogout}>Logout</Button>
+      </ToastProvider>
     </div>
   );
 };

@@ -13,9 +13,9 @@ const AuthProvider = ({ children }) => {
   const authLogin = async (email, password) => {
     try {
       const userData = await login(email, password);
-      console.log(
-        `${userData.data.user_id}, ${userData.data.username} ${userData.data.email}, ${userData.data.role}`
-      );
+      // console.log(
+      //   `${userData.data.user_id}, ${userData.data.username} ${userData.data.email}, ${userData.data.role}`
+      // );
       setIsAuthenticated(true);
       setUser(userData);
       navigate("/dashboard", { replace: true });

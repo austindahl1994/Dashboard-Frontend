@@ -24,8 +24,8 @@ export const createProfile = (name, properties) =>
   });
 export const getProfile = (name) =>
   api.get(`/profile/${encodeURIComponent(name)}`);
-export const getRecentProfiles = (limit) =>
-  api.get("/profile/recent", { params: { limit } });
+export const getRecentProfiles = () =>
+  api.get("/profile/recent");
 export const updateProfile = (name, data) =>
   api.post(`/profile/${encodeURIComponent(name)}`, { data });
 export const deleteProfile = (name) =>

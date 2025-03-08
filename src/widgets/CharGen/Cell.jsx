@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import "./cell.css";
 //Once either trait is edited or propertys updated/added, update array object at index
-const Cell = ({ profileObject, index, modifyTable }) => {
+const Cell = ({ profileObject, index, modifyTable, keyDown }) => {
   const [editingTrait, setEditingTrait] = useState(false);
   const [editingProperty, setEditingProperty] = useState(false);
   const [editingPercent, setEditingPercent] = useState(false);
@@ -45,7 +45,6 @@ const Cell = ({ profileObject, index, modifyTable }) => {
     const newObj = {
       trait: input,
       properties: profileObject.properties,
-      saved: false,
     };
     finalize(newObj);
   };
@@ -73,7 +72,6 @@ const Cell = ({ profileObject, index, modifyTable }) => {
     const newObj = {
       trait: profileObject.trait,
       properties: newArr,
-      saved: false,
     };
     finalize(newObj);
   };
@@ -99,7 +97,6 @@ const Cell = ({ profileObject, index, modifyTable }) => {
     const finalObj = {
       trait: profileObject.trait,
       properties: newArr,
-      saved: false,
     };
     finalize(finalObj);
   };
@@ -124,6 +121,7 @@ const Cell = ({ profileObject, index, modifyTable }) => {
             onChange={(e) => {
               setTempTrait(e.target.value);
             }}
+            onKeyDown={keyDown}
           />
         </td>
       ) : (
@@ -149,6 +147,7 @@ const Cell = ({ profileObject, index, modifyTable }) => {
                 onChange={(e) => {
                   setTempProperty(e.target.value);
                 }}
+                onKeyDown={keyDown}
                 onBlur={() => {
                   setEditingProperty(false);
                   modifyProperty(
@@ -178,6 +177,7 @@ const Cell = ({ profileObject, index, modifyTable }) => {
                 autoFocus
                 type="text"
                 value={tempPercent}
+                onKeyDown={keyDown}
                 onBlur={() => {
                   setEditingPercent(false);
                   modifyProperty(
@@ -199,11 +199,12 @@ const Cell = ({ profileObject, index, modifyTable }) => {
                 setTempPercent(propertyObject.percent);
                 setSelectedIndex(arrIndex);
               }}
-              style={{textDecoration: propertyObject.percent === 0
-                ? "underline" : ""}}
+              style={{
+                textDecoration: propertyObject.percent === 0 ? "underline" : "",
+              }}
             >
               {propertyObject.percent === 0
-                ? allocatedPercent
+                ? Math.floor(allocatedPercent)
                 : propertyObject.percent}
             </td>
           )}
@@ -213,6 +214,7 @@ const Cell = ({ profileObject, index, modifyTable }) => {
         <td>
           <input
             autoFocus
+            onKeyDown={keyDown}
             onBlur={() => {
               addProperty(createdProperty);
               setCreatingProperty(false);
@@ -254,6 +256,7 @@ Cell.propTypes = {
   }),
   index: PropTypes.number,
   modifyTable: PropTypes.func,
+  keyDown: PropTypes.func
 };
 
 export default Cell;

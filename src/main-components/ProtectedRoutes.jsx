@@ -7,26 +7,29 @@ import { checkSession } from "../api";
 const ProtectedRoutes = ({ children }) => {
   const { isAuthenticated, setIsAuthenticated, setUser } = useContext(AuthContext);
   const isCheckingRef = useRef(false);
+  const hasChecked = useRef(false)
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (hasChecked.current) return
+    hasChecked.current = true
     if (!isAuthenticated) {
       navigate("/login");
     }
   }, [isAuthenticated, navigate]);
 
   useEffect(() => {
+    if (isCheckingRef.current) return;
+    isCheckingRef.current = true;
       const authCheck = async () => {
-        if (isCheckingRef.current) return;
-        isCheckingRef.current = true;
-  
         try {
           const response = await checkSession();
           if (response?.data.message === "Authenticated") {
-            console.log("User is authenticated");
+            //console.log("User is authenticated");
             setIsAuthenticated(true);
             setUser(response.user); 
-            navigate("/dashboard", { replace: true });
+            //console.log(`Current user location: ${location}`)
+            navigate(location || "/dashboard", { replace: true });
           } else {
             throw new Error("Invalid session");
           }

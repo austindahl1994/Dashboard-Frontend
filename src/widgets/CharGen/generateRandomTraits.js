@@ -1,4 +1,7 @@
 const generateRandomTraits = (updateTraitsFunc, table) => {
+  if (table.trait === null) {
+    return
+  }
   const newTraitsArray = []
   table.forEach((profile) => {
     if (profile.properties.length === 0) return
