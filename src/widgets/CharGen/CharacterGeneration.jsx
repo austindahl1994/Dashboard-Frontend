@@ -55,6 +55,9 @@ const tempProfile = [
   },
 ];
 
+
+//TODO: Update so if localstorage isnt an array, not to use it, or just dont use it at all, no purpose
+//Add the ability to remove traits and remove properties
 //BETTER UNDERSTANDING OF USEEFFECT DEPENDENCIES and USECALLBACK for no inf renders
 const CharacterGeneration = () => {
   const { createToast } = useContext(ToastContext);
