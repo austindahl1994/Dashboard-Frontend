@@ -4,18 +4,20 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import "./cell.css";
 //Once either trait is edited or propertys updated/added, update array object at index
-const Cell = ({ profileObject, index, modifyTable, keyDown }) => {
+const Cell = ({ profileObject, index, modifyTable, deleteTrait, keyDown }) => {
   const [editingTrait, setEditingTrait] = useState(false);
   const [editingProperty, setEditingProperty] = useState(false);
   const [editingPercent, setEditingPercent] = useState(false);
   const [creatingProperty, setCreatingProperty] = useState(false);
 
   const [tempTrait, setTempTrait] = useState("");
+  const [startingTrait, setStartingTrait] = useState("");
 
   const [tempProperty, setTempProperty] = useState("");
   const [tempPercent, setTempPercent] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [createdProperty, setCreatedProperty] = useState("");
+  const [startingProperty, setStartingProperty] = useState("");
 
   const [allocatedPercent, setAllocatedPercent] = useState(0);
 
@@ -38,6 +40,11 @@ const Cell = ({ profileObject, index, modifyTable, keyDown }) => {
   }, [generatePercents]);
 
   const modifyTrait = (input) => {
+    if (!input || input.length === 0) {
+      deleteTrait(startingTrait);
+      setStartingTrait("");
+      return;
+    }
     if (profileObject.trait === input) {
       console.log(`Same trait passed in`);
       return;
@@ -64,14 +71,25 @@ const Cell = ({ profileObject, index, modifyTable, keyDown }) => {
       console.log(`Same property passed in`);
       return;
     }
+    //ProfileObj is the object of an array
+    //Creates a deep copy of the array of properties/percents
     const newArr = structuredClone(profileObject.properties);
-    newArr[propIndex] = {
-      property: input.property,
-      percent: parseInt(input.percent) || 0,
-    };
+    let updatedArr;
+    if (!input.property || input?.property?.trim() === "" || input?.property?.length === 0) {
+      //console.log(`Need to filter based on index`)
+      updatedArr = newArr.filter((_, i) => {
+        return i !== propIndex;
+      });
+    } else {
+      newArr[propIndex] = {
+        property: input.property,
+        percent: parseInt(input.percent) || 0,
+      };
+      updatedArr = newArr
+    }
     const newObj = {
       trait: profileObject.trait,
-      properties: newArr,
+      properties: updatedArr,
     };
     finalize(newObj);
   };
@@ -129,11 +147,13 @@ const Cell = ({ profileObject, index, modifyTable, keyDown }) => {
           onClick={() => {
             setEditingTrait(true);
             setTempTrait(profileObject.trait);
+            setStartingTrait(profileObject.trait);
           }}
         >
           {profileObject.trait}
         </td>
       )}
+      {/*Editing the properties of a row*/}
       {profileObject.properties.map((propertyObject, arrIndex) => (
         <React.Fragment key={arrIndex}>
           {/* Change table property if clicked on */}
@@ -163,6 +183,7 @@ const Cell = ({ profileObject, index, modifyTable, keyDown }) => {
             <td
               onClick={() => {
                 setTempProperty(propertyObject.property);
+                setStartingProperty(propertyObject.property);
                 setSelectedIndex(arrIndex);
                 setEditingProperty(true);
               }}
@@ -256,7 +277,8 @@ Cell.propTypes = {
   }),
   index: PropTypes.number,
   modifyTable: PropTypes.func,
-  keyDown: PropTypes.func
+  deleteTrait: PropTypes.func,
+  keyDown: PropTypes.func,
 };
 
 export default Cell;

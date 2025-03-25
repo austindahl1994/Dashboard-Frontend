@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Accordion, Button, Modal, Table } from "react-bootstrap";
 import { ToastContext } from "../../main-components/ToastContext";
 import Cell from "./Cell";
@@ -55,7 +55,6 @@ const tempProfile = [
   },
 ];
 
-
 //TODO: Update so if localstorage isnt an array, not to use it, or just dont use it at all, no purpose
 //Add the ability to remove traits and remove properties
 //BETTER UNDERSTANDING OF USEEFFECT DEPENDENCIES and USECALLBACK for no inf renders
@@ -81,15 +80,12 @@ const CharacterGeneration = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showLoadModal, setShowLoadModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const hasRun = useRef(false);
 
   //When table is updated, generates random traits based on table data
   useEffect(() => generateRandomTraits(updateRandomTraits, table), [table]);
 
   //API call to get names of profiles in database, used in get requests to load profile data
   useEffect(() => {
-    if (hasRun.current) return;
-    hasRun.current = true;
     const getData = async () => {
       try {
         const response = await getRecentProfiles();
@@ -97,9 +93,12 @@ const CharacterGeneration = () => {
           return obj.name;
         });
 
-        if (response.data.length > 0) {
+        if (response.data.length > 0 && Array.isArray(arr)) {
           setLoadedProfiles(arr);
           localStorage.setItem("recentProfiles", JSON.stringify(arr));
+        } else {
+          setLoadedProfiles([]);
+          localStorage.setItem("recentProfiles", JSON.stringify([]));
         }
       } catch (error) {
         console.log(`Could not get recent profiles`);
@@ -133,11 +132,11 @@ const CharacterGeneration = () => {
         createToast(`Successfully saved profile: ${title}`, 1);
         const newTitle =
           JSON.parse(localStorage.getItem("recentProfiles")) || [];
-          if (!newTitle.includes(title)) {
-            let finalArr = [...newTitle, title];
-            localStorage.setItem("recentProfiles", JSON.stringify(finalArr));
-            setLoadedProfiles(finalArr);
-          }
+        if (!newTitle.includes(title)) {
+          let finalArr = [...newTitle, title];
+          localStorage.setItem("recentProfiles", JSON.stringify(finalArr));
+          setLoadedProfiles(finalArr);
+        }
         setSaved(true);
       }
     } catch (error) {
@@ -211,11 +210,14 @@ const CharacterGeneration = () => {
 
   //OnBlur, updates title locally and in title state
   const finalizeTitleChange = () => {
+    if (!title || title.length === 0 || title.trim() === "") {
+      setTitle("New Profile");
+    }
     setEditingTitle(false);
     setSaved(false);
     localStorage.setItem(
       "title",
-      JSON.stringify(title.length === 0 ? "New profile" : title)
+      JSON.stringify(title)
     );
   };
 
@@ -235,6 +237,25 @@ const CharacterGeneration = () => {
     });
   };
 
+  const deleteTrait = (traitToDelete) => {
+    console.log(`Delete trait called with trait: ${traitToDelete}`);
+    if (
+      !traitToDelete ||
+      traitToDelete.length === 0 ||
+      traitToDelete.trim() === ""
+    )
+      return;
+    setTable((prev) => {
+      const newTable = structuredClone(prev);
+      setSaved(false);
+      const updatedTable = newTable.filter((obj) => {
+        return obj.trait !== traitToDelete;
+      });
+      localStorage.setItem("profile", JSON.stringify(updatedTable));
+      return updatedTable;
+    });
+  };
+
   //When trait is created, create new object and add to table array
   const createTrait = () => {
     if (newTrait === "") {
@@ -248,7 +269,7 @@ const CharacterGeneration = () => {
         trait: newTrait,
         properties: [],
       };
-      if (newTable[0].trait === null) {
+      if (newTable[0]?.trait === null) {
         newTable.shift();
       }
       newTable.push(newObj);
@@ -294,6 +315,7 @@ const CharacterGeneration = () => {
                 {title.length === 0 ? "New Profile" : title}
               </h1>
             )}
+            {/*Table for showing user profile traits and properties*/}
             <Table striped bordered>
               <tbody>
                 {table.map((profileObj, index) => (
@@ -305,6 +327,7 @@ const CharacterGeneration = () => {
                         profileObject={profileObj}
                         index={index}
                         modifyTable={modifyTable}
+                        deleteTrait={deleteTrait}
                         keyDown={handleKeyDown}
                       />
                     )}
