@@ -2,12 +2,10 @@
 import { Route, Routes } from "react-router-dom";
 //import { useState, useEffect } from 'react'
 import { ToastProvider } from "./ToastContext";
-import { AuthContext } from "./AuthContext";
 import Navbar from "./Navbar";
 import Toasts from "./Toasts";
 import CharacterGeneration from "../widgets/CharGen/CharacterGeneration"; //elsewhere
-import { Button } from "react-bootstrap";
-import { useContext } from "react";
+import '../main-styles/dashboard.css'
 /*
 widgets table
 [{
@@ -54,12 +52,9 @@ Still need to define the routes for each widget
 //remove user_profile table, just store the info in profile for chgen settings
 const Dashboard = () => {
   //const [widgets, setWidgets] = useState({})
-  //const [loading, setLoading] = useState(true)
-  const { authLogout } = useContext(AuthContext);
   //async to get user information, setWigets to json object
-
   return (
-    <div>
+    <div className="dash">
       <Navbar />
       <ToastProvider>
         <Toasts />
@@ -73,7 +68,6 @@ const Dashboard = () => {
         </Routes>
         <br />
         {/* Remove logout button */}
-        <Button onClick={authLogout}>Logout</Button>
       </ToastProvider>
     </div>
   );

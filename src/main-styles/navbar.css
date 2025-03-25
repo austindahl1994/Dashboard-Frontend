@@ -1,4 +1,15 @@
-.main-nav {
+div.offcanvas.customNav {
     display: flex;
-    width: 20%;
+    flex-direction: column;
+    width: 25%;
+}
+
+.offcanvas-header.customHeader {
+    display: flex;
+    justify-content: space-between;
+}
+
+.showNav {
+    position: fixed;
+    margin-left: -4%;
 }

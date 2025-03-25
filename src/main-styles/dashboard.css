@@ -1,0 +1,7 @@
+.dash {
+    display: flex;
+    flex-direction: column;
+    padding: 1%;
+    width: 95%;
+    margin-left: 5%;
+}

@@ -17,7 +17,6 @@ const Cell = ({ profileObject, index, modifyTable, deleteTrait, keyDown }) => {
   const [tempPercent, setTempPercent] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [createdProperty, setCreatedProperty] = useState("");
-  const [startingProperty, setStartingProperty] = useState("");
 
   const [allocatedPercent, setAllocatedPercent] = useState(0);
 
@@ -183,7 +182,6 @@ const Cell = ({ profileObject, index, modifyTable, deleteTrait, keyDown }) => {
             <td
               onClick={() => {
                 setTempProperty(propertyObject.property);
-                setStartingProperty(propertyObject.property);
                 setSelectedIndex(arrIndex);
                 setEditingProperty(true);
               }}
