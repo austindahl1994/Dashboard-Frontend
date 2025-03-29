@@ -44,8 +44,8 @@ export const parseFileData = (arr, fileName, updateFileData) => {
 
 //After parsing file data, checks if the description string is a part of any subcat set, then add that value to subcat obj if it is, otherwise add the string to unknown set and unknown object total
 //FileArr is an array of objects [{Description: string, Amount: int}]
-//subCat array is array of objects [{[subCategory (string)] : Set(strings)}]
-//totalsArr is arr of objects [{[subCategory (string)] : Amount (int)}]
+//subCat array is array of objects [{subCategory: name, description: Set([strings])}]
+//totalsArr is arr of objects [{[subCategory: (string)], amount: (int)}]
 //subCatFn is to update subCat state if Unknown needs to be added
 //totalsFn is to update the totals object with all amounts
 export const modifyData = (fileArr, subCatArr, totalsArr, subCatFn, totalsFn) => {
@@ -55,24 +55,28 @@ export const modifyData = (fileArr, subCatArr, totalsArr, subCatFn, totalsFn) =>
   let newCatArr = structuredClone(subCatArr)
   let newTotalsArr = structuredClone(totalsFn)
   let needsUnkown = false
-  const unknownObj = { Unknown: new Set() };
-
+  const unknownObj = {subCategory: "Unknown", descriptions: new Set()};
+  
   // Check if the array is empty or doesn't have the Unknown key
-  if (!newCatArr?.some(obj => obj.hasOwnProperty('Unknown'))) {
+  if (!newCatArr?.some(obj => obj.subCategory === 'Unknown')) {
     newCatArr.push(unknownObj)
     needsUnknown = true
   }
   if (fileArr && Array.isArray(fileArr) && fileArr.length > 0) {
     fileArr.map((obj) => {
-    //Iterates through every object of file that contains Description and Amount, check for description in subcatarr, if so add its total to matching totals obj, else add to unknown
-    //Check obj description against each subcatarr object key, if a match add to that total
-    const subCat = checkString(obj.Description, newCatArr)
-    //add to the totals object amount
-    if (newTotalsArr?.some(obj => obj?.hasOwnProperty(subCat))) {
-      const index = totals.indexOf(subCat)
-      newTotalsArr[index].Amount += amount || 0
-    } else {
-      newTotalsArr.push({subCat: obj?.Amount || 0})
+    //subCat will be the subCategory string that we should add the amount to from fileData
+    const subCat = checkString(obj.Description, newCatArr) 
+    let subCatInTotals = false;
+    //if the totalsArr has an object with matching subCategory name, add Amount to its amount, otherwise add that subcategory to totalsArr with amount
+    totalsArr.forEach((totalsObj) => {
+      if (totalsObj?.subCategory === subCat) {
+        totalsObj?.amount += obj.Amount
+        subCatInTotals = true
+      }
+    })
+    if (!subCatInTotals) {
+      const newSubCat = {subCategory: subCat, amount: obj.Amount}
+      totalsArr.push(newSubCat)
     }
   })
   }
@@ -83,21 +87,18 @@ export const modifyData = (fileArr, subCatArr, totalsArr, subCatFn, totalsFn) =>
 }
 
 //[{subcat: [strings]}], returns a the category string thats the correct key for the string
-const checkString = (str, amount, subCategory) => {
+const checkString = (str, subCategory) => {
   if (!subCategory || !Array.isArray(subCategory) || subCategory.length === 0) {
     console.log(`No valid subCategory array to use`)
     return "Unknown"
   }
   
   subCategory.map((obj) => {
-    Object.keys(obj).forEach((key) => {
-      if (obj[key].has(str)) {
-        return key
-      } else {
-        return "Unknown"
-      }
-    })
+    if (obj?.descriptions?.has(str)) {
+      return obj.subCategory
+    }
   })
+  return "Unknown"
 }
 
 //After file is parsed with header files, data we want is Description and Amount. Amount might be replaced with Debit/Credit
