@@ -28,18 +28,25 @@ const Navbar = () => {
             <GoSidebarExpand size={25} onClick={handleClose} />
           </Offcanvas.Header>
           <Offcanvas.Body>
-          <div className="d-flex h-100 flex-column justify-content-between">
-            <Nav className="d-flex flex-column">
-              <Nav.Link
-                as={Link}
-                onClick={handleClose}
-                to="/dashboard/characterGeneration"
-              >
-                Character Generation
-              </Nav.Link>
-            </Nav>
-            <Button onClick={authLogout}>Logout</Button>
-          </div>
+            <div className="d-flex h-100 flex-column justify-content-between">
+              <Nav className="d-flex flex-column">
+                <Nav.Link
+                  as={Link}
+                  onClick={handleClose}
+                  to="/dashboard/characterGeneration"
+                >
+                  Character Generation
+                </Nav.Link>
+                <Nav.Link
+                  as={Link}
+                  onClick={handleClose}
+                  to="/dashboard/expensetracker"
+                >
+                  Expense Tracker
+                </Nav.Link>
+              </Nav>
+              <Button onClick={authLogout}>Logout</Button>
+            </div>
           </Offcanvas.Body>
         </Offcanvas>
       )}

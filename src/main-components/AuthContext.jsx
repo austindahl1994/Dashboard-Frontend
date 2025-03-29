@@ -6,7 +6,7 @@ import { login, logout } from "../api";
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [user, setUser] = useState({});
   const navigate = useNavigate();
 

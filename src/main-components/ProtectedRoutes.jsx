@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "./AuthContext";
 import PropTypes from "prop-types";
 import { checkSession } from "../api";
@@ -9,6 +9,7 @@ const ProtectedRoutes = ({ children }) => {
   const isCheckingRef = useRef(false);
   const hasChecked = useRef(false)
   const navigate = useNavigate();
+  const location = useLocation().pathname
 
   useEffect(() => {
     if (hasChecked.current) return
@@ -44,7 +45,7 @@ const ProtectedRoutes = ({ children }) => {
       };
   
       authCheck();
-    }, [navigate, setIsAuthenticated, setUser]);
+    }, [navigate, setIsAuthenticated, setUser, location]);
 
   return <>{children}</>;
 };

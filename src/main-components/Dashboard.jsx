@@ -6,6 +6,7 @@ import Navbar from "./Navbar";
 import Toasts from "./Toasts";
 import CharacterGeneration from "../widgets/CharGen/CharacterGeneration"; //elsewhere
 import '../main-styles/dashboard.css'
+import ExpenseTracker from "../widgets/ExpenseTracker/ExpenseTracker";
 /*
 widgets table
 [{
@@ -64,6 +65,10 @@ const Dashboard = () => {
           <Route
             path="/characterGeneration"
             element={<CharacterGeneration />}
+          />
+          <Route
+            path="/expensetracker"
+            element={<ExpenseTracker />}
           />
         </Routes>
         <br />
