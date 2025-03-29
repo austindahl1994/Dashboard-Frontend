@@ -5,49 +5,59 @@ import { Button, Card } from "react-bootstrap";
 import UploadExpenseData from "./UploadExpenseData";
 import ExpenseTable from "./ExpenseTable";
 
-// const tempCategories = [
-//   {
-//     Necessities: ["HOA", "Mortgage", "Electric"],
-//   },
-//   {
-//     "Car Expenses": ["Gas", "Auto Insurance"],
-//   },
-//   {
-//     Other: ["Unknown"],
-//   },
-// ];
-
-// const tempSubCategories = [
-//   // { Mortgage: new Set() },
-//   // { HOA: new Set() },
-//   // { Electric: new Set() },
-//   // { "Gas for house": new Set() },
-//   // { Gas: new Set() },
-//   { Unknown: new Set() },
-// ];
-
-// const tempTotals = [
-//   {Other: 0}
-// ]
-
 const ExpenseTracker = () => {
   //Categories is what is iterated over for table data, subcategories array is just for what strings should be in that subcat, total is for the totals of the subcat
-  const [categories, setCategories] = useState([]); //Arr objects [{category: ['subcategories']}, ...]
-  const [subCategories, setSubCategories] = useState([]); //Arr objects [{subcategory: Set['strings']}, ...] for string matches parsed file data vs personalized strings
-  const [unknown, setUnkown] = useState([])
-  const [totals, setTotals] = useState([]); //Arr objects [{subcategory: total}, ...]
+  const [categories, setCategories] = useState([{category: "Other", subCategory: new Set(["Unknown"])}]); //Arr objects [{category: ['subcategories']}, ...]
+  const [subCategories, setSubCategories] = useState([{subCategory: "Unknown", descriptions: new Set()}]); //Arr objects [{subcategory: Set['strings']}, ...] for string matches parsed file data vs personalized strings, pull from Database instead of just having it be unknown
+  const [totals, setTotals] = useState([{subCat: "Unknown", amount: 0}]); //Arr objects [{subcategory: total}, ...]
   const [fileData, setFileData] = useState([]); //Arr of objects, each obj is {fileName: {parsedData}}
   const [showModal, setShowModal] = useState(false)
 
   useEffect(() => {
+    //Do a check, if greater then zero should modify, however if greater than one should add the new file? Or just dont care, get it done, make it re-render every file change
     if (fileData && fileData.length > 0) {
       fileData.map((obj) => {
         //console.log(obj.fileName);
         //When a new file is uploaded, need to modify subcategories and totals
-        modifyData(obj.data)
+        modifyData(obj.data, subCategories, totals, updateSubCat, updateTotals)
       });
     }
   }, [fileData]);
+
+  const resetTotals = () => {
+    setTotals([{subCategories: "Unknown", amount: 0}])
+  }
+
+  const updateSubCat = (data) => {
+    setSubCategories(data)
+  }
+
+  const updateTotals = (newData) => {
+    setTotals((prev) => {
+      if (prev) { //If there was other data, add new totals to old
+        const oldTotals = structuredClone(prev)
+        //iterate through copy of old totals array
+        newData.forEach((newTotalsObj) => {
+          let oldTotalsHasSubCat = false
+          //For every new total, check if there is an old total that matches it, then add amount to it
+          oldTotals.forEach((oldTotalsObj) => {
+            if (oldTotalsObj.subCategory === newTotalsObj.subCategory) {
+              newTotalsObj.amount += oldTotalsObj.amount
+              oldTotalHasSubCat = true
+            }
+          })
+          //If previous totals does not have the subcategory, push it into the copy array
+          if (!oldTotalHasSubCat) {
+            newData.push(newTotalsObj)
+          }
+        })
+        return newTotals
+      } else {
+        //No previous data, just set totals to the new data
+        return newData
+      }
+    })
+  }
 
   //#region fileData
   const updateFileData = (data) => {
@@ -64,6 +74,7 @@ const ExpenseTracker = () => {
   };
 
   const removeFileData = (name) => {
+    resetTotals()
     setFileData((prev) => {
       const finalArr = prev.filter((obj) => obj?.fileName !== name);
       return finalArr;
@@ -77,10 +88,6 @@ const ExpenseTracker = () => {
 
   //#region subcategories
   const updateSubCategories = () => {};
-  //#endregion
-
-  //#region totals
-  const updateTotals = () => {};
   //#endregion
   return (
     <div className="w-100 h-100">
