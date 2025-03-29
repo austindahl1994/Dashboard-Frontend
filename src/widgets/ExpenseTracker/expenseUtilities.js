@@ -23,9 +23,9 @@ export const parseFileData = (arr, fileName, updateFileData) => {
         const newObj = {}
         Object.entries(obj).forEach(([k, v]) => {
             if (k === 'Description') {
-                newObj[k] = v.replace(/[^a-zA-Z]/g, "");
+                newObj[k] = v.replace(/[^a-zA-Z]/g, ""); //Only allows characters, no numbers as a part of the name
             } 
-            
+            //For each row of data, only gets Description and Amount (or credit/debit if no amount)
             if (k === 'Amount'){
                 newObj.Amount = v;
             } else if (k === 'Debit') {
@@ -43,19 +43,29 @@ export const parseFileData = (arr, fileName, updateFileData) => {
 }
 
 //After parsing file data, checks if the description string is a part of any subcat set, then add that value to subcat obj if it is, otherwise add the string to unknown set and unknown object total
-//Array object (row) is parsed, want Description and Amount/Debit & Credit
 //If Description is in subcat array of objects, add total to that subcat
 //Description is not in any subcat, add that string to unknown subcat set, and add that amount to unknown total
-export const modifyData = (fileObj) => {
+export const modifyData = (fileArr, subCatArr, totalsArr, subCatFn, totalsFn) => {
   //Iterate through every object in the array
-  let unknown = []
-  let unknownTotal = 0 //unneeded?
-  Object.values(fileObj).forEach((obj) => {
-    //If the value exists in one of the subCategories, add its total to totals[subCategory]
-    //If value doesn't exist then add it to unknown and total to unknown
-    console.log(obj)
-    //each obj has obj.description and obj.total, maybe doesnt matter since could add data in above? or not in order to separate the logic for when subcats are changed
-  });
+  console.log('Called modifyData, but not in prod so returning')
+  return
+  let newCatArr = structuredClone(subCatArr)
+  let newTotalsArr = structuredClone(totalsFn)
+  if (newCatArr?.length > 0) {
+    //If arr.length > 0, check to make sure there is an object with 'Unknown' key, if not then create it with value of a new Set().
+    const hasUnkown = newCatArr.some(obj => obj.hasOwnProperty('Unknown'))
+    if (!hasUnknown) {
+      const unknownObj = { Unknown: new Set() }
+      newCatArr.push(unknownObj)
+    }
+  } else {
+    const unknownObj = { Unknown: new Set() }
+    newCatArr.push(unknownObj)
+  }
+  fileArr.map((obj) => {
+    //Iterates through every object of file that contains Description and Amount, check for description in subcatarr, if so add its total to matching totals obj, else add to unknown
+    //Check obj description against each subcatarr object key, if a match add to that total
+  })
 }
 //[{subcat: [strings]}]
 const checkString = (str, subCategory) => {
