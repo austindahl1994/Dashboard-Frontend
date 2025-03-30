@@ -123,14 +123,10 @@ const ExpenseTracker = () => {
   const updateFileData = (data) => {
     console.log(`Adding file data to state`);
     setFileData((prev) => {
-      let newArr = structuredClone(prev);
-      const index = prev.findIndex((obj) => obj?.fileName === data?.fileName);
-      if (index !== -1) {
-        newArr[index] = data;
-      } else {
-        newArr.push(data);
+      const newArr = prev.filter((obj) => obj?.fileName !== data?.fileName);
+      if (newArr && newArr.length > 0) {
+        return newArr
       }
-      return newArr;
     });
     //updateTotals(data.data); //data is arr of objects [{description, amount}]
   };
