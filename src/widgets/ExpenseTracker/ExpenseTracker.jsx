@@ -155,7 +155,7 @@ const ExpenseTracker = () => {
         updateFn={updateFileData}
         deleteFn={removeFileData}
       />
-      <ExpenseTable />
+      {fileData > 0 && <ExpenseTable categories={categories} totals={totals} />}
       <Button onClick={() => setShowModal(true)}>Show Modal</Button>
       <CategorizeModal showModal={showModal} setShowModal={setShowModal} />
     </div>
