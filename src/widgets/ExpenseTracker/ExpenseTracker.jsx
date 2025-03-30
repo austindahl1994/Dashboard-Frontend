@@ -3,34 +3,42 @@ import CategorizeModal from "./CategorizeModal";
 import { Button } from "react-bootstrap";
 import UploadExpenseData from "./UploadExpenseData";
 import ExpenseTable from "./ExpenseTable";
-
+//TODO: If removing a file, do we care about removing unknown strings from the Unknown descriptions set?
+//If so, descriptions.clear() for "Unknown" before going through and updating the totals data
+const freshSubCat = [
+  { subCategory: "Unknown", descriptions: new Set() },
+  { subCategory: "Ignore", descriptions: new Set() }
+]
+const freshTotals = [
+  { subCategory: "Unknown", amount: 0 },
+  { subCategory: "Ignore", amount: 0 }
+]
+const freshCats = [
+  { category: "Other", subCategory: new Set(["Unknown", "Ignore"])},
+]
 const ExpenseTracker = () => {
   //Categories is what is iterated over for table data, subcategories array is just for what strings should be in that subcat, total is for the totals of the subcat
-  const [categories, setCategories] = useState([
-    { category: "Other", subCategory: new Set(["Unknown", "Ignore"])},
-  ]); //Arr objects [{category: ['subcategories']}, ...]
-  const [subCategories, setSubCategories] = useState([
-    { subCategory: "Unknown", descriptions: new Set() },
-  ]); //Arr objects [{subcategory: Set['strings']}, ...] for string matches parsed file data vs personalized strings, pull from Database instead of just having it be unknown
-  const [totals, setTotals] = useState([{ subCategory: "Unknown", amount: 0 }]); //Arr objects [{subcategory: total}, ...]
+  const [categories, setCategories] = useState(freshCats); //Arr objects [{category: ['subcategories']}, ...]
+  const [subCategories, setSubCategories] = useState(freshSubCat); //Arr objects [{subcategory: Set['strings']}, ...] for string matches parsed file data vs personalized strings, pull from Database instead of just having it be unknown
+  const [totals, setTotals] = useState(freshTotals); //Arr objects [{subcategory: total}, ...]
   const [fileData, setFileData] = useState([]); //Arr of objects, each obj is {fileName: {parsedData}}
   const [showModal, setShowModal] = useState(false);
-  const [showTable, setShowTable] = useState(false)
 
   useEffect(() => {
     setSubCategories((prev) => {
-      if (subCategories.some((obj) => obj.subCategory === "Unknown")) {
-        //console.log(`Subcat has unknown`)
+      let newSubCat = structuredClone(prev)
+      if (subCategories.some((obj) => obj.subCategory === "Unknown") && subCategories.some((obj) => obj.subCategory === "Ignore")) {
+        //console.log(`Subcat has unknown and ignore`)
         return prev;
+      } 
+      if (!subCategories.some((obj) => obj.subCategory === "Unknown")) {
+        console.log(`subcat does not have unknown`);
+        newSubCat = [...prev, freshSubCat[0]]
+      } 
+      if (!subCategories.some((obj) => obj.subCategory === "Ignore")) {
+        console.log(`subcat does not have ignore`);
+        newSubCat = [...prev, freshSubCat[1]]
       }
-      console.log(`subcat does not have unknown`);
-      const newSubCat = [
-        ...prev,
-        {
-          subCategory: "Unknown",
-          descriptions: new Set(),
-        },
-      ];
       return newSubCat;
     });
   }, [subCategories]);
@@ -54,16 +62,21 @@ const ExpenseTracker = () => {
     }
   }, [fileData]);
 
-  const updateSubCat = (data) => {
-    setSubCategories(data);
-  };
+  useEffect(() => {
+    console.log("Subcategory change")
+    subCategories.map((subCatObj) => {
+      Object.entries(subCatObj).map(([k, v]) => {
+        console.log(`subCategory: ${k || "No subCategoies!"}, strings: ${v || "No strings in subCategory"}`)
+      })
+    })
+  }, [subCategories])
 
-  //#region fileUpdate
-  //Whenever a new file is added, should update old totals with new totals
+  //Whenever a file is added/removed, should update old totals with new totals
   const updateTotals = (newData) => {
     console.log("Calling updateTotals Function with data: ")
     console.log(newData);
-    const oldTotals = fileData.length <= 1 ? [{ subCategory: "Unknown", amount: 0 }] : structuredClone(totals);
+    const oldTotals = fileData.length <= 1 ? freshTotals : structuredClone(totals || freshTotals);
+    const unknownSet = new Set()
     if (!newData && !Array.isArray(newData)) return;
     newData.map((newObj) => {
       //Check if string is part of subcat index, if so then will need to update total
@@ -94,8 +107,9 @@ const ExpenseTracker = () => {
           oldTotals.push(newSubCatObj);
         }
       } else {
-        //string is not a part of the subCat, add it to subCat Unknown and amount to unknown
+        //string is not a part of the subCat array, add it to subCat object Unknown and amount
         let unknownExists = false;
+        unknownSet.add(newObj.description)
         oldTotals.map((oldObj) => {
           if (oldObj.subCategory === "Unknown") {
             unknownExists = true;
@@ -114,8 +128,15 @@ const ExpenseTracker = () => {
     });
     //console.log(oldTotals);
     setTotals(oldTotals);
+    if (unknownSet && unknownSet.size > 0) {
+      setSubCategories((prev) => {
+      const newSubCatArr = structuredClone(prev)
+      unknownSet?.forEach(str => newSubCatArr.Unknown.add(str))
+      return newSubCatArr
+    })
+    }
   };
-
+  //#region fileUpdate
   const updateFileData = (data) => {
     console.log(`Adding file data to state`);
     setFileData((prev) => {
@@ -138,7 +159,10 @@ const ExpenseTracker = () => {
 
   //#endregion
   //#region categories
-  const updateCategories = () => {};
+  //When totals are being run for the file changes, should update categories with the strings parsed from updateTotals
+  const updateCategories = (obj) => {
+    
+  };
   //#endregion
 
   //#region subcategories
