@@ -8,11 +8,15 @@ const ExpenseTable = ({categories, totals}) => {
       return acc
     }, {})
     setSimpleTotals(newTotalsObj)
+    const d = new Date()
+    console.log(`Time updated: ${d.getMinutes()}`)
   }, [totals])
 
   const categorySum = (subCatSet) => {
     return Array.from(subCatSet)?.reduce((acc, subCatStr) => {
-      return Number(acc) + Number(simpleTotals[subCatStr])
+      if (simpleTotals.hasOwnProperty(subCatStr)) {
+        return Number(acc) + Number(simpleTotals[subCatStr])
+      }
     }, 0)
   }
 
@@ -23,7 +27,7 @@ const ExpenseTable = ({categories, totals}) => {
   return (
     <div>
       <h1>ExpenseTable</h1>
-      <table style={style}>
+      <table style={{border: "1px solid black"}}>
         <thead>
           <tr>
             {categories.map((catObj, catIndex) => (
