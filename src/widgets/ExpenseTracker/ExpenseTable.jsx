@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 const ExpenseTable = ({categories, totals}) => {
   const [simpleTotals, setSimpleTotals] = useState({})
   useEffect(() => {
@@ -12,38 +12,40 @@ const ExpenseTable = ({categories, totals}) => {
 
   const categorySum = (subCatSet) => {
     return Array.from(subCatSet)?.reduce((acc, subCatStr) => {
-      return acc + simpleTotals[subCatStr]
+      return Number(acc) + Number(simpleTotals[subCatStr])
     }, 0)
+  }
+
+  const style = {
+    border: "1px solid black"
   }
   
   return (
     <div>
       <h1>ExpenseTable</h1>
-      <table>
+      <table style={style}>
         <thead>
           <tr>
             {categories.map((catObj, catIndex) => (
-              <th key={catIndex} colSpan="2">{catObj.category}</th>
+              <th key={catIndex} colSpan="2" style={style}>{catObj.category}</th>
             ))}
           </tr>
         </thead>
         <tbody>
         {categories.map((catObj, catIndex) => (
-          <tr key={catIndex}>
           {Array.from(catObj.subCategory).map((setStr, strIndex) => (
-            <React.Fragment key={strIndex}>
-              <td>{setStr}</td>
-              <td>{simpleTotals[setStr] || 0}</td>
-            </React.Fragment>
+            <tr key={strIndex}>
+              <td style={style}>{setStr}</td>
+              <td style={style}>{simpleTotals[setStr] || 0}</td>
+            </tr>
           ))}
-          </tr>
         ))}
         </tbody>
         <tfoot>
           <tr>
             {/*In a single row, iterate through categories, for every category have a td of the sum*/}
             {categories.map((catObj, catIndex) => (
-              <td colSpan="2" key={catIndex}>{categorySum(catObj.subCategory)}</td>
+              <td colSpan="2" key={catIndex} style={style}>{categorySum(catObj.subCategory)}</td>
             ))}
           </tr>
         </tfoot>
