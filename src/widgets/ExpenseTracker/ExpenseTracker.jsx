@@ -76,6 +76,7 @@ const ExpenseTracker = () => {
     console.log("Calling updateTotals Function with data: ")
     console.log(newData);
     const oldTotals = fileData.length <= 1 ? freshTotals : structuredClone(totals || freshTotals);
+    const unknownIndex = subCategories.indexOf((obj) => obj.subCategory === "Unknown")
     const unknownSet = new Set()
     if (!newData && !Array.isArray(newData)) return;
     newData.map((newObj) => {
@@ -131,7 +132,7 @@ const ExpenseTracker = () => {
     if (unknownSet && unknownSet.size > 0) {
       setSubCategories((prev) => {
       const newSubCatArr = structuredClone(prev)
-      unknownSet?.forEach(str => newSubCatArr.Unknown.add(str))
+      unknownSet?.forEach(str => newSubCatArr[unknownIndex].Unknown.add(str))
       return newSubCatArr
     })
     }
