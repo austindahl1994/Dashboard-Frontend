@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Modal } from "react-bootstrap";
+import { Modal, Tab, Tabs } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 const CategorizeModal = ({ showModal, setShowModal, categories, subCategories }) => {
-  const [unknown, setUnknown] = useState([])
+  //add for updates to cats and subcats: , modifyCatFn, modifySubCatFn
   return (
     <div>
       <Modal
@@ -15,7 +15,17 @@ const CategorizeModal = ({ showModal, setShowModal, categories, subCategories })
       >
         <Modal.Header closeButton>Categorize</Modal.Header>
         <Modal.Body className="w-100 h-100">
-
+          <Tabs
+            defaultActiveKey="subCategories"
+            fill
+          >
+          <Tab eventKey="subCategories" title="Subcategories">
+            Modify Subcategory strings
+          </Tab>
+          <Tab eventKey="categories" title="Categories">
+            Modify which subcategories are in categories
+          </Tab>
+        </Tabs>
         </Modal.Body>
       </Modal>
     </div>
@@ -26,7 +36,9 @@ CategorizeModal.propTypes = {
   showModal: PropTypes.bool,
   setShowModal: PropTypes.func,
   categories: PropTypes.array,
-  subCategories: PropTypes.array
+  subCategories: PropTypes.array,
+  // modifyCatFn: PropTypes.func,
+  // modifySubCatFn: PropTypes.func
 };
 
 export default CategorizeModal;
