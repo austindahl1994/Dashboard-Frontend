@@ -39,14 +39,18 @@ const ExpenseTracker = () => {
         console.log(`subcat does not have ignore`);
         newSubCat = [...prev, freshSubCat[1]]
       }
+      console.log("SubCategory was changed in useEffect, updating now to ${newSubCat}")
       return newSubCat;
     });
     
     console.log("Subcategory changed")
-    subCategories.map((subCatObj) => {
-      Object.keys(subCatObj).map((key) => {
-        console.log(`subCategory: ${key || "No subCategoies!"}`)
-        Array.from(subCatObj[key]).map(e => console.log(`String in ${e}`))
+    subCategories.map((subCatObj) => { //iterates through array of objects
+      Object.values(subCatObj).map((value, index) => {
+        if (typeof value === String) {
+          console.log(`subCategory: ${value || "No subCategoies!"}`)
+        } else {
+          Array.from(value).map(e => console.log(`description: ${e || "No descriptions!"}`))
+        }
       })
       
     })
