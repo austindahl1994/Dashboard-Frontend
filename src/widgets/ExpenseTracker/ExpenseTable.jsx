@@ -11,7 +11,7 @@ const ExpenseTable = ({categories, totals}) => {
   }, [totals])
 
   const categorySum = (subCatSet) => {
-    return Array.from(catObj.subCategory).reduce((acc, subCatStr) => {
+    return Array.from(subCatSet.subCategory).reduce((acc, subCatStr) => {
       return acc + simpleTotals[subCatStr]
     }, 0)
   }
