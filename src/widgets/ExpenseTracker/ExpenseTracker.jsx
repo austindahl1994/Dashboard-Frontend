@@ -7,7 +7,7 @@ import ExpenseTable from "./ExpenseTable";
 const ExpenseTracker = () => {
   //Categories is what is iterated over for table data, subcategories array is just for what strings should be in that subcat, total is for the totals of the subcat
   const [categories, setCategories] = useState([
-    { category: "Other", subCategory: new Set(["Unknown"]) },
+    { category: "Other", subCategory: new Set(["Unknown", "Other"]) },
   ]); //Arr objects [{category: ['subcategories']}, ...]
   const [subCategories, setSubCategories] = useState([
     { subCategory: "Unknown", descriptions: new Set() },
