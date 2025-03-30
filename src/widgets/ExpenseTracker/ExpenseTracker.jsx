@@ -1,66 +1,125 @@
 import React, { useEffect, useState } from "react";
 import CategorizeModal from "./CategorizeModal";
-import { modifyData } from "./expenseUtilities";
-import { Button, Card } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import UploadExpenseData from "./UploadExpenseData";
 import ExpenseTable from "./ExpenseTable";
 
 const ExpenseTracker = () => {
   //Categories is what is iterated over for table data, subcategories array is just for what strings should be in that subcat, total is for the totals of the subcat
-  const [categories, setCategories] = useState([{category: "Other", subCategory: new Set(["Unknown"])}]); //Arr objects [{category: ['subcategories']}, ...]
-  const [subCategories, setSubCategories] = useState([{subCategory: "Unknown", descriptions: new Set()}]); //Arr objects [{subcategory: Set['strings']}, ...] for string matches parsed file data vs personalized strings, pull from Database instead of just having it be unknown
-  const [totals, setTotals] = useState([{subCat: "Unknown", amount: 0}]); //Arr objects [{subcategory: total}, ...]
+  const [categories, setCategories] = useState([
+    { category: "Other", subCategory: new Set(["Unknown"]) },
+  ]); //Arr objects [{category: ['subcategories']}, ...]
+  const [subCategories, setSubCategories] = useState([
+    { subCategory: "Unknown", descriptions: new Set() },
+  ]); //Arr objects [{subcategory: Set['strings']}, ...] for string matches parsed file data vs personalized strings, pull from Database instead of just having it be unknown
+  const [totals, setTotals] = useState([{ subCategory: "Unknown", amount: 0 }]); //Arr objects [{subcategory: total}, ...]
   const [fileData, setFileData] = useState([]); //Arr of objects, each obj is {fileName: {parsedData}}
-  const [showModal, setShowModal] = useState(false)
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    //Do a check, if greater then zero should modify, however if greater than one should add the new file? Or just dont care, get it done, make it re-render every file change
+    setSubCategories((prev) => {
+      if (subCategories.some((obj) => obj.subCategory === "Unknown")) {
+        //console.log(`Subcat has unknown`)
+        return prev;
+      }
+      console.log(`subcat does not have unknown`);
+      const newSubCat = [
+        ...prev,
+        {
+          subCategory: "Unknown",
+          descriptions: new Set(),
+        },
+      ];
+      return newSubCat;
+    });
+  }, [subCategories]);
+
+  useEffect(() => {
+    totals.map((obj) => {
+      console.log(
+        `Totals subCats ${obj.subCategory} with amount: ${obj.amount}`
+      );
+    });
+  }, [totals]);
+
+  useEffect(() => {
     if (fileData && fileData.length > 0) {
       fileData.map((obj) => {
         //console.log(obj.fileName);
-        //When a new file is uploaded, need to modify subcategories and totals
-        modifyData(obj.data, subCategories, totals, updateSubCat, updateTotals)
+        updateTotals(obj.data)
       });
+    } else {
+      //console.log(`No file data!`);
     }
   }, [fileData]);
 
   const resetTotals = () => {
-    setTotals([{subCategories: "Unknown", amount: 0}])
-  }
+    setTotals([{ subCategory: "Unknown", amount: 0 }]);
+  };
 
   const updateSubCat = (data) => {
-    setSubCategories(data)
-  }
+    setSubCategories(data);
+  };
 
+  //#region fileUpdate
+  //Whenever a new file is added, should update old totals with new totals
   const updateTotals = (newData) => {
-    setTotals((prev) => {
-      if (prev) { //If there was other data, add new totals to old
-        const oldTotals = structuredClone(prev)
-        //iterate through copy of old totals array
-        newData.forEach((newTotalsObj) => {
-          let oldTotalsHasSubCat = false
-          //For every new total, check if there is an old total that matches it, then add amount to it
-          oldTotals.forEach((oldTotalsObj) => {
-            if (oldTotalsObj.subCategory === newTotalsObj.subCategory) {
-              newTotalsObj.amount += oldTotalsObj.amount
-              oldTotalHasSubCat = true
+    //console.log(newData);
+    const oldTotals = structuredClone(totals);
+    if (!newData && !Array.isArray(newData)) return;
+    newData.map((newObj) => {
+      //Check if string is part of subcat index, if so then will need to update total
+      const index = subCategories.findIndex((obj) =>
+        obj.descriptions.has(newObj.description)
+      );
+      //string is a part of the subCat, add amount to that subCat total
+      if (index !== -1) {
+        //subCatObj is the object at the specified index
+        const subCatObj = subCategories[index];
+        //using the object at that index, we get the actual subCategory string
+        const subCatStr = subCatObj.subCategory;
+        //Check if the subCatStr is in the old totals array of [{subCat, amount}], if so add to previous value
+        if (oldTotals.some((obj) => obj.subCategory === subCatStr)) {
+          oldTotals.forEach((subCatObj) => {
+            if (subCatObj.subCategory === subCatStr) {
+              const newAmount =
+                Number(subCatObj.amount) + Number(newObj.amount);
+              subCatObj.amount = newAmount.toFixed(2);
             }
-          })
-          //If previous totals does not have the subcategory, push it into the copy array
-          if (!oldTotalHasSubCat) {
-            newData.push(newTotalsObj)
-          }
-        })
-        return newTotals
+          });
+        } else {
+          //subCat is not in old Totals, need to add it and its value
+          const newSubCatObj = {
+            subCategory: newObj.subCategory,
+            amount: Number(newObj.amount).toFixed(2),
+          };
+          oldTotals.push(newSubCatObj);
+        }
       } else {
-        //No previous data, just set totals to the new data
-        return newData
+        //string is not a part of the subCat, add it to subCat Unknown and amount to unknown
+        let unknownExists = false;
+        oldTotals.map((oldObj) => {
+          if (oldObj.subCategory === "Unknown") {
+            unknownExists = true;
+            const newAmount = Number(oldObj.amount) + Number(newObj.amount);
+            oldObj.amount = newAmount.toFixed(2);
+          }
+        });
+        if (!unknownExists) {
+          const unknownObj = {
+            subCategory: "Unknown",
+            amount: Number(newObj.amount).toFixed(2),
+          };
+          oldTotals.push(unknownObj);
+        }
       }
-    })
-  }
+    });
+    //console.log(oldTotals);
+    setTotals(oldTotals);
+  };
 
-  //#region fileData
   const updateFileData = (data) => {
+    console.log(`Adding file data to state`);
     setFileData((prev) => {
       let newArr = structuredClone(prev);
       const index = prev.findIndex((obj) => obj?.fileName === data?.fileName);
@@ -71,13 +130,13 @@ const ExpenseTracker = () => {
       }
       return newArr;
     });
+    //updateTotals(data.data); //data is arr of objects [{description, amount}]
   };
 
   const removeFileData = (name) => {
     resetTotals()
     setFileData((prev) => {
-      const finalArr = prev.filter((obj) => obj?.fileName !== name);
-      return finalArr;
+      return prev.filter((obj) => obj?.fileName !== name);
     });
   };
 
@@ -91,7 +150,11 @@ const ExpenseTracker = () => {
   //#endregion
   return (
     <div className="w-100 h-100">
-      <UploadExpenseData fileData={fileData} updateFn={updateFileData} deleteFn={removeFileData}/>
+      <UploadExpenseData
+        fileData={fileData}
+        updateFn={updateFileData}
+        deleteFn={removeFileData}
+      />
       <ExpenseTable />
       <Button onClick={() => setShowModal(true)}>Show Modal</Button>
       <CategorizeModal showModal={showModal} setShowModal={setShowModal} />

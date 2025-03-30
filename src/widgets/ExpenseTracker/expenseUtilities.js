@@ -1,139 +1,79 @@
-import Papa from 'papaparse'
+import Papa from "papaparse";
 
-//Parse csv data, will pass in files one at a time, parses into array of objects, each row is an object with keys Description and Amount || (Debit/Credit)
+//Parse csv data, will pass in one file, parses into array of objects, each parsed row is an object with keys description and amount/debit/credit, returns arr of objects [{description, amount}]
 export const updateFile = (file, updateFileData) => {
   const fileName = file.name;
   if (file) {
     Papa.parse(file, {
       complete: (result) => {
-        parseFileData(result.data, fileName, updateFileData);
+        const newArr = [];
+        result.data.map((obj) => {
+          const newObj = {};
+          Object.keys(obj).map((key) => {
+            const v = obj[key];
+            if (key === "Description" && v) {
+              newObj.description = v.replace(/[^a-zA-Z\s]/g, "").trim();
+            }
+            if (key === "Amount" && v.length > 0) {
+              const newValue = Number(v.replace(/[^\d.-]/g, ""));
+              //console.log(`Amount: ${newValue}`)
+              newObj.amount = newValue;
+            }
+            if (key === "Credit" && v?.length > 0) {
+              //console.log(`Credit: ${v}`);
+              newObj.amount = v;
+            }
+            if (key === "Debit" && v?.length > 0) {
+              //console.log(`Debit: ${-v}`)
+              newObj.amount = -v;
+            }
+          });
+          if (Object.keys(newObj).length > 0 && newObj?.amount) {
+            // console.log(`description: ${newObj.description}, amount: ${newObj.amount}`)
+            newArr.push(newObj);
+          }
+        });
+        const finalObj = { fileName: fileName, data: newArr };
+        updateFileData(finalObj);
       },
       header: true,
-      dynamicTyping: true,
     });
   }
 };
-//File is parsed, only store the key: value of Description, Total, Debit, or Credit, store the objects in array of objects (in in an object where the key is a string which is the file name to delete easier or update etc.)
-export const parseFileData = (arr, fileName, updateFileData) => {
-    //arr is array of objects or array of row data
-    //want to have a new array of objects, where the objects only have a description and total (if debit just make total, credit is negative)
-    //newArr = [{Description: "someString", Total: someInt}]
-    //console.log(`FileName: ${fileName}`)
-    const newArr = arr.map((obj) => {
-        const newObj = {}
-        Object.entries(obj).forEach(([k, v]) => {
-            if (k === 'Description') {
-                newObj[k] = v.replace(/[^a-zA-Z]/g, ""); //Only allows characters, no numbers as a part of the name
-            } 
-            //For each row of data, only gets Description and Amount (or credit/debit if no amount)
-            if (k === 'Amount'){
-                newObj.Amount = v;
-            } else if (k === 'Debit') {
-                newObj.Amount = -v;
-            } else if (k === 'Credit' && v !== null) {
-                newObj.Amount = v;
-            }
-        })
-        //console.log(`Description: ${newObj.Description}, Amount: ${newObj.Amount}`);
-        return newObj
-    })
-    const finalObj = {fileName: fileName, data: newArr}
-    //return object of fileName: array[objects]
-    updateFileData(finalObj)
-}
-
-//After parsing file data, checks if the description string is a part of any subcat set, then add that value to subcat obj if it is, otherwise add the string to unknown set and unknown object total
-//FileArr is an array of objects [{Description: string, Amount: int}]
-//subCat array is array of objects [{subCategory: name, description: Set([strings])}]
-//totalsArr is arr of objects [{[subCategory: (string)], amount: (int)}]
-//subCatFn is to update subCat state if Unknown needs to be added
-//totalsFn is to update the totals object with all amounts
-export const modifyData = (fileArr, subCatArr, totalsArr, subCatFn, totalsFn) => {
-  //Iterate through every object in the array
-  console.log('Called modifyData, but not in prod so returning')
-  return
-  let newCatArr = structuredClone(subCatArr)
-  let newTotalsArr = structuredClone(totalsFn)
-  let needsUnkown = false
-  const unknownObj = {subCategory: "Unknown", descriptions: new Set()};
-  
-  // Check if the array is empty or doesn't have the Unknown key
-  if (!newCatArr?.some(obj => obj.subCategory === 'Unknown')) {
-    newCatArr.push(unknownObj)
-    needsUnknown = true
-  }
-  if (fileArr && Array.isArray(fileArr) && fileArr.length > 0) {
-    fileArr.map((obj) => {
-    //subCat will be the subCategory string that we should add the amount to from fileData
-    const subCat = checkString(obj.Description, newCatArr) 
-    let subCatInTotals = false;
-    //if the totalsArr has an object with matching subCategory name, add Amount to its amount, otherwise add that subcategory to totalsArr with amount
-    totalsArr.forEach((totalsObj) => {
-      if (totalsObj?.subCategory === subCat) {
-        totalsObj?.amount += obj.Amount
-        subCatInTotals = true
-      }
-    })
-    if (!subCatInTotals) {
-      const newSubCat = {subCategory: subCat, amount: obj.Amount}
-      totalsArr.push(newSubCat)
-    }
-  })
-  }
-  if (needsUnkown) {
-    subCatFn(newCatArr)
-  }
-  totalsFn(newTotalsArr)
-}
-
-//[{subcat: [strings]}], returns a the category string thats the correct key for the string
-const checkString = (str, subCategory) => {
-  if (!subCategory || !Array.isArray(subCategory) || subCategory.length === 0) {
-    console.log(`No valid subCategory array to use`)
-    return "Unknown"
-  }
-  
-  subCategory.map((obj) => {
-    if (obj?.descriptions?.has(str)) {
-      return obj.subCategory
-    }
-  })
-  return "Unknown"
-}
 
 //After file is parsed with header files, data we want is Description and Amount. Amount might be replaced with Debit/Credit
 //Want to save data two(?) separate places, string without numbers with str.replace(/[^a-zA-Z]/g, '') added to a new object {}
 //New object is an object {subcat: set of strings}
 
 //Takes in array of objects [{subCategory: array[strings]}] to change array into a set, from DB to show on client
-const generateStringComparisons = (subCategories) => {
-  //new array of objects
-  const newArr = [];
-  //categories is an array of objects
-  subCategories.forEach((obj) => {
-    const newObj = {};
-    //each object is { category: array[strings] }, change to {category: set(strings)}
-    Object.keys(obj).forEach((key) => {
-      newObj[key] = new Set([...obj[key]]);
-    });
-    newArr.push(newObj);
-  });
-  return newArr;
-};
+// const generateStringComparisons = (subCategories) => {
+//   //new array of objects
+//   const newArr = [];
+//   //categories is an array of objects
+//   subCategories.forEach((obj) => {
+//     const newObj = {};
+//     //each object is { category: array[strings] }, change to {category: set(strings)}
+//     Object.keys(obj).forEach((key) => {
+//       newObj[key] = new Set([...obj[key]]);
+//     });
+//     newArr.push(newObj);
+//   });
+//   return newArr;
+// };
 
 //Converts the categories back from sets into arrays to store in db
-const convertComparisons = (subCategories) => {
-  //have an array of objects, each object is {subCategory: set()}, change to {subCategory: array[]}
-  const newArr = [];
-  subCategories.forEach((obj) => {
-    const newObj = {};
-    Object.keys(obj).forEach((key) => {
-      newObj[key] = [...obj[key]];
-    });
-    newArr.push(newObj);
-  });
-  return newArr; //replace comparison array in state
-};
+// const convertComparisons = (subCategories) => {
+//   //have an array of objects, each object is {subCategory: set()}, change to {subCategory: array[]}
+//   const newArr = [];
+//   subCategories.forEach((obj) => {
+//     const newObj = {};
+//     Object.keys(obj).forEach((key) => {
+//       newObj[key] = [...obj[key]];
+//     });
+//     newArr.push(newObj);
+//   });
+//   return newArr; //replace comparison array in state
+// };
 
 //function to get the correct category that the new string will be put into
 // const newString = "test";
