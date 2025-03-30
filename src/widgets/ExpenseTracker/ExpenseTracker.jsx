@@ -54,10 +54,6 @@ const ExpenseTracker = () => {
     }
   }, [fileData]);
 
-  const resetTotals = () => {
-    setTotals([{ subCategory: "Unknown", amount: 0 }]);
-  };
-
   const updateSubCat = (data) => {
     setSubCategories(data);
   };
@@ -67,7 +63,7 @@ const ExpenseTracker = () => {
   const updateTotals = (newData) => {
     console.log("Calling updateTotals Function with data: ")
     console.log(newData);
-    const oldTotals = structuredClone(totals);
+    const oldTotals = fileData.length <= 1 ? [{ subCategory: "Unknown", amount: 0 }] : structuredClone(totals);
     if (!newData && !Array.isArray(newData)) return;
     newData.map((newObj) => {
       //Check if string is part of subcat index, if so then will need to update total
@@ -123,16 +119,18 @@ const ExpenseTracker = () => {
   const updateFileData = (data) => {
     console.log(`Adding file data to state`);
     setFileData((prev) => {
-      const newArr = prev.filter((obj) => obj?.fileName !== data?.fileName);
-      if (newArr && newArr.length > 0) {
-        return newArr
+      let newArr = structuredClone(prev);
+      const index = prev.findIndex((obj) => obj?.fileName === data?.fileName);
+      if (index !== -1) {
+        newArr[index] = data;
+      } else {
+        newArr.push(data);
       }
+      return newArr;
     });
-    //updateTotals(data.data); //data is arr of objects [{description, amount}]
-  };
+  }
 
   const removeFileData = (name) => {
-    resetTotals()
     setFileData((prev) => {
       return prev.filter((obj) => obj?.fileName !== name);
     });
