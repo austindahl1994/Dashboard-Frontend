@@ -132,7 +132,7 @@ const ExpenseTracker = () => {
     if (unknownSet && unknownSet.size > 0) {
       setSubCategories((prev) => {
       const newSubCatArr = structuredClone(prev)
-      unknownSet?.forEach(str => newSubCatArr[unknownIndex].Unknown.add(str))
+      unknownSet?.forEach(str => newSubCatArr[unknownIndex]?.descriptions?.add(str)) //subCategory: "Unknown"
       return newSubCatArr
     })
     }
