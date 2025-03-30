@@ -46,7 +46,7 @@ const ExpenseTracker = () => {
     console.log("Subcategory changed")
     subCategories.map((subCatObj) => { //iterates through array of objects
       Object.values(subCatObj).map((value, index) => {
-        if (typeof value === String) {
+        if (index === 0) {
           console.log(`subCategory: ${value || "No subCategoies!"}`)
         } else {
           Array.from(value).map(e => console.log(`description: ${e || "No descriptions!"}`))
