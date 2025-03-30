@@ -31,18 +31,20 @@ const ExpenseTable = ({categories, totals}) => {
         <thead>
           <tr>
             {categories.map((catObj, catIndex) => (
-              <th key={catIndex} colSpan="2" style={style}>{catObj.category}</th>
+              <th key={catIndex} colSpan="2">{catObj.category}</th>
             ))}
           </tr>
         </thead>
         <tbody>
         {categories.map((catObj, catIndex) => (
-          {Array.from(catObj.subCategory).map((setStr, strIndex) => (
-            <tr key={strIndex}>
-              <td style={style}>{setStr}</td>
-              <td style={style}>{simpleTotals[setStr] || 0}</td>
-            </tr>
-          ))}
+          <React.Fragment key={catIndex}>
+            {Array.from(catObj.subCategory).map((setStr, strIndex) => (
+              <tr key={strIndex}>
+                <td>{setStr}</td>
+                <td>{simpleTotals[setStr] || 0}</td>
+              </tr>
+            ))}
+          </React.Fragment>
         ))}
         </tbody>
         <tfoot>
