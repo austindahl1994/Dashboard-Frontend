@@ -41,6 +41,15 @@ const ExpenseTracker = () => {
       }
       return newSubCat;
     });
+    
+    console.log("Subcategory changed")
+    subCategories.map((subCatObj) => {
+      Object.keys(subCatObj).map((key) => {
+        console.log(`subCategory: ${key || "No subCategoies!"}`)
+        Array.from(subCatObj[key]).map(e => console.log(`String in ${e}`))
+      })
+      
+    })
   }, [subCategories]);
 
   useEffect(() => {
@@ -61,15 +70,6 @@ const ExpenseTracker = () => {
       //console.log(`No file data!`);
     }
   }, [fileData]);
-
-  useEffect(() => {
-    console.log("Subcategory change")
-    subCategories.map((subCatObj) => {
-      Object.entries(subCatObj).map(([k, v]) => {
-        console.log(`subCategory: ${k || "No subCategoies!"}, strings: ${v || "No strings in subCategory"}`)
-      })
-    })
-  }, [subCategories])
 
   //Whenever a file is added/removed, should update old totals with new totals
   const updateTotals = (newData) => {
