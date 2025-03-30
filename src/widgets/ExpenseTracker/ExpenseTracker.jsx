@@ -64,7 +64,8 @@ const ExpenseTracker = () => {
   //#region fileUpdate
   //Whenever a new file is added, should update old totals with new totals
   const updateTotals = (newData) => {
-    //console.log(newData);
+    console.log("Calling updateTotals Function with data: ")
+    console.log(newData);
     const oldTotals = structuredClone(totals);
     if (!newData && !Array.isArray(newData)) return;
     newData.map((newObj) => {
