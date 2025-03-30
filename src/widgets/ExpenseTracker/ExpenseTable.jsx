@@ -16,6 +16,8 @@ const ExpenseTable = ({categories, totals}) => {
     return Array.from(subCatSet)?.reduce((acc, subCatStr) => {
       if (simpleTotals.hasOwnProperty(subCatStr)) {
         return Number(acc) + Number(simpleTotals[subCatStr])
+      } else {
+        return Number(acc)
       }
     }, 0)
   }
