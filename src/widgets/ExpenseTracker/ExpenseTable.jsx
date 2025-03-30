@@ -33,7 +33,7 @@ const ExpenseTable = ({categories, totals}) => {
         <thead>
           <tr>
             {categories.map((catObj, catIndex) => (
-              <th key={catIndex} colSpan="2">{catObj.category}</th>
+              <th key={catIndex} colSpan="2" style={{border: "1px solid black", textAlign: "center"}}>{catObj.category}</th>
             ))}
           </tr>
         </thead>
@@ -42,8 +42,8 @@ const ExpenseTable = ({categories, totals}) => {
           <React.Fragment key={catIndex}>
             {Array.from(catObj.subCategory).map((setStr, strIndex) => (
               <tr key={strIndex}>
-                <td>{setStr}</td>
-                <td>{simpleTotals[setStr] || 0}</td>
+                <td style={{border: "1px solid black"}}>{setStr}</td>
+                <td style={{border: "1px solid black"}}>{simpleTotals[setStr] || 0}</td>
               </tr>
             ))}
           </React.Fragment>
@@ -53,7 +53,7 @@ const ExpenseTable = ({categories, totals}) => {
           <tr>
             {/*In a single row, iterate through categories, for every category have a td of the sum*/}
             {categories.map((catObj, catIndex) => (
-              <td colSpan="2" key={catIndex} style={style}>{categorySum(catObj.subCategory)}</td>
+              <td colSpan="2" key={catIndex} style={{border: "1px solid black", textAlign: "center"}}>{categorySum(catObj.subCategory)}</td>
             ))}
           </tr>
         </tfoot>
