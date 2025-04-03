@@ -1,29 +1,33 @@
 import PropTypes from 'prop-types'
 import React, { useState, useEffect } from 'react'
+
+//TODO: Add styling component for table
+
 const ExpenseTable = ({categories, totals}) => {
   const [simpleTotals, setSimpleTotals] = useState({})
   useEffect(() => {
+    if (!totals) return
+    // console.log(totals)
+    // totals.map((obj) => {
+    //   console.log(
+    //     `Totals subCats ${obj.subCategory} with amount: ${obj.amount}`
+    //   );
+    // });
     const newTotalsObj = totals.reduce((acc, obj) => {
-      acc[obj?.subCategory] = obj.amount || 0
-      return acc
-    }, {})
-    setSimpleTotals(newTotalsObj)
-    const d = new Date()
-    console.log(`Time updated: ${d.getMinutes()}`)
+      acc[obj?.subCategory] = obj.amount || 0;
+      return acc;
+    }, {});
+    setSimpleTotals(newTotalsObj);
   }, [totals])
 
   const categorySum = (subCatSet) => {
     return Array.from(subCatSet)?.reduce((acc, subCatStr) => {
-      if (simpleTotals.hasOwnProperty(subCatStr)) {
-        return Number(acc) + Number(simpleTotals[subCatStr])
+      if (subCatStr in simpleTotals) {
+        return Number(acc) + Number(simpleTotals[subCatStr]);
       } else {
-        return Number(acc)
+        return Number(acc);
       }
     }, 0)
-  }
-
-  const style = {
-    border: "1px solid black"
   }
   
   return (

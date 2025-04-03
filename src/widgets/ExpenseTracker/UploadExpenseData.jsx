@@ -1,16 +1,16 @@
 import { Button, Card } from "react-bootstrap";
-import PropTypes from 'prop-types'
+import PropTypes from "prop-types";
 import React from "react";
 import { updateFile } from "./expenseUtilities";
 
-const UploadExpenseData = ({fileData, updateFn, deleteFn}) => {
-    const handleFileUpload = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          updateFile(file, updateFn);
-          e.target.value = "";
-        }
-      };
+const UploadExpenseData = ({ fileData, updateFn, deleteFn }) => {
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      updateFile(file, updateFn);
+      e.target.value = "";
+    }
+  };
   return (
     <div className="d-flex w-100 justify-content-evenly">
       <Card className="d-flex p-2 m-0 align-items-center">
@@ -45,12 +45,12 @@ const UploadExpenseData = ({fileData, updateFn, deleteFn}) => {
       </Card>
     </div>
   );
-}
+};
 
 UploadExpenseData.propTypes = {
-    fileData: PropTypes.array,
-    updateFn: PropTypes.func,
-    deleteFn: PropTypes.func
-}
+  fileData: PropTypes.array,
+  updateFn: PropTypes.func,
+  deleteFn: PropTypes.func,
+};
 
-export default UploadExpenseData
+export default UploadExpenseData;

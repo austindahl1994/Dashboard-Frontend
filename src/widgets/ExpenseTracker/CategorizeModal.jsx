@@ -1,8 +1,7 @@
-import { useState } from "react";
 import { Modal, Tab, Tabs } from "react-bootstrap";
 import PropTypes from "prop-types";
 
-const CategorizeModal = ({ showModal, setShowModal, categories, subCategories }) => {
+const CategorizeModal = ({ showModal, setShowModal }) => {
   //add for updates to cats and subcats: , modifyCatFn, modifySubCatFn
   return (
     <div>
