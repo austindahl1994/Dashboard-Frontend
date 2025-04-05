@@ -43,16 +43,17 @@ export const updateFile = (file, updateFileData) => {
 
 //returns array of objects based on number of subCategories [{subCategory, amount}]
 export const setInitialTotals = (subCategories) => {
-  const newTotals = subCategories.map((subCatObj) => {
+  const newTotals = subCategories?.map((subCatObj) => {
     return { subCategory: subCatObj.subCategory, amount: 0 };
   });
   //console.log(newTotals.map((obj) => obj.subCategory))
-  return newTotals;
+  return newTotals || null;
 };
 
 //Taking in the previous totals array, the newFileData obj to parse through, and subcategories array of objects [subCategory: name, descriptions: Set()]
 //Want to take the previous table and for each object in newFileData add it's values to totals, then return an array with all the totals of prevArray with newFileData obj that matches subCategories
 export const addTotals = (prevTotals, newFileData, subCategories) => {
+  if (!subCategories) return 
   const copiedTotals = structuredClone(prevTotals);
   const unknownIndex = copiedTotals.findIndex(
     (obj) => obj.subCategory === "Unknown"
@@ -84,21 +85,23 @@ export const addTotals = (prevTotals, newFileData, subCategories) => {
 
 //Every time fileData is changed, want to update subCats Unknown with the new strings
 //Want to have the subCats change from either file being changed or user moving strings from one subcat desc to another
-export const addSubCats = (newDataArr, prevSubCatArr) => {
-  newDataArr.map((subCatObj) => {
-    Object.entries(subCatObj).map(([subCat, descriptions]) => {
-      if (
-        descriptions instanceof Set &&
-        descriptions.has(subCat) //Leaving off here
-      ) {
-        console.log(`FF`)
+export const getUnknown = (fileData, subCats) => {
+  let unknownArr = []
+  fileData.map((obj) => {
+    let hasStr = false
+    Object.values(subCats).forEach((subCatObj) => {
+      if (subCatObj.descriptions.has(obj.description)) {
+        hasStr = true
+        //console.log(`ALREADY A PART OF UNKNOWN`)
+        return
       }
-    });
-  });
-}
-
-const checkArray = () => {
-
+    })
+    if (!hasStr) {
+      //console.log(`Subcat does not have fileData desc, adding to unknown: ${obj.description}`)
+      unknownArr.push(obj.description)
+    }
+  })
+  return unknownArr
 }
 
 //After file is parsed with header files, data we want is Description and Amount. Amount might be replaced with Debit/Credit

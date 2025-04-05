@@ -1,8 +1,19 @@
-import { Modal, Tab, Tabs } from "react-bootstrap";
+import { Button, Modal, Tab, Tabs } from "react-bootstrap";
 import PropTypes from "prop-types";
+import ModalGrid from "./ModalGrid";
+import './modalStyle.css'
+import { useState } from "react";
 
-const CategorizeModal = ({ showModal, setShowModal }) => {
+const CategorizeModal = ({
+  showModal,
+  setShowModal,
+  categories,
+  setCategories,
+  subCategories,
+  setSubCategories,
+}) => {
   //add for updates to cats and subcats: , modifyCatFn, modifySubCatFn
+  const [settings, setSettings] = useState({ badgeSize: 1, mode: "add", spacing: "centered" }); //badge sizes, add/edit/delete mode, spacing of start, center, end
   return (
     <div>
       <Modal
@@ -12,20 +23,33 @@ const CategorizeModal = ({ showModal, setShowModal }) => {
         }}
         fullscreen
       >
-        <Modal.Header closeButton>Categorize</Modal.Header>
-        <Modal.Body className="w-100 h-100">
-          <Tabs
-            defaultActiveKey="subCategories"
-            fill
-          >
-          <Tab eventKey="subCategories" title="Subcategories">
-            Modify Subcategory strings
-          </Tab>
-          <Tab eventKey="categories" title="Categories">
-            Modify which subcategories are in categories
-          </Tab>
-        </Tabs>
+        <Modal.Header closeButton></Modal.Header>
+        <Modal.Body>
+          <Tabs defaultActiveKey="subCategories" fill>
+            <Tab eventKey="subCategories" title="subCategories">
+              <ModalGrid
+                title="subCategories"
+                category={categories}
+                subCategory={subCategories}
+                setCategories={setCategories}
+                setSubCategories={setSubCategories}
+              />
+            </Tab>
+            <Tab eventKey="categories" title="Categories">
+              <ModalGrid
+                title="cats"
+                category={categories}
+                subCategory={subCategories}
+                setCategories={setCategories}
+                setSubCategories={setSubCategories}
+              />
+            </Tab>
+          </Tabs>
         </Modal.Body>
+        <Modal.Footer>
+          <div>Settings</div>
+          <Button onClick={() => setShowModal(false)}>Save</Button>
+        </Modal.Footer>
       </Modal>
     </div>
   );
@@ -36,8 +60,8 @@ CategorizeModal.propTypes = {
   setShowModal: PropTypes.func,
   categories: PropTypes.array,
   subCategories: PropTypes.array,
-  // modifyCatFn: PropTypes.func,
-  // modifySubCatFn: PropTypes.func
+  setCategories: PropTypes.func,
+  setSubCategories: PropTypes.func,
 };
 
 export default CategorizeModal;
