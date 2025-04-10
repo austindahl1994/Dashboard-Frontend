@@ -1,8 +1,9 @@
 import { Button, Modal, Tab, Tabs } from "react-bootstrap";
 import PropTypes from "prop-types";
 import ModalGrid from "./ModalGrid";
-import './modalStyle.css'
 import { useState } from "react";
+import { IoSettingsOutline, IoSettings } from "react-icons/io5";
+import "./modalStyle.css";
 
 const CategorizeModal = ({
   showModal,
@@ -13,7 +14,26 @@ const CategorizeModal = ({
   setSubCategories,
 }) => {
   //add for updates to cats and subcats: , modifyCatFn, modifySubCatFn
-  const [settings, setSettings] = useState({ badgeSize: 1, mode: "add", spacing: "centered" }); //badge sizes, add/edit/delete mode, spacing of start, center, end
+  const [settings, setSettings] = useState({
+    Size: "Medium",
+    Spacing: "Evenly",
+  }); //badge sizes, add/edit/delete mode(?), spacing of start, center, end
+  const [showSettings, setShowSettings] = useState(false);
+
+  const settingsObj = {
+    Size: ["Small", "Medium", "Large"],
+    Spacing: ["Left", "Evenly", "Right"],
+  };
+
+  const changeSettings = (name, value) => {
+    setSettings((prev) => {
+      const copy = structuredClone(prev);
+      copy[name] = value;
+      //console.log(copy[name])
+      return copy;
+    });
+  };
+
   return (
     <div>
       <Modal
@@ -23,31 +43,61 @@ const CategorizeModal = ({
         }}
         fullscreen
       >
-        <Modal.Header closeButton></Modal.Header>
         <Modal.Body>
           <Tabs defaultActiveKey="subCategories" fill>
-            <Tab eventKey="subCategories" title="subCategories">
-              <ModalGrid
-                title="subCategories"
-                category={categories}
-                subCategory={subCategories}
-                setCategories={setCategories}
-                setSubCategories={setSubCategories}
-              />
-            </Tab>
-            <Tab eventKey="categories" title="Categories">
-              <ModalGrid
-                title="cats"
-                category={categories}
-                subCategory={subCategories}
-                setCategories={setCategories}
-                setSubCategories={setSubCategories}
-              />
-            </Tab>
+            {["subCategories", "categories"].map((str, i) => (
+              <Tab
+                eventKey={str}
+                title={str === "subCategories" ? "Subcategories" : "Categories"}
+                key={i}
+              >
+                <ModalGrid
+                  title={str}
+                  category={categories}
+                  subCategory={subCategories}
+                  setCategories={setCategories}
+                  setSubCategories={setSubCategories}
+                  settings={settings}
+                />
+              </Tab>
+            ))}
           </Tabs>
         </Modal.Body>
-        <Modal.Footer>
-          <div>Settings</div>
+        <Modal.Footer className="d-flex justify-content-between w-100">
+          {showSettings ? (
+            <IoSettings
+              size={25}
+              onClick={() => setShowSettings(!showSettings)}
+            />
+          ) : (
+            <IoSettingsOutline
+              size={25}
+              onClick={() => setShowSettings(!showSettings)}
+            />
+          )}
+          <div className="d-flex align-items-stretch">
+            {showSettings &&
+              Object.keys(settingsObj).map((objKey, index) => (
+                <form
+                  key={index}
+                  name={objKey}
+                  onSubmit={(e) => e.preventDefault()}
+                  className="d-flex align-items-center mx-4"
+                >
+                  {objKey}:
+                  {settingsObj[objKey].map((str, arrIndex) => (
+                    <Button
+                      className="mx-1"
+                      key={arrIndex}
+                      disabled={settings[objKey] === str}
+                      onClick={() => changeSettings(objKey, str)}
+                    >
+                      {str}
+                    </Button>
+                  ))}
+                </form>
+              ))}
+          </div>
           <Button onClick={() => setShowModal(false)}>Save</Button>
         </Modal.Footer>
       </Modal>

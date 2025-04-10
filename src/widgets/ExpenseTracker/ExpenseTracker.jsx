@@ -4,19 +4,19 @@ import { addTotals, setInitialTotals, getUnknown } from "./expenseUtilities";
 import { Button } from "react-bootstrap";
 import UploadExpenseData from "./UploadExpenseData";
 import ExpenseTable from "./ExpenseTable";
-//TODO: If removing a file, do we care about removing unknown strings from the Unknown descriptions set?
-//If so, descriptions.clear() for "Unknown" before going through and updating the totals data
-//Need to add a check if there is unknown or ignore in subcategories when iteration for other data, if not add them
+//LEAVING OFF: Create two tables in DB, backend routing
 const freshCats = [
-  { category: "Other", subCategory: new Set(["Unknown", "Ignore"]) },
-  { category: "Income", subCategory: new Set()},
+  { category: "Other", subCategory: new Set(["Unknown", "Ignore", "Test"]) },
+  { category: "Income", subCategory: new Set(["Work"])},
 ];
 const freshSubCats = [
   { subCategory: "Test", descriptions: new Set() },
+  { subCategory: "Work", descriptions: new Set() },
   { subCategory: "Unknown", descriptions: new Set() },
   { subCategory: "Ignore", descriptions: new Set() },
 ];
 const freshTotals = [
+  { subCategory: "Test", amount: 0},
   { subCategory: "Unknown", amount: 0 },
   { subCategory: "Ignore", amount: 0 },
 ];
