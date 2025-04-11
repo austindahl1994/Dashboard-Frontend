@@ -1,5 +1,6 @@
 import { Badge, Card, Col, Container, Row } from "react-bootstrap";
 import PropTypes from "prop-types";
+import { MdDeleteForever } from "react-icons/md";
 import { useState } from "react";
 
 const ModalGrid = ({
@@ -23,7 +24,8 @@ const ModalGrid = ({
   const [heldStr, setHeldStr] = useState("");
   const [editingIndex, setEditingIndex] = useState(-1);
   const [hovering, setHovering] = useState(false);
-  const [dragging, setDragging] = useState(false)
+  const [hoverIndex, setHoverIndex] = useState(-1)
+  const [dragging, setDragging] = useState(false);
 
   const getIndexByKey = (arr, key, str) => {
     return arr.findIndex((obj) => obj[key] === str);
@@ -70,42 +72,7 @@ const ModalGrid = ({
       return false;
     }
   };
-
-  const handleDragStart = (str) => {
-    setDragging(true)
-    setHeldStr(str);
-  };
-
-  const handleDragEnd = () => {
-    setHeldStr("");
-    setEditingIndex(0)
-    setDragging(false)
-  };
-
-  const handleDragEnter = (e, i) => {
-    e.preventDefault();
-    setHovering(true);
-    setEditingIndex(i);
-  };
-
-  // const handleDragExit = (e) => {
-  //   e.preventDefault();
-  //   console.log(`Drag exit called`);
-  //   setHovering(false);
-  //   setEditingIndex(-1);
-  // };
-
-  const handleDrop = (str) => {
-    setHovering(false);
-    setEditingIndex(-1);
-    if (title === "subCategories") {
-      moveFromUnknown(str);
-    } else {
-      moveToCat(str);
-    }
-  };
-
-  //Check if the input string already is a part of subCategories or categories
+  
   const checkPrevious = (str) => {
     //console.log(`Checking previous`)
     let exists = false;
@@ -126,6 +93,46 @@ const ModalGrid = ({
     }
     return exists;
   };
+
+  const handleDragStart = (str) => {
+    setDragging(true);
+    setHeldStr(str);
+  };
+
+  const handleDragEnd = () => {
+    setHeldStr("");
+    setEditingIndex(0);
+    setDragging(false);
+    setHovering(false)
+  };
+
+  const handleDragEnter = (e, i) => {
+    e.preventDefault();
+    setHovering(true);
+    setEditingIndex(i);
+  };
+
+  const handleDrop = (str) => {
+    setHovering(false);
+    setEditingIndex(-1);
+    if (title === "subCategories") {
+      moveFromUnknown(str);
+    } else {
+      moveToCat(str);
+    }
+  };
+
+  const handleHover = (index) => {
+    setHovering(true)
+    setHoverIndex(index)
+  }
+
+  const handleMouseOut = () => {
+    setHovering(false)
+    setHoverIndex(-1)
+  }
+
+  //Check if the input string already is a part of subCategories or categories
 
   //User clicked '+', add to subCat or Cat
   const handleAddBlur = () => {
@@ -233,7 +240,7 @@ const ModalGrid = ({
   const handleDelete = (str) => {
     if (checkMainKeys(str)) return;
     if (title === "subCategories") {
-      console.log(`Clearing it from subCat`);
+      //console.log(`Clearing it from subCat`);
       setSubCategories((prev) => {
         const copy = prev.filter((obj) => obj.subCategory !== str);
         const oldIndex = getIndexByKey(prev, "subCategory", str);
@@ -380,16 +387,26 @@ const ModalGrid = ({
                   <Card
                     key={index}
                     className={`d-flex flex-column ${
-                      hovering && dragging && editingIndex === index ? "shadow" : ""
+                      hovering && dragging && editingIndex === index
+                        ? "shadow"
+                        : ""
                     }`}
                     style={{ minWidth: "150px", minHeight: "150px" }}
                     onClick={() => setSelected(str)}
                     onDragOver={(e) => e.preventDefault()}
                     onDragEnter={(e) => handleDragEnter(e, index)}
-                    // onDragLeave={(e) => handleDragExit(e)}
                     onDrop={() => handleDrop(str)}
+                    onMouseOver={() => handleHover(index)}
+                    onMouseOut={handleMouseOut}
                     onContextMenu={(e) => handleRightClick(e, str, index)}
                   >
+                    {hovering &&
+                      !dragging &&
+                      hoverIndex === index &&(
+                        <Card.Header className="m-0 p-0 d-flex justify-content-end">
+                          <MdDeleteForever onClick={() => handleDelete(str)} size={20} />
+                        </Card.Header>
+                      )}
                     <Card.Body className="d-flex justify-content-center align-items-center text-center">
                       {editing && editingIndex === index ? (
                         <input

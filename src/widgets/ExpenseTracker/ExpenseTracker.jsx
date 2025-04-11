@@ -1,13 +1,19 @@
 import { useState } from "react";
 import CategorizeModal from "./CategorizeModal";
-import { addTotals, setInitialTotals, getUnknown } from "./expenseUtilities";
-import { Button } from "react-bootstrap";
+import {
+  addTotals,
+  setInitialTotals,
+  getUnknown,
+} from "./utils/expenseUtilities";
+import { Button, Accordion, Container, Row, Col, Card } from "react-bootstrap";
 import UploadExpenseData from "./UploadExpenseData";
 import ExpenseTable from "./ExpenseTable";
-//LEAVING OFF: Create two tables in DB, backend routing
+import ExpensePieGraph from "./ExpensePieGraph";
+import "./styles/expenseTracker.css";
+//LEAVING OFF: Create two tables in DB, backend routing, finish graphUtils for the different graphs
 const freshCats = [
   { category: "Other", subCategory: new Set(["Unknown", "Ignore", "Test"]) },
-  { category: "Income", subCategory: new Set(["Work"])},
+  { category: "Income", subCategory: new Set(["Work"]) },
 ];
 const freshSubCats = [
   { subCategory: "Test", descriptions: new Set() },
@@ -16,10 +22,26 @@ const freshSubCats = [
   { subCategory: "Ignore", descriptions: new Set() },
 ];
 const freshTotals = [
-  { subCategory: "Test", amount: 0},
+  { subCategory: "Test", amount: 0 },
   { subCategory: "Unknown", amount: 0 },
+  { subCategory: "Work", amount: 0 },
   { subCategory: "Ignore", amount: 0 },
 ];
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
 const ExpenseTracker = () => {
   const [fileData, setFileData] = useState([]); //Arr of objects, each obj is {fileName: {parsedData}}
   //Categories is what is iterated over for table data, subcategories array is just for what strings should be in that subcat, total is for the totals of the subcat
@@ -27,6 +49,8 @@ const ExpenseTracker = () => {
   const [subCategories, setSubCategories] = useState(freshSubCats); //Arr objects [{subcategory: Set['strings']}, ...]
   //Want to add every subCat to totals
   const [showModal, setShowModal] = useState(false);
+  const [activeKey, setActiveKey] = useState("0");
+  const [selectedOption, setSelectedOption] = useState("");
   const initialTotals = setInitialTotals(subCategories) || freshTotals;
   const totals =
     fileData.length === 0
@@ -37,6 +61,9 @@ const ExpenseTracker = () => {
 
   //#region fileUpdate
   const updateFileData = (data) => {
+    if (selectedOption?.length === 0) {
+      setSelectedOption(data.fileName);
+    }
     setFileData((prev) => {
       let newArr = structuredClone(prev);
       const index = prev.findIndex((obj) => obj?.fileName === data?.fileName);
@@ -58,31 +85,220 @@ const ExpenseTracker = () => {
         });
         return copy;
       } else {
-        return prev
+        return prev;
       }
     });
-
   };
 
   const removeFileData = (name) => {
     setFileData((prev) => {
-      return prev.filter((obj) => obj?.fileName !== name);
+      const copyWithoutDeleted = prev.filter((obj) => obj?.fileName !== name);
+      if (copyWithoutDeleted.length > 0) {
+        setSelectedOption(copyWithoutDeleted[0].fileName);
+      }
+      return copyWithoutDeleted;
     });
+  };
+  //returns array of years
+  const getYears = () => {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const range = 10;
+    return Array.from(
+      { length: range * 2 + 1 },
+      (_, i) => currentYear - range + i
+    );
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const year = formData.get("year");
+    const month = formData.get("month");
+    console.log(`Year: ${year}, Month: ${month}`);
   };
 
   //#endregion
   return (
     <div className="w-100 h-100">
-      <UploadExpenseData
-        fileData={fileData}
-        updateFn={updateFileData}
-        deleteFn={removeFileData}
-      />
-      {fileData && fileData.length > 0 && (
-        <ExpenseTable categories={categories} totals={totals || freshTotals} />
-      )}
-      <Button onClick={() => setShowModal(true)}>Show Modal</Button>
-      <CategorizeModal showModal={showModal} setShowModal={setShowModal} categories={categories} subCategories={subCategories} setCategories={setCategories} setSubCategories={setSubCategories}/>
+      <Accordion
+        onSelect={(e) => setActiveKey(e)}
+        className="d-flex flex-column h-100"
+        defaultActiveKey="0"
+      >
+        <Accordion.Item
+          eventKey="0"
+          className={`d-flex flex-column ${
+            activeKey === "0" ? "flex-grow-1" : ""
+          }`}
+        >
+          <Accordion.Header>File Data</Accordion.Header>
+          <Accordion.Body>
+            <Container>
+              <Row>
+                {/*UPLOAD FILES */}
+                <Col sm={6} md={3}>
+                  <UploadExpenseData
+                    fileData={fileData}
+                    updateFn={updateFileData}
+                    deleteFn={removeFileData}
+                  />
+                </Col>
+                {/*DISPLAY FILES */}
+                <Col sm={6} md={3}>
+                  <Card className="w-100 h-100">
+                    <Card.Body className="d-flex">
+                      {fileData.length === 0 ? (
+                        <p className="d-flex w-100 h-100 justify-content-center align-items-center">
+                          No file Data
+                        </p>
+                      ) : (
+                        <div className="w-100 d-flex justify-content-center align-items-center">
+                          <label htmlFor="files">Files: </label>
+                          <select
+                            name="files"
+                            id="files"
+                            className="w-75"
+                            value={selectedOption}
+                            onChange={(e) => setSelectedOption(e.target.value)}
+                          >
+                            {fileData.map((obj, index) => (
+                              <option value={obj.fileName} key={index}>
+                                {obj.fileName}
+                              </option>
+                            ))}
+                          </select>
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            className="mx-2"
+                            onClick={() => removeFileData(selectedOption)}
+                          >
+                            X
+                          </Button>
+                        </div>
+                      )}
+                    </Card.Body>
+                  </Card>
+                </Col>
+                {/*SAVE DATA TO DATABASE WITH MONTH AND YEAR */}
+                <Col sm={6} md={3}>
+                  <Card className="h-100">
+                    <Card.Body className="p-1">
+                      <form
+                        className="d-flex flex-column m-0 p-0"
+                        onSubmit={handleSubmit}
+                      >
+                        <label htmlFor="year">Year: </label>
+                        <select
+                          name="year"
+                          id="year"
+                          defaultValue={new Date().getFullYear()}
+                        >
+                          {getYears().map((year, index) => {
+                            return (
+                              <option key={index} value={year}>
+                                {year}
+                              </option>
+                            );
+                          })}
+                        </select>
+                        <label htmlFor="month" className="mx-1">
+                          Month:{" "}
+                        </label>
+                        <select
+                          name="month"
+                          id="month"
+                          defaultValue={months[new Date().getMonth()]}
+                        >
+                          {months.map((month, index) => {
+                            return (
+                              <option key={index} value={month}>
+                                {month}
+                              </option>
+                            );
+                          })}
+                        </select>
+                        <Button className="mt-1" type="submit">
+                          Save
+                        </Button>
+                      </form>
+                    </Card.Body>
+                  </Card>
+                </Col>
+                {/*MODIFY AND SAVE CATEGORIES */}
+                <Col sm={6} md={3}>
+                  <Card className="h-100">
+                    <div className="d-flex h-100 flex-column p-2 justify-content-evenly">
+                      <Button onClick={() => setShowModal(true)}>
+                        Modify Categories
+                      </Button>
+                      <Button
+                        variant="success"
+                        onClick={() =>
+                          console.log(`Save Categories to database`)
+                        }
+                      >
+                        Save Categories
+                      </Button>
+                    </div>
+                  </Card>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  {fileData && fileData.length > 0 && (
+                    <ExpenseTable
+                      categories={categories}
+                      totals={totals || freshTotals}
+                    />
+                  )}
+                </Col>
+              </Row>
+              <Row className="d-flex align-items-center justify-content-center custom-row">
+                <Col>
+                  {fileData && fileData.length > 0 && (
+                    <ExpensePieGraph
+                      totalsArr={totals}
+                      categories={categories}
+                      title="Categories"
+                    />
+                  )}
+                </Col>
+                <Col>
+                  {fileData && fileData.length > 0 && (
+                    <ExpensePieGraph
+                      totalsArr={totals}
+                      categories={categories}
+                      title="Subcategories"
+                    />
+                  )}
+                </Col>
+              </Row>
+            </Container>
+
+            <CategorizeModal
+              showModal={showModal}
+              setShowModal={setShowModal}
+              categories={categories}
+              subCategories={subCategories}
+              setCategories={setCategories}
+              setSubCategories={setSubCategories}
+            />
+          </Accordion.Body>
+        </Accordion.Item>
+        <Accordion.Item
+          eventKey="1"
+          className={`d-flex flex-column ${
+            activeKey !== "0" ? "flex-grow-1" : ""
+          }`}
+        >
+          <Accordion.Header>Database Data</Accordion.Header>
+          <Accordion.Body>
+            <h1>Data Body</h1>
+          </Accordion.Body>
+        </Accordion.Item>
+      </Accordion>
     </div>
   );
 };

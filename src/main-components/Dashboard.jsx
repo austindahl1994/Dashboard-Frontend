@@ -55,7 +55,7 @@ const Dashboard = () => {
   //const [widgets, setWidgets] = useState({})
   //async to get user information, setWigets to json object
   return (
-    <div className="dash">
+    <div className="dash vh-100">
       <Navbar />
       <ToastProvider>
         <Toasts />

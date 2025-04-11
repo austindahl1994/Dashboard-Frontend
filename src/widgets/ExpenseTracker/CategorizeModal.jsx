@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import ModalGrid from "./ModalGrid";
 import { useState } from "react";
 import { IoSettingsOutline, IoSettings } from "react-icons/io5";
-import "./modalStyle.css";
+import "./styles/modalStyle.css";
 
 const CategorizeModal = ({
   showModal,
@@ -98,7 +98,7 @@ const CategorizeModal = ({
                 </form>
               ))}
           </div>
-          <Button onClick={() => setShowModal(false)}>Save</Button>
+          <Button onClick={() => setShowModal(false)}>Done</Button>
         </Modal.Footer>
       </Modal>
     </div>

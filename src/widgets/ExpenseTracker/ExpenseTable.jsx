@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React, { useState, useEffect } from "react";
-import "./expenseTable.css";
+import "./styles/expenseTable.css";
 
 //TODO: Add styling component for table
 //Remove Ignore from table
@@ -52,7 +52,7 @@ const ExpenseTable = ({ categories, totals }) => {
   };
 
   return (
-    <div className="d-flex justify-content-center">
+    <div className="d-flex overflow-auto">
       <table>
         <thead>
           <tr>
@@ -101,27 +101,19 @@ const ExpenseTable = ({ categories, totals }) => {
         </thead>
         <tbody>
           {incomeCat[0].subCategory.size > 0 ? (
-            Array.from({ length: incomeCat[0].subCategory.size }).map(
-              (_, index) => (
-                <tr key={index}>
-                  {Array.from(incomeCat[0].subCategory).map(
-                    (str, innerIndex) => (
-                      <React.Fragment key={innerIndex}>
-                        <td>{str || ""}</td>
-                        <td>{simpleTotals[str]}</td>
-                      </React.Fragment>
-                    )
-                  )}
-                </tr>
-              )
-            )
+            Array.from(incomeCat[0].subCategory).map((str, index) => (
+              <tr key={index}>
+                <td>{str || ""}</td>
+                <td>{simpleTotals[str]}</td>
+              </tr>
+            ))
           ) : (
             <tr></tr>
           )}
         </tbody>
         <tfoot>
           <tr>
-            {modifiedCat.map((catObj, catIndex) => (
+            {incomeCat.map((catObj, catIndex) => (
               <td colSpan="2" key={catIndex}>
                 {categorySum(incomeCat[0].subCategory).toFixed(2)}
               </td>

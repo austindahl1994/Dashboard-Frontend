@@ -9,13 +9,14 @@ const api = axios.create({
   },
 });
 
-//-------------AUTHORIZATION-------------
+//-------------AUTHORIZATION-------------------
 export const login = (email, password) =>
   api.post("/auth/login", { email, password });
 export const logout = () => api.post("/auth/logout");
 export const checkSession = () => api.get("/check-session");
+//get wiget settings along with user information, right/left merge
 
-//----------------WIDGETS----------------
+//----------------WIDGETS----------------------
 
 //----------------CHARACTER GEN----------------
 export const createProfile = (name, properties) =>
@@ -24,9 +25,16 @@ export const createProfile = (name, properties) =>
   });
 export const getProfile = (name) =>
   api.get(`/profile/${encodeURIComponent(name)}`);
-export const getRecentProfiles = () =>
-  api.get("/profile/recent");
+export const getRecentProfiles = () => api.get("/profile/recent");
 export const updateProfile = (name, data) =>
   api.post(`/profile/${encodeURIComponent(name)}`, { data });
 export const deleteProfile = (name) =>
   api.delete(`/profile/delete/${encodeURIComponent(name)}`);
+
+//----------------EXPENSE TRACKER---------------
+
+//get all the data, each month/year combination
+//allow user to save month year to database, overrides current
+//When user saves categories, will combine categories object and subcat object, this way we keep track of which categories have which subcategories, and what strings are a part of which subcategories
+//Widget table will contain the settings for categories
+
