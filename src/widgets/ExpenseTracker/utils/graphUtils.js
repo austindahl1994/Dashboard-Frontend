@@ -36,8 +36,14 @@ const checkInCategory = (str, categories) => {
 };
 
 //get subcategories besides ignore and any subcategories in Income
-const getModifiedSubCats = () => {
-  
+const getModifiedSubCats = (totalsArr) => {
+  const copy = totalsArr.filter((obj) => obj.subCategory !== "Ignore");
+  const finalCopy = copy.filter((obj) => {
+    if (!checkInCategory(obj.subCategory)) {
+      return obj;
+    }
+  });
+  return finalCopy;
 };
 
 //match totals with each of those subcategories
