@@ -43,8 +43,8 @@ const ExpensePieGraph = ({ totalsArr, categories, title }) => {
                       return acc;
                     }
                   }, 0);
-                  console.log(`value: ${value}`);
-                  console.log(`total: ${totalAmount}`);
+                  // console.log(`value: ${value}`);
+                  // console.log(`total: ${totalAmount}`);
                   const percentage = ((value / totalAmount) * 100).toFixed();
                   // console.log(percentage)
                   return `${context.label}: ${value} (${percentage}%)`;
