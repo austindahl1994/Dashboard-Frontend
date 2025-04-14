@@ -9,6 +9,7 @@ import { Button, Accordion, Container, Row, Col, Card } from "react-bootstrap";
 import UploadExpenseData from "./UploadExpenseData";
 import ExpenseTable from "./ExpenseTable";
 import ExpensePieGraph from "./ExpensePieGraph";
+import * as gu from './utils/graphUtils.js'
 import "./styles/expenseTracker.css";
 //LEAVING OFF: Create two tables in DB, backend routing, finish graphUtils for the different graphs
 const freshCats = [
@@ -58,6 +59,10 @@ const ExpenseTracker = () => {
       : fileData.reduce((acc, nextFileObj) => {
           return addTotals(acc, nextFileObj.data, subCategories);
         }, initialTotals); //Arr objects [{subcategory: total}, ...]
+  const modCat = gu.getCatwithoutIncome(categories); //Category without income or ignore data
+  const catTotals = gu.matchTotalsToCats(modCat, totals); //Totals for the modCat only data
+  const modSubCat = gu.getModifiedSubCats(totals, categories);
+const subCatTotals = gu.getModifiedSubCatTotals(modSubCat, totals)
 
   //#region fileUpdate
   const updateFileData = (data) => {
@@ -246,6 +251,7 @@ const ExpenseTracker = () => {
                 </Col>
               </Row>
               <Row>
+                {/**EXPENSE GRAPH */}
                 <Col>
                   {fileData && fileData.length > 0 && (
                     <ExpenseTable
@@ -255,12 +261,13 @@ const ExpenseTracker = () => {
                   )}
                 </Col>
               </Row>
+              {/**GRAPHS TO DISPLAY DATA */}
               <Row className="d-flex align-items-center justify-content-center custom-row">
                 <Col>
                   {fileData && fileData.length > 0 && (
                     <ExpensePieGraph
-                      totalsArr={totals}
-                      categories={categories}
+                      totalsArr={catTotals}
+                      categories={catTotals}
                       title="Categories"
                     />
                   )}
@@ -268,8 +275,8 @@ const ExpenseTracker = () => {
                 <Col>
                   {fileData && fileData.length > 0 && (
                     <ExpensePieGraph
-                      totalsArr={totals}
-                      categories={categories}
+                      totalsArr={subCatTotals}
+                      categories={modSubCat}
                       title="Subcategories"
                     />
                   )}
