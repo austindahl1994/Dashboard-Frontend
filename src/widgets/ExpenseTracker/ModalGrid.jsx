@@ -51,7 +51,7 @@ const ModalGrid = ({
 
   const getRightData = () => {
     if (title === "subCategories") {
-      return subCategory.map((obj) => obj.subCategory);
+      return subCategory.map((obj) => obj.subCategory).sort();
     } else {
       return category.map((obj) => obj.category);
     }
@@ -351,7 +351,7 @@ const ModalGrid = ({
         <Row className="h-100">
           {/*Left Data*/}
           <Col>
-            <Card className="h-100 my-2">
+            <Card className="leftBox my-2">
               <Card.Header>
                 {title === "subCategories"
                   ? `Subcategory: ${selected}`
@@ -386,12 +386,11 @@ const ModalGrid = ({
                 rightData.map((str, index) => (
                   <Card
                     key={index}
-                    className={`d-flex flex-column ${
+                    className={`d-flex flex-column rightBox ${
                       hovering && dragging && editingIndex === index
                         ? "shadow"
                         : ""
                     }`}
-                    style={{ minWidth: "150px", minHeight: "150px" }}
                     onClick={() => setSelected(str)}
                     onDragOver={(e) => e.preventDefault()}
                     onDragEnter={(e) => handleDragEnter(e, index)}
@@ -400,16 +399,18 @@ const ModalGrid = ({
                     onMouseOut={handleMouseOut}
                     onContextMenu={(e) => handleRightClick(e, str, index)}
                   >
-                    {hovering &&
-                      !dragging &&
-                      hoverIndex === index &&(
-                        <Card.Header className="m-0 p-0 d-flex justify-content-end">
-                          <MdDeleteForever onClick={() => handleDelete(str)} size={20} />
-                        </Card.Header>
-                      )}
+                    {hovering && !dragging && hoverIndex === index && (
+                      <Card.Header className="m-0 p-0 d-flex justify-content-end">
+                        <MdDeleteForever
+                          onClick={() => handleDelete(str)}
+                          size={20}
+                        />
+                      </Card.Header>
+                    )}
                     <Card.Body className="d-flex justify-content-center align-items-center text-center">
                       {editing && editingIndex === index ? (
                         <input
+                          id="EditInputText"
                           type="text"
                           className="h-25 w-75"
                           value={editText}
@@ -435,6 +436,7 @@ const ModalGrid = ({
                 <Card.Body className="d-flex justify-content-center align-items-center">
                   {adding ? (
                     <input
+                      id="AddInputText"
                       className="h-25 w-75"
                       autoFocus
                       onChange={(e) => setEditText(e.target.value)}

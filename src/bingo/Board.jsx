@@ -24,20 +24,20 @@ const Board = () => {
   const [unlocksAvailable, setUnlocksAvailable] = useState(10);
   const [tiles, setTiles] = useState([]);
 
-  useEffect(() => {
-    // const loadCSV = async () => {
-    //   try {
-    //     const data = await startFile();
-    //     setTiles(data || []);
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // };
-    // if (isFirstLoad.current) {
-    //   loadCSV();
-    //   isFirstLoad.current = false;
-    // }
-  }, []);
+  // useEffect(() => {
+  //   // const loadCSV = async () => {
+  //   //   try {
+  //   //     const data = await startFile();
+  //   //     setTiles(data || []);
+  //   //   } catch (error) {
+  //   //     console.log(error);
+  //   //   }
+  //   // };
+  //   // if (isFirstLoad.current) {
+  //   //   loadCSV();
+  //   //   isFirstLoad.current = false;
+  //   // }
+  // }, []);
 
   const updateTiles = (data) => {
     setTiles(data);

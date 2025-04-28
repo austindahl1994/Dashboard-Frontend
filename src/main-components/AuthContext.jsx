@@ -1,51 +1,89 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { PropTypes } from "prop-types";
 import { useNavigate } from "react-router-dom";
-import { login, logout } from "../api";
+import { getSession, login, logout } from "../api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [user, setUser] = useState({});
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  const authLogin = async (email, password) => {
-    try {
-      const userData = await login(email, password);
-      // console.log(
-      //   `${userData.data.user_id}, ${userData.data.username} ${userData.data.email}, ${userData.data.role}`
-      // );
-      setIsAuthenticated(true);
-      setUser(userData);
-      navigate("/dashboard", { replace: true });
-    } catch (error) {
-      console.log(`Error logging in`)
-      console.error(`Error: ${error}`);
-      throw error;
+  const loginMutation = useMutation({
+    mutationFn: ({ email, password }) => login(email, password),
+    retry: false,
+    onSuccess: (data) => {
+      //console.log(data.username);
+      setUser(data);
+      navigate("./dashboard", { replace: true });
+    },
+    onError: () => {
+      console.log(`There was an error logging user in`);
+      setUser({});
+      navigate("./login");
+      throw new Error("Error logging user in");
+    },
+  });
+
+  const logoutMutation = useMutation({
+    mutationFn: logout,
+    onSettled: () => {
+      queryClient.clear();
+      setUser({});
+      navigate("./login");
+    },
+  });
+
+  const sessionQuery = useQuery({
+    queryKey: ["session"],
+    queryFn: getSession,
+    retry: false,
+    staleTime: Infinity,
+    refetchInterval: 3600000,
+    refetchOnWindowFocus: false,
+  });
+
+  // handle success
+  useEffect(() => {
+    if (sessionQuery.isSuccess && Object.keys(user).length === 0) {
+      console.log("Successfully checked session");
+      setUser(sessionQuery.data);
+      navigate(location || "./dashboard");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionQuery.isSuccess]);
+
+  // handle error
+  useEffect(() => {
+    if (sessionQuery.isError) {
+      setUser({});
+      navigate("./login");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionQuery.isError]);
+
+
+  const authLogin = (credentials) => {
+    loginMutation.mutate(credentials);
   };
 
-  const authLogout = async () => {
-    try {
-      await logout(); // Backend should clear session properly
-      setIsAuthenticated(false);
-      setUser({});
-      navigate("/login");
-    } catch (error) {
-      console.error(`Logout Error: ${error}`);
-    }
+  const authLogout = () => {
+    logoutMutation.mutate();
+  };
+
+  const checkSession = () => {
+    sessionQuery.refetch();
   };
 
   return (
     <AuthContext.Provider
       value={{
-        setIsAuthenticated,
-        isAuthenticated,
-        setUser,
-        user,
         authLogin,
         authLogout,
+        checkSession,
+        isCheckingSession: sessionQuery.isFetching,
       }}
     >
       {children}

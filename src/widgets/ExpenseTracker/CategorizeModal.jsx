@@ -63,6 +63,7 @@ const CategorizeModal = ({
             ))}
           </Tabs>
         </Modal.Body>
+        {/**SETTINGS AND DONE BUTTON */}
         <Modal.Footer className="d-flex justify-content-between w-100">
           {showSettings ? (
             <IoSettings

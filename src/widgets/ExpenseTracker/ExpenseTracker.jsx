@@ -1,3 +1,5 @@
+import { useQuery } from "@tanstack/react-query";
+import { getAllExpenses } from "./utils/expenseApi.ts";
 import { useState } from "react";
 import CategorizeModal from "./CategorizeModal";
 import {
@@ -5,45 +7,31 @@ import {
   setInitialTotals,
   getUnknown,
 } from "./utils/expenseUtilities";
+import {
+  freshCats,
+  freshSubCats,
+  freshTotals,
+  months,
+} from "./utils/initialData.js";
 import { Button, Accordion, Container, Row, Col, Card } from "react-bootstrap";
 import UploadExpenseData from "./UploadExpenseData";
 import ExpenseTable from "./ExpenseTable";
 import ExpensePieGraph from "./ExpensePieGraph";
-import * as gu from './utils/graphUtils.js'
+import * as gu from "./utils/graphUtils.js";
 import "./styles/expenseTracker.css";
 //LEAVING OFF: Create two tables in DB, backend routing, finish graphUtils for the different graphs
-const freshCats = [
-  { category: "Other", subCategory: new Set(["Unknown", "Ignore", "Test"]) },
-  { category: "Income", subCategory: new Set(["Work"]) },
-];
-const freshSubCats = [
-  { subCategory: "Test", descriptions: new Set() },
-  { subCategory: "Work", descriptions: new Set() },
-  { subCategory: "Unknown", descriptions: new Set() },
-  { subCategory: "Ignore", descriptions: new Set() },
-];
-const freshTotals = [
-  { subCategory: "Test", amount: 0 },
-  { subCategory: "Unknown", amount: 0 },
-  { subCategory: "Work", amount: 0 },
-  { subCategory: "Ignore", amount: 0 },
-];
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
 
 const ExpenseTracker = () => {
+  const { data, isSuccess } = useQuery({
+    queryKey: ["expenseSettings"],
+    queryFn: getAllExpenses, 
+    staleTime: Infinity
+  });
+
+  if (isSuccess) {
+    console.log(data.dbResponse)
+  }
+
   const [fileData, setFileData] = useState([]); //Arr of objects, each obj is {fileName: {parsedData}}
   //Categories is what is iterated over for table data, subcategories array is just for what strings should be in that subcat, total is for the totals of the subcat
   const [categories, setCategories] = useState(freshCats); //Arr objects [{category: ['subcategories']}, ...]
@@ -62,7 +50,7 @@ const ExpenseTracker = () => {
   const modCat = gu.getCatwithoutIncome(categories); //Category without income or ignore data
   const catTotals = gu.matchTotalsToCats(modCat, totals); //Totals for the modCat only data
   const modSubCat = gu.getModifiedSubCats(totals, categories);
-const subCatTotals = gu.getModifiedSubCatTotals(modSubCat, totals)
+  const subCatTotals = gu.getModifiedSubCatTotals(modSubCat, totals);
 
   //#region fileUpdate
   const updateFileData = (data) => {
