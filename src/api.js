@@ -9,7 +9,7 @@ const api = axios.create({
   },
 });
 
-//-------------AUTHORIZATION-------------------
+// #region Authorization ----------------------------
 export const login = async (email, password) => {
   const response = await api.post("/auth/login", { email, password });
   return response.data;
@@ -24,11 +24,15 @@ export const getSession = async () => {
   const response = await api.get("/check-session");
   return response.data;
 };
-
-//----------------WIDGETS----------------------
-export const updateSettings = async (widgetName, data) => {
-  const response = await api.post(
-    `/widgetSettings/updateSettings/${encodeURIComponent(widgetName)}`,
+// #endregion
+// #region ALL Widgets ----------------------------
+// #region Widget Settings ----------------------------
+export const updateSettings = async ({settings, location}) => {
+  const widgetName = location
+  const data = settings
+  console.log(`Update settings called with ${location}, data of: ${settings}`);
+  const response = await api.put(
+    `/widgetSettings/update/${encodeURIComponent(widgetName)}`,
     { data }
   );
   return response.data;
@@ -36,15 +40,15 @@ export const updateSettings = async (widgetName, data) => {
 
 export const getSettings = async (widgetName) => {
   const response = await api.get(
-    `/widgetSettings/getSettings/${encodeURIComponent(widgetName)}`
+    `/widgetSettings/get/${encodeURIComponent(widgetName)}`
   );
   return response.data;
 };
-
-//----------------CHARACTER GEN----------------
-export const createProfile = async (name, properties) => {
+// #endregion
+// #region Character Generation ----------------------------
+export const saveProfile = async (name, properties) => {
   const response = await api.post(
-    `/profile/createProfile/${encodeURIComponent(name)}`,
+    `/profile/save/${encodeURIComponent(name)}`,
     { properties }
   );
   //console.log(response.data)
@@ -62,26 +66,20 @@ export const getRecentProfiles = async () => {
   return response.data;
 };
 
-export const updateProfile = async (name, data) => {
-  const response = await api.post(
-    `/profile/${encodeURIComponent(name)}`,
-    { data }
-  );
-  return response.data;
-};
-
 export const deleteProfile = async (name) => {
   const response = await api.delete(
     `/profile/delete/${encodeURIComponent(name)}`
   );
   return response.data;
 };
-
-//----------------EXPENSE TRACKER---------------
+// #endregion
+// #region Expense Tracker ----------------------------
 export const getExpenses = async () => {
   const response = await api.get("/expenses");
   return response.data;
 };
+// #endregion
+// #endregion
 
 //get all the data, each month/year combination
 //allow user to save month year to database, overrides current

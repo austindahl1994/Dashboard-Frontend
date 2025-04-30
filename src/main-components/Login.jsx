@@ -1,17 +1,10 @@
 import { Form, Button } from "react-bootstrap";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { AuthContext } from "./AuthContext";
 
-//import { useNavigate } from "react-router-dom"
-
 const Login = () => {
-  const { authLogin, checkSession } = useContext(AuthContext);
+  const { authLogin } = useContext(AuthContext);
   
-  useEffect(() => {
-    checkSession();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const email = e.target.email.value;

@@ -34,10 +34,10 @@ const getSubCats = (categories) => {
   const finalArr = [];
   categories.forEach((obj) => {
     obj.subCategory.forEach((subCat) => {
+      //console.log(subCat)
       finalArr.push({ subCategory: subCat, descriptions: new Set() });
     });
   });
-  //console.log(finalArr)
   return finalArr;
 };
 const freshSubCats = getSubCats(freshCats);

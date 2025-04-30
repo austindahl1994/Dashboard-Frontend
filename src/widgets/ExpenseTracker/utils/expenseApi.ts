@@ -3,7 +3,6 @@ import {
   getSettings,
   updateSettings,
   getExpenses,
-  updateExpenses,
 } from "../../../api";
 import { AxiosResponse } from "axios";
 //Get or update widget settings

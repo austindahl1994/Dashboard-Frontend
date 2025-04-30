@@ -5,7 +5,7 @@ import Cell from "./Cell";
 import generateRandomTraits from "./generateRandomTraits";
 import "./characterGeneration.css";
 import {
-  createProfile,
+  saveProfile,
   deleteProfile,
   getProfile,
   getRecentProfiles,
@@ -60,8 +60,8 @@ const tempProfile = [
 //Add the ability to remove traits and remove properties
 //BETTER UNDERSTANDING OF USEEFFECT DEPENDENCIES and USECALLBACK for no inf renders
 const CharacterGeneration = () => {
+  const queryClient = useQueryClient();
   const { createToast } = useContext(ToastContext);
-  const queryClient = useQueryClient()
   const [loadedProfiles, setLoadedProfiles] = useState([]);
   const [table, setTable] = useState(() => {
     const savedProfile = localStorage.getItem("profile");
@@ -77,7 +77,7 @@ const CharacterGeneration = () => {
   const [editingTrait, setEditingTrait] = useState(false);
   const [randomizedTraits, setRandomizedTraits] = useState([]);
 
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState(true);
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showLoadModal, setShowLoadModal] = useState(false);
@@ -85,8 +85,9 @@ const CharacterGeneration = () => {
 
   //When table is updated, generates random traits based on table data
   useEffect(() => generateRandomTraits(updateRandomTraits, table), [table]);
+
   const recentProfiles = useQuery({
-    queryKey: ["RecentProfiles"],
+    queryKey: ["recentProfiles"],
     queryFn: getRecentProfiles,
     staleTime: Infinity,
     refetch: false,
@@ -95,6 +96,7 @@ const CharacterGeneration = () => {
       const arr = data.map((obj) => {
         return obj.name;
       });
+      localStorage.setItem("recentProfiles", JSON.stringify(data));
       setLoadedProfiles(arr);
     },
     onError: () => {
@@ -103,7 +105,9 @@ const CharacterGeneration = () => {
   });
 
   if (recentProfiles.isSuccess && loadedProfiles.length === 0) {
-    setLoadedProfiles(recentProfiles.data.map((obj) => obj.name));
+    const arr = recentProfiles.data.map((obj) => obj.name);
+    localStorage.setItem("recentProfiles", JSON.stringify(arr));
+    setLoadedProfiles(arr);
   }
 
   //Helper fn passed into generateRandom to modify randomTraits state
@@ -122,16 +126,18 @@ const CharacterGeneration = () => {
   };
 
   const saveMutation = useMutation({
-    mutationFn: ({ title, table }) => createProfile(title, table),
+    mutationFn: ({ title, table }) => saveProfile(title, table),
     onSuccess: () => {
       createToast(`Successfully saved profile: ${title}`, 1);
-      const newTitle = JSON.parse(localStorage.getItem("recentProfiles")) || [];
-      if (!newTitle.includes(title)) {
-        let finalArr = [...newTitle, title];
+      console.log(`Successfully saved title: ${title} with properties of: ${table}`)
+      const oldRecentProfiles = JSON.parse(localStorage.getItem("recentProfiles")) || [];
+      if (!oldRecentProfiles.includes(title)) {
+        let finalArr = [...oldRecentProfiles, title];
+        console.log(`Saved profile now need to add it to recent`);
+        console.log(`Final profile array is ${finalArr}`);
         localStorage.setItem("recentProfiles", JSON.stringify(finalArr));
-        setLoadedProfiles(finalArr);
       }
-      queryClient.setQueryData(['profiles', title], table)
+      queryClient.setQueryData(["profile", title], table);
       setSaved(true);
     },
     onError: () => {
@@ -140,50 +146,43 @@ const CharacterGeneration = () => {
   });
 
   //When clicking on a new profile to start fresh
-  const handleNew = async () => {
-    setTitle("New Profile");
-    setTable(blankProfile);
-    setSaved(false);
-    localStorage.setItem("profile", JSON.stringify(blankProfile));
-    localStorage.setItem("title", JSON.stringify("New Profile"));
+  const handleNew = () => {
+    setAllData(blankProfile, "New Profile")
   };
 
   //Button calls to show modals
-  const handleLoad = () => {
+  const handleLoadClick = () => {
     !saved && setShowConfirmModal(true);
     setShowLoadModal(true);
   };
 
-  //Profile selected from a button in load modal, gets profile and sets tablestate to [obj]
-  // const loadProfile = async (profile) => {
-  //   try {
-  //     const response = await getProfile(profile);
-  //     if (response) {
-  //       setTitle(response.name);
-  //       setTable(response.properties);
-  //       setSaved(true);
-  //       localStorage.setItem("title", JSON.stringify(response.name));
-  //       localStorage.setItem("profile", JSON.stringify(response.properties));
-  //     }
-  //   } catch (error) {
-  //     console.log(`Error getting profile: ${error}`);
-  //   }
-  // };
+  const handleLoad = async (profileName) => {
+    const cachedData = queryClient.getQueryData(["profile", profileName]);
+    if (cachedData) {
+      console.log(`Data was cached with title: ${profileName}`)
+      console.log(cachedData)
+      setAllData(cachedData, profileName)
+    } else {
+      try {
+        const data = await queryClient.fetchQuery({
+          queryKey: ["profile", profileName],
+          queryFn: () => getProfile(profileName),
+          staleTime: Infinity
+        })
+        setAllData(data, profileName)
+      } catch (error) {
+        console.log(`Error getting profile: ${error}`)
+      }
+    }
+  };
 
-  const loadMutation = useMutation({
-    mutationFn: ({ element }) => getProfile(element),
-    onSuccess: (response) => {
-      setTitle(response.name);
-      setTable(response.properties);
-      setSaved(true);
-      localStorage.setItem("title", JSON.stringify(response.name));
-      localStorage.setItem("profile", JSON.stringify(response.properties));
-      queryClient.setQueryData(["profiles", response.name], response.properties);
-    },
-    onError: () => {
-      console.log(`Error getting profile`);
-    },
-  });
+  const setAllData = (data, title) => {
+    setTitle(title);
+    setTable(data?.properties ? data.properties : data);
+    setSaved(true);
+    localStorage.setItem("title", JSON.stringify(title));
+    localStorage.setItem("profile", JSON.stringify(data.properties));
+  }
 
   //Deletes the profile from database
   const handleDelete = async () => {
@@ -201,6 +200,8 @@ const CharacterGeneration = () => {
         console.log(`New Array after filter: ${newArr}`);
         localStorage.setItem("recentProfiles", JSON.stringify(newArr));
         createToast("Successfully deleted profile", 1);
+        queryClient.removeQueries(["recentProfiles", title])
+        queryClient.removeQueries(["profile", title]);
         handleNew();
       }
     } catch (error) {
@@ -378,7 +379,7 @@ const CharacterGeneration = () => {
                 className="custom-btn"
                 variant="success"
                 onClick={() => {
-                  !checkEmptyObject() ? setShowConfirmModal(true) : handleNew();
+                  !checkEmptyObject() && !saved ? setShowConfirmModal(true) : handleNew();
                 }}
               >
                 New Profile
@@ -386,7 +387,7 @@ const CharacterGeneration = () => {
               <Button
                 className="custom-btn"
                 variant="info"
-                onClick={handleLoad}
+                onClick={handleLoadClick}
               >
                 Load Profile
               </Button>
@@ -438,7 +439,7 @@ const CharacterGeneration = () => {
             onClick={() => {
               setShowConfirmModal(false);
               !showLoadModal && handleNew();
-              handleSave();
+              saveMutation.mutate({ title, table });
             }}
           >
             Save
@@ -481,7 +482,7 @@ const CharacterGeneration = () => {
               className="m-2"
               onClick={() => {
                 setShowLoadModal(false);
-                loadMutation.mutate({ element });
+                handleLoad(element)
               }}
             >
               {element}

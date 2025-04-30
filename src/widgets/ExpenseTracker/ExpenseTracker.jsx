@@ -1,6 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { getAllExpenses } from "./utils/expenseApi.ts";
-import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
 import CategorizeModal from "./CategorizeModal";
 import {
   addTotals,
@@ -19,18 +18,22 @@ import ExpenseTable from "./ExpenseTable";
 import ExpensePieGraph from "./ExpensePieGraph";
 import * as gu from "./utils/graphUtils.js";
 import "./styles/expenseTracker.css";
-//LEAVING OFF: Create two tables in DB, backend routing, finish graphUtils for the different graphs
+import {
+  convertForBackendData,
+  convertForBackendSettings,
+  convertForFrontendSettings,
+} from "./dataConversion.js";
+import {
+  getExpenseSettings,
+  mutateExpenseSettings,
+} from "./utils/expenseQueries.js";
+//LEAVING OFF: Finish updating totals for table, setup front/backend data updates
 
 const ExpenseTracker = () => {
-  const { data, isSuccess } = useQuery({
-    queryKey: ["expenseSettings"],
-    queryFn: getAllExpenses, 
-    staleTime: Infinity
-  });
-
-  if (isSuccess) {
-    console.log(data.dbResponse)
-  }
+  const queryClient = useQueryClient();
+  const widgetSettings = useQuery(getExpenseSettings());
+  const saveSettingsConfig = mutateExpenseSettings(queryClient);
+  const saveWidgetSettings = useMutation(saveSettingsConfig);
 
   const [fileData, setFileData] = useState([]); //Arr of objects, each obj is {fileName: {parsedData}}
   //Categories is what is iterated over for table data, subcategories array is just for what strings should be in that subcat, total is for the totals of the subcat
@@ -40,17 +43,49 @@ const ExpenseTracker = () => {
   const [showModal, setShowModal] = useState(false);
   const [activeKey, setActiveKey] = useState("0");
   const [selectedOption, setSelectedOption] = useState("");
-  const initialTotals = setInitialTotals(subCategories) || freshTotals;
-  const totals =
-    fileData.length === 0
-      ? initialTotals
-      : fileData.reduce((acc, nextFileObj) => {
-          return addTotals(acc, nextFileObj.data, subCategories);
-        }, initialTotals); //Arr objects [{subcategory: total}, ...]
+  const calcTotals = () => {
+    const initialTotals = setInitialTotals(subCategories) || freshTotals;
+
+    if (fileData.length === 0) {
+      return initialTotals;
+    }
+
+    return fileData.reduce((acc, nextFileObj) => {
+      return addTotals(acc, nextFileObj.data, subCategories);
+    }, initialTotals);
+  };
+  const [totals, setTotals] = useState(calcTotals);
+
+  // const totals = useMemo(() => {
+  //   console.log(`Called update totals`)
+  //   const initialTotals = setInitialTotals(subCategories) || freshTotals;
+
+  //   if (fileData.length === 0) {
+  //     return initialTotals;
+  //   } else {
+  //     return fileData.reduce((acc, nextFileObj) => {
+  //       return addTotals(acc, nextFileObj.data, subCategories);
+  //     }, initialTotals);
+  //   }
+  // }, [fileData, subCategories]); //Arr objects [{subcategory: total}, ...]
+  useEffect(() => {
+    if (widgetSettings.isSuccess && widgetSettings.data) {
+      //console.log(widgetSettings.data)
+      const newData = convertForFrontendSettings(widgetSettings.data);
+      //console.log(newData)
+      setSubCategories(newData);
+    }
+  }, [widgetSettings.isSuccess, widgetSettings.data]);
+
+  useEffect(() => {
+
+  }, [totals])
+
   const modCat = gu.getCatwithoutIncome(categories); //Category without income or ignore data
   const catTotals = gu.matchTotalsToCats(modCat, totals); //Totals for the modCat only data
   const modSubCat = gu.getModifiedSubCats(totals, categories);
   const subCatTotals = gu.getModifiedSubCatTotals(modSubCat, totals);
+
 
   //#region fileUpdate
   const updateFileData = (data) => {
@@ -103,12 +138,21 @@ const ExpenseTracker = () => {
     );
   };
 
-  const handleSubmit = (e) => {
+  const handleSaveExpenses = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const year = formData.get("year");
     const month = formData.get("month");
+    console.log(`Saving expense data to expenses table`);
     console.log(`Year: ${year}, Month: ${month}`);
+    const saveData = convertForBackendData(categories, totals);
+    console.log(saveData);
+  };
+
+  const handleSaveSettings = () => {
+    console.log(`Save Categories to database`);
+    const saveData = convertForBackendSettings(subCategories);
+    saveWidgetSettings.mutate({ settings: saveData, location: "expenses" });
   };
 
   //#endregion
@@ -180,7 +224,7 @@ const ExpenseTracker = () => {
                     <Card.Body className="p-1">
                       <form
                         className="d-flex flex-column m-0 p-0"
-                        onSubmit={handleSubmit}
+                        onSubmit={handleSaveExpenses}
                       >
                         <label htmlFor="year">Year: </label>
                         <select
@@ -228,9 +272,7 @@ const ExpenseTracker = () => {
                       </Button>
                       <Button
                         variant="success"
-                        onClick={() =>
-                          console.log(`Save Categories to database`)
-                        }
+                        onClick={() => handleSaveSettings()}
                       >
                         Save Categories
                       </Button>

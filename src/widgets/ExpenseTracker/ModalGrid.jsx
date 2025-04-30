@@ -1,7 +1,7 @@
 import { Badge, Card, Col, Container, Row } from "react-bootstrap";
 import PropTypes from "prop-types";
 import { MdDeleteForever } from "react-icons/md";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 const ModalGrid = ({
   title,
@@ -24,40 +24,51 @@ const ModalGrid = ({
   const [heldStr, setHeldStr] = useState("");
   const [editingIndex, setEditingIndex] = useState(-1);
   const [hovering, setHovering] = useState(false);
-  const [hoverIndex, setHoverIndex] = useState(-1)
+  const [hoverIndex, setHoverIndex] = useState(-1);
   const [dragging, setDragging] = useState(false);
 
   const getIndexByKey = (arr, key, str) => {
+    // console.log(`Key of: ${key}`);
+    // console.log(`String of: ${str}`);
     return arr.findIndex((obj) => obj[key] === str);
   };
 
   //Left card will either contain all strings in subCat or all subCat strings in categories
-  const getLeftData = () => {
-    if (title === "subCategories") {
-      const index = getIndexByKey(subCategory, "subCategory", selected);
-      if (index === -1) return [];
-      const newArr = Array.from(subCategory[index].descriptions);
-      //console.log(newArr)
-      return newArr.sort();
-    } else {
-      const otherIndex = getIndexByKey(category, "category", selected);
-      const newArr = Array.from(category[otherIndex].subCategory);
-      //console.log(newArr);
-      return newArr.sort();
-    }
-  };
+  const leftData = useMemo(() => {
+    const getLeftData = () => {
+      if (title === "subCategories") {
+        const index = getIndexByKey(subCategory, "subCategory", selected);
+        if (index === -1) return [];
+        const newArr = Array.from(subCategory[index].descriptions);
+        return newArr.sort();
+      } else {
+        const otherIndex = getIndexByKey(category, "category", selected);
+        //console.log(`The returned index was ${otherIndex}`);
+        if (otherIndex === -1) {
+          setSelected("Other")
+          return
+        }
+        const newArr = Array.from(category[otherIndex].subCategory);
+        return newArr.sort();
+      }
+    };
 
-  const leftData = getLeftData();
+    return getLeftData();
+  }, [category, subCategory, selected, title]);
 
-  const getRightData = () => {
-    if (title === "subCategories") {
-      return subCategory.map((obj) => obj.subCategory).sort();
-    } else {
-      return category.map((obj) => obj.category);
-    }
-  };
+  //Right data will be either the subCategories strings can go into or the categories subCats can go into
+  const rightData = useMemo(() => {
+    const getRightData = () => {
+      if (title === "subCategories") {
+        return subCategory.map((obj) => obj.subCategory).sort();
+      } else {
+        return category.map((obj) => obj.category);
+      }
+    };
+    return getRightData();
+  }, [category, subCategory, title]);
 
-  const rightData = getRightData();
+  //const rightData = getRightData();
 
   //Don't allow users to change these values
   const checkMainKeys = (str) => {
@@ -72,7 +83,7 @@ const ModalGrid = ({
       return false;
     }
   };
-  
+
   const checkPrevious = (str) => {
     //console.log(`Checking previous`)
     let exists = false;
@@ -103,7 +114,7 @@ const ModalGrid = ({
     setHeldStr("");
     setEditingIndex(0);
     setDragging(false);
-    setHovering(false)
+    setHovering(false);
   };
 
   const handleDragEnter = (e, i) => {
@@ -123,14 +134,14 @@ const ModalGrid = ({
   };
 
   const handleHover = (index) => {
-    setHovering(true)
-    setHoverIndex(index)
-  }
+    setHovering(true);
+    setHoverIndex(index);
+  };
 
   const handleMouseOut = () => {
-    setHovering(false)
-    setHoverIndex(-1)
-  }
+    setHovering(false);
+    setHoverIndex(-1);
+  };
 
   //Check if the input string already is a part of subCategories or categories
 
@@ -238,6 +249,7 @@ const ModalGrid = ({
 
   //Delete called either from editing and leaving as a blank string or pressing X button on card
   const handleDelete = (str) => {
+    //console.log(`-------------- CALLING DELETE --------------`);
     if (checkMainKeys(str)) return;
     if (title === "subCategories") {
       //console.log(`Clearing it from subCat`);
@@ -254,20 +266,32 @@ const ModalGrid = ({
       setCategories((prev) => {
         const copy = structuredClone(prev);
         const catIndex = copy.findIndex((obj) => obj.subCategory.has(str));
-        copy[catIndex].subCategory.delete(str);
+        if (catIndex !== -1) {
+          copy[catIndex].subCategory.delete(str);
+        }
         return copy;
       });
+      setSelected("Unknown");
+      setEditText("");
+      setHeldStr("");
     } else {
-      console.log(`Clear it from categories: ${str}`);
+      // console.log(`Clear it from categories: ${str}`);
       setCategories((prev) => {
         const copy = prev.filter((obj) => obj.category !== str);
+        // console.log(`Attempting to get index of str being deleted`);
         const oldIndex = prev.findIndex((obj) => obj.category === str);
+        // console.log(`Index was found for ${str} of ${oldIndex}`);
+        // console.log(`Now attempting to get index for "Other" category`);
         const otherIndex = getIndexByKey(copy, "category", "Other");
+        // console.log(`Other index passed back was ${otherIndex}`);
         prev[oldIndex].subCategory.forEach((e) => {
           copy[otherIndex].subCategory.add(e);
         });
         return copy;
       });
+      setSelected("Other");
+      setEditText("");
+      setHeldStr("");
     }
   };
 
