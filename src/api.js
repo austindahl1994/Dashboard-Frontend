@@ -80,8 +80,8 @@ export const getExpenses = async () => {
   return response.data;
 };
 
-export const saveExpenses = async () => {
-  const response = await api.put("/expenses/save")
+export const saveExpenses = async ({ year, month }) => {
+  const response = await api.put(`/expenses/update/${encodeURIComponent(year)}/${encodeURIComponent(month)}`)
   return response.data
 }
 // #endregion
