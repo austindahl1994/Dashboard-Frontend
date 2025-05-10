@@ -26,9 +26,9 @@ export const getExpenseSettings = () => {
 export const mutateExpenseSettings = (queryClient) => ({
   mutationFn: updateSettings,
   onSuccess: (data, variables) => {
-    //console.log(`Settings updated for expenses, returned: ${data}`);
+    // console.log(`Settings updated for expenses, returned: ${JSON.stringify(data)}`);
+    // console.log(`Compared to variable settings: ${variables.settings})}`)
     const frontendFriendlySettings = convertForFrontendSettings(variables.settings)
-    //console.log(`Updating ExpenseSettings with: ${frontendFriendlySettings}`);
     queryClient.setQueryData(["expenseSettings"], () => frontendFriendlySettings);
   },
   onError: (error) => {

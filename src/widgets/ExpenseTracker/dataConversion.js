@@ -57,20 +57,24 @@ const convertForBackendData = (catArray, totalsArr) => {
 //array of [{subCategory: ["description strings"]}]
 //change into subCatArr = [{subCategory: 'subCat string', descriptions: Set(["desc string"])}]
 const convertForFrontendSettings = (data) => {
+  // console.log(`Convert for frontend was called`)
   let subCatArr
   if (typeof data === "string") {
     subCatArr = JSON.parse(data)
   } else {
     subCatArr = data
   }
-  return subCatArr.map((subCatObj) => {
+  const finalSubCatArr = subCatArr.map((subCatObj) => {
     const newObj = { subCategory: null, descriptions: null };
     for (const subCategory in subCatObj) {
+      //console.log(`Subcategory of ${subCategory} has descriptions: ${subCatObj[subCategory]}`)
       newObj.subCategory = subCategory;
       newObj.descriptions = new Set(subCatObj[subCategory]);
     }
     return newObj;
   });
+  // console.log(finalSubCatArr)
+  return finalSubCatArr
 };
 
 //Data passed in - [{categoryName: [{subCategoryName: amount}] }]

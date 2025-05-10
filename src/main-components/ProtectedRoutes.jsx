@@ -12,12 +12,12 @@ const ProtectedRoutes = ({ children }) => {
   const queryClient = useQueryClient()
 
   useEffect(() => {
-    if (isError) {
+    if (isError || !getUser) {
       console.log(`There was an error validating the user`);
       queryClient.removeQueries(["User"]);
       navigate("/login");
     }
-  }, [isError, user, navigate, queryClient]);
+  }, [isError, user, navigate, queryClient, getUser]);
 
   // useEffect(() => {
   //   console.log("user:", user);

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import CategorizeModal from "./CategorizeModal";
 import {
   addTotals,
@@ -21,7 +21,6 @@ import "./styles/expenseTracker.css";
 import {
   convertForBackendData,
   convertForBackendSettings,
-  convertForFrontendSettings,
 } from "./dataConversion.js";
 import {
   getExpenseSettings,
@@ -43,49 +42,27 @@ const ExpenseTracker = () => {
   const [showModal, setShowModal] = useState(false);
   const [activeKey, setActiveKey] = useState("0");
   const [selectedOption, setSelectedOption] = useState("");
-  const calcTotals = () => {
-    const initialTotals = setInitialTotals(subCategories) || freshTotals;
 
-    if (fileData.length === 0) {
-      return initialTotals;
-    }
-
-    return fileData.reduce((acc, nextFileObj) => {
-      return addTotals(acc, nextFileObj.data, subCategories);
-    }, initialTotals);
-  };
-  const [totals, setTotals] = useState(calcTotals);
-
-  // const totals = useMemo(() => {
-  //   console.log(`Called update totals`)
-  //   const initialTotals = setInitialTotals(subCategories) || freshTotals;
-
-  //   if (fileData.length === 0) {
-  //     return initialTotals;
-  //   } else {
-  //     return fileData.reduce((acc, nextFileObj) => {
-  //       return addTotals(acc, nextFileObj.data, subCategories);
-  //     }, initialTotals);
-  //   }
-  // }, [fileData, subCategories]); //Arr objects [{subcategory: total}, ...]
   useEffect(() => {
     if (widgetSettings.isSuccess && widgetSettings.data) {
-      //console.log(widgetSettings.data)
-      const newData = convertForFrontendSettings(widgetSettings.data);
-      //console.log(newData)
-      setSubCategories(newData);
+      setSubCategories(widgetSettings.data);
     }
   }, [widgetSettings.isSuccess, widgetSettings.data]);
 
-  useEffect(() => {
+  const initialTotals = setInitialTotals(subCategories) || freshTotals;
+  const totals =
+    fileData.length === 0
+      ? initialTotals
+      : fileData.reduce((acc, nextFileObj) => {
+          return addTotals(acc, nextFileObj.data, subCategories);
+        }, initialTotals); //Arr objects [{subcategory: total}, ...]
 
-  }, [totals])
-
-  const modCat = gu.getCatwithoutIncome(categories); //Category without income or ignore data
-  const catTotals = gu.matchTotalsToCats(modCat, totals); //Totals for the modCat only data
+  const catTotals = gu.matchTotalsToCats(
+    gu.getCatwithoutIncome(categories),
+    totals
+  );
   const modSubCat = gu.getModifiedSubCats(totals, categories);
   const subCatTotals = gu.getModifiedSubCatTotals(modSubCat, totals);
-
 
   //#region fileUpdate
   const updateFileData = (data) => {
@@ -150,7 +127,7 @@ const ExpenseTracker = () => {
   };
 
   const handleSaveSettings = () => {
-    console.log(`Save Categories to database`);
+    //console.log(`Save Categories to database`);
     const saveData = convertForBackendSettings(subCategories);
     saveWidgetSettings.mutate({ settings: saveData, location: "expenses" });
   };

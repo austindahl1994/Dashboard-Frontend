@@ -1,4 +1,5 @@
 import axios from "axios";
+import { convertForFrontendSettings } from "./widgets/ExpenseTracker/dataConversion";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const api = axios.create({
@@ -30,7 +31,7 @@ export const getSession = async () => {
 export const updateSettings = async ({settings, location}) => {
   const widgetName = location
   const data = settings
-  console.log(`Update settings called with ${location}, data of: ${settings}`);
+  //console.log(`Update settings called with ${location}, data of: ${settings}`);
   const response = await api.put(
     `/widgetSettings/update/${encodeURIComponent(widgetName)}`,
     { data }
@@ -42,7 +43,7 @@ export const getSettings = async (widgetName) => {
   const response = await api.get(
     `/widgetSettings/get/${encodeURIComponent(widgetName)}`
   );
-  return response.data;
+  return convertForFrontendSettings(response.data);
 };
 // #endregion
 // #region Character Generation ----------------------------
@@ -78,6 +79,11 @@ export const getExpenses = async () => {
   const response = await api.get("/expenses");
   return response.data;
 };
+
+export const saveExpenses = async () => {
+  const response = await api.put("/expenses/save")
+  return response.data
+}
 // #endregion
 // #endregion
 

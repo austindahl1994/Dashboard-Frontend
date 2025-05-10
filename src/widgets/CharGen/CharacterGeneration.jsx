@@ -129,12 +129,14 @@ const CharacterGeneration = () => {
     mutationFn: ({ title, table }) => saveProfile(title, table),
     onSuccess: () => {
       createToast(`Successfully saved profile: ${title}`, 1);
-      console.log(`Successfully saved title: ${title} with properties of: ${table}`)
+      // console.log(`Successfully saved title: ${title} with properties of: ${table}`)
       const oldRecentProfiles = JSON.parse(localStorage.getItem("recentProfiles")) || [];
       if (!oldRecentProfiles.includes(title)) {
+        // console.log(`Old profiles does not include the new one for cookies, adding it in`)
         let finalArr = [...oldRecentProfiles, title];
-        console.log(`Saved profile now need to add it to recent`);
-        console.log(`Final profile array is ${finalArr}`);
+        // console.log(`Saved profile now need to add it to recent`);
+        // console.log(`Final profile array is ${finalArr}`);
+        setLoadedProfiles(finalArr)
         localStorage.setItem("recentProfiles", JSON.stringify(finalArr));
       }
       queryClient.setQueryData(["profile", title], table);

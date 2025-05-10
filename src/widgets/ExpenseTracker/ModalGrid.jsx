@@ -107,10 +107,12 @@ const ModalGrid = ({
 
   const handleDragStart = (str) => {
     setDragging(true);
+    // console.log(`Held str of ${str}`)
     setHeldStr(str);
   };
 
   const handleDragEnd = () => {
+    // console.log(`Drag end called with string: ${heldStr}`)
     setHeldStr("");
     setEditingIndex(0);
     setDragging(false);
@@ -124,6 +126,7 @@ const ModalGrid = ({
   };
 
   const handleDrop = (str) => {
+    // console.log(`Dropped str: ${str}`)
     setHovering(false);
     setEditingIndex(-1);
     if (title === "subCategories") {
@@ -249,7 +252,10 @@ const ModalGrid = ({
 
   //Delete called either from editing and leaving as a blank string or pressing X button on card
   const handleDelete = (str) => {
-    //console.log(`-------------- CALLING DELETE --------------`);
+    console.log(`-------------- CALLING DELETE --------------`);
+    setSelected("Unknown");
+    setEditText("");
+    setHeldStr("");
     if (checkMainKeys(str)) return;
     if (title === "subCategories") {
       //console.log(`Clearing it from subCat`);
@@ -271,9 +277,6 @@ const ModalGrid = ({
         }
         return copy;
       });
-      setSelected("Unknown");
-      setEditText("");
-      setHeldStr("");
     } else {
       // console.log(`Clear it from categories: ${str}`);
       setCategories((prev) => {
