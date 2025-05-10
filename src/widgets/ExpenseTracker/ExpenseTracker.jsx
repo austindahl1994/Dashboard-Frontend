@@ -5,6 +5,7 @@ import {
   addTotals,
   setInitialTotals,
   getUnknown,
+  getYears
 } from "./utils/expenseUtilities";
 import {
   freshCats,
@@ -25,6 +26,7 @@ import {
 import {
   getExpenseSettings,
   mutateExpenseSettings,
+  mutateExpenseData
 } from "./utils/expenseQueries.js";
 //LEAVING OFF: Finish updating totals for table, setup front/backend data updates
 
@@ -33,6 +35,8 @@ const ExpenseTracker = () => {
   const widgetSettings = useQuery(getExpenseSettings());
   const saveSettingsConfig = mutateExpenseSettings(queryClient);
   const saveWidgetSettings = useMutation(saveSettingsConfig);
+  const saveExpenseConfig = mutateExpenseData(queryClient)
+  const saveExpenseData = useMutation(saveExpenseConfig)
 
   const [fileData, setFileData] = useState([]); //Arr of objects, each obj is {fileName: {parsedData}}
   //Categories is what is iterated over for table data, subcategories array is just for what strings should be in that subcat, total is for the totals of the subcat
@@ -104,16 +108,6 @@ const ExpenseTracker = () => {
       return copyWithoutDeleted;
     });
   };
-  //returns array of years
-  const getYears = () => {
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const range = 10;
-    return Array.from(
-      { length: range * 2 + 1 },
-      (_, i) => currentYear - range + i
-    );
-  };
 
   const handleSaveExpenses = (e) => {
     e.preventDefault();
@@ -124,6 +118,7 @@ const ExpenseTracker = () => {
     console.log(`Year: ${year}, Month: ${month}`);
     const saveData = convertForBackendData(categories, totals);
     console.log(saveData);
+    saveExpenseData.mutate({year: year, month: month, data: saveData})
   };
 
   const handleSaveSettings = () => {
