@@ -106,3 +106,13 @@ export const getUnknown = (fileData, subCats) => {
   return unknownArr;
 };
 
+  //returns array of years
+ export const getYears = (range = 10) => {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    return Array.from(
+      { length: range * 2 + 1 },
+      (_, i) => currentYear - range + i
+    );
+  };
+
