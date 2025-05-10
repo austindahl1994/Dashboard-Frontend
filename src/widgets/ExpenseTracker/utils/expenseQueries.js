@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { getExpenses, getSettings, updateSettings, saveExpenses } from "../../../api";
-import { convertForFrontendSettings } from "../dataConversion";
+import { convertForFrontendSettings, convertForFrontendData } from "../dataConversion";
 
 const MINUTE = 1000 * 60;
 
@@ -39,6 +39,7 @@ export const mutateExpenseSettings = (queryClient) => ({
 export const mutateExpenseData = (queryClient) = > ({
   mutationFn: saveExpenses,
   onSuccess: (variables) => {
-    queryClient.setQueryData(["Expenses", variables.year + variables.month], variables.data)
+    const frontendData = convertForFrontendData(variables.data)
+    queryClient.setQueryData(["Expenses", variables.year + variables.month], frontendData)
   }
 })
