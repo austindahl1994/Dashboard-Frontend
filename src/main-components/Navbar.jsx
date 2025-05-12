@@ -1,13 +1,13 @@
 import { Button, Nav, Offcanvas } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { AuthContext } from "./AuthContext";
 import { GoSidebarExpand, GoSidebarCollapse } from "react-icons/go";
 import '../main-styles/navbar.css'
-import { useState, useContext } from "react";
+import { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
 
 const Navbar = () => {
   const [show, setShow] = useState(false);
-  const { authLogout } = useContext(AuthContext);
+  const { authLogout } = useAuth();
 
   const handleOpen = () => setShow(true);
   const handleClose = () => setShow(false);

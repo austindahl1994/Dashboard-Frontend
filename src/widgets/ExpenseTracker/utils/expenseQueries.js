@@ -36,10 +36,11 @@ export const mutateExpenseSettings = (queryClient) => ({
   },
 });
 
-export const mutateExpenseData = (queryClient) = > ({
+export const mutateExpenseData = (queryClient) => ({
   mutationFn: saveExpenses,
-  onSuccess: (variables) => {
-    const frontendData = convertForFrontendData(variables.data)
+  onSuccess: (_, variables) => {
+    const frontendData = convertForFrontendData(JSON.parse(variables.data));
+    // console.log(frontendData)
     queryClient.setQueryData(["Expenses", variables.year + variables.month], frontendData)
   }
 })

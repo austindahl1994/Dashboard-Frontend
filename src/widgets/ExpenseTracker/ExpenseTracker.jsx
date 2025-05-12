@@ -108,16 +108,24 @@ const ExpenseTracker = () => {
       return copyWithoutDeleted;
     });
   };
-
-  const handleSaveExpenses = (e) => {
+// #endregion
+  
+const handleSaveExpenses = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const year = formData.get("year");
     const month = formData.get("month");
-    console.log(`Saving expense data to expenses table`);
-    console.log(`Year: ${year}, Month: ${month}`);
+    // console.log(`Saving expense data to expenses table`);
+    // console.log(`Year: ${year}, Month: ${month}`);
     const saveData = convertForBackendData(categories, totals);
-    console.log(saveData);
+    // console.log(`Save data:`)
+    // console.log(saveData)
+    //console.log(saveData);
+    // const cachedData = queryClient.getQueryData(["Expenses", year + month]);
+    // if (cachedData) {
+    //   console.log(`There is already cached data for ${year}${month}`)
+    //   console.log(cachedData)
+    // }
     saveExpenseData.mutate({year: year, month: month, data: saveData})
   };
 

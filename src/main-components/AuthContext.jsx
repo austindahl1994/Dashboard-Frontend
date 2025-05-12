@@ -9,6 +9,7 @@ const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const cachedUser = queryClient.getQueryData(["User"]);
 
   const loginMutation = useMutation({
     mutationFn: ({ email, password }) => login(email, password),
@@ -33,12 +34,18 @@ const AuthProvider = ({ children }) => {
     },
   });
 
-  const getUser = useQuery({
+  const {
+    data: user,
+    isError,
+    isLoading,
+  } = useQuery({
     queryKey: ["User"],
     queryFn: getSession,
     retry: false,
     staleTime: 600000,
     refetchOnWindowFocus: false,
+    enabled: !cachedUser,
+    initialData: cachedUser,
   });
 
   const authLogin = (credentials) => {
@@ -54,7 +61,9 @@ const AuthProvider = ({ children }) => {
       value={{
         authLogin,
         authLogout,
-        getUser,
+        user,
+        isError,
+        isLoading,
       }}
     >
       {children}

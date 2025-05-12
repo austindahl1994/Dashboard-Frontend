@@ -1,18 +1,16 @@
 import PropTypes from "prop-types";
-import React, { useState } from "react";
+import React from "react";
 import "./styles/expenseTable.css";
 
 //TODO: Add styling component for table
 //Remove Ignore from table
 const ExpenseTable = ({ categories, totals }) => {
-  const [simpleTotals, setSimpleTotals] = useState(
-    !totals
-      ? {}
-      : totals.reduce((acc, obj) => {
-          acc[obj?.subCategory] = obj.amount || 0;
-          return acc;
-        }, {})
-  );
+  const simpleTotals = !totals
+    ? {}
+    : totals.reduce((acc, obj) => {
+        acc[obj?.subCategory] = obj.amount || 0;
+        return acc;
+      }, {});
 
   const createModifiedCategories = () => {
     const copy = categories.filter((obj) => obj.category !== "Income");

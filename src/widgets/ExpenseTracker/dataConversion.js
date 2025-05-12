@@ -58,11 +58,11 @@ const convertForBackendData = (catArray, totalsArr) => {
 //change into subCatArr = [{subCategory: 'subCat string', descriptions: Set(["desc string"])}]
 const convertForFrontendSettings = (data) => {
   // console.log(`Convert for frontend was called`)
-  let subCatArr
+  let subCatArr;
   if (typeof data === "string") {
-    subCatArr = JSON.parse(data)
+    subCatArr = JSON.parse(data);
   } else {
-    subCatArr = data
+    subCatArr = data;
   }
   const finalSubCatArr = subCatArr.map((subCatObj) => {
     const newObj = { subCategory: null, descriptions: null };
@@ -74,40 +74,31 @@ const convertForFrontendSettings = (data) => {
     return newObj;
   });
   // console.log(finalSubCatArr)
-  return finalSubCatArr
+  return finalSubCatArr;
 };
 
 //Data passed in - [{categoryName: [{subCategoryName: amount}] }]
 //Want two arrays:
 //Categories: [{category: 'someCatName', subCategories: ['subCatNames']}]
 //Totals: [{subCategory: 'subCatName', amount: INT}]
-const convertForFrontendData = (catArr) => {
+const convertForFrontendData = (catObj) => {
   let newCategoryArray = [];
   let newTotalsArray = [];
-
-  //Iterate through the original data passed in
-  catArr.forEach((categoryObject) => {
-    const newCatObj = { category: null, subCategories: new Set() };
-
-    //Look into each category object {categoryName: array[{subcategoryName: INT}]}
-    for (const category in categoryObject) {
-      //get the Category name
-      newCatObj.category = category;
-
-      //Iterate through the array of the category to get subcats and amounts
-      categoryObject[category].forEach((subCategoryObject) => {
-        //Look at each subcat object {subCategory: INT}
-        for (const subCategory in subCategoryObject) {
-          newCatObj.subCategories.add(subCategory);
-          newTotalsArray.push({
-            subCategory: subCategory,
-            amount: subCategoryObject[subCategory],
-          });
-        }
-      });
-    }
+  for (const category in catObj) {
+    const newCatObj = { category: category, subCategories: new Set() };
+    catObj[category].forEach((subCatObj) => {
+      for (const subCategory in subCatObj) {
+        newCatObj.subCategories.add(subCategory);
+        newTotalsArray.push({
+          subCategory: subCategory,
+          amount: subCatObj[subCategory],
+        });
+      }
+    });
     newCategoryArray.push(newCatObj);
-  });
+  }
+  // console.log(newCategoryArray);
+  // console.log(newTotalsArray);
   return { newCategoryArray, newTotalsArray };
 };
 
