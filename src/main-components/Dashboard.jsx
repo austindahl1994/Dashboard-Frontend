@@ -7,6 +7,7 @@ import Toasts from "./Toasts";
 import CharacterGeneration from "../widgets/CharGen/CharacterGeneration"; //elsewhere
 import '../main-styles/dashboard.css'
 import ExpenseTracker from "../widgets/ExpenseTracker/ExpenseTracker";
+import { ExpenseProvider } from "../widgets/ExpenseTracker/ExpenseContext";
 /*
 widgets table
 [{
@@ -68,7 +69,11 @@ const Dashboard = () => {
           />
           <Route
             path="/expensetracker"
-            element={<ExpenseTracker />}
+            element={
+              <ExpenseProvider>
+                <ExpenseTracker />
+              </ExpenseProvider>
+            }
           />
         </Routes>
         <br />

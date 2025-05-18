@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import CategorizeModal from "./CategorizeModal";
 import {
   addTotals,
@@ -28,9 +28,14 @@ import {
   mutateExpenseSettings,
   mutateExpenseData
 } from "./utils/expenseQueries.js";
+import { ExpenseContext } from "./ExpenseContext.jsx";
 //LEAVING OFF: Finish updating totals for table, setup front/backend data updates
 
 const ExpenseTracker = () => {
+  const { expenses } = useContext(ExpenseContext);
+  if (expenses) {
+    console.log(expenses);
+  }
   const queryClient = useQueryClient();
   const widgetSettings = useQuery(getExpenseSettings());
   const saveSettingsConfig = mutateExpenseSettings(queryClient);
@@ -115,17 +120,7 @@ const handleSaveExpenses = (e) => {
     const formData = new FormData(e.target);
     const year = formData.get("year");
     const month = formData.get("month");
-    // console.log(`Saving expense data to expenses table`);
-    // console.log(`Year: ${year}, Month: ${month}`);
     const saveData = convertForBackendData(categories, totals);
-    // console.log(`Save data:`)
-    // console.log(saveData)
-    //console.log(saveData);
-    // const cachedData = queryClient.getQueryData(["Expenses", year + month]);
-    // if (cachedData) {
-    //   console.log(`There is already cached data for ${year}${month}`)
-    //   console.log(cachedData)
-    // }
     saveExpenseData.mutate({year: year, month: month, data: saveData})
   };
 

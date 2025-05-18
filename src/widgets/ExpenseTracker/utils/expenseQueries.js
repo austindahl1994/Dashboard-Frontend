@@ -1,23 +1,12 @@
 import { queryOptions } from "@tanstack/react-query";
-import { getExpenses, getSettings, updateSettings, saveExpenses } from "../../../api";
-import { convertForFrontendSettings, convertForFrontendData } from "../dataConversion";
-
-const MINUTE = 1000 * 60;
-
-export const getAllExpensesQuery = () => {
-  return queryOptions({
-    queryKey: ["expenses"],
-    queryFn: getExpenses,
-    staleTime: 60 * MINUTE,
-    gcTime: 30 * MINUTE,
-  });
-};
+import { getSettings, updateSettings, saveExpenses } from "../../../api";
+import { convertForFrontendSettings } from "../dataConversion";
 
 export const getExpenseSettings = () => {
   return queryOptions({
     queryKey: ["expenseSettings"],
     queryFn: () => getSettings("Expenses"),
-    retry: false
+    retry: false,
     // staleTime: 60 * MINUTE,
     // gcTime: 30 * MINUTE,
   });
@@ -28,7 +17,9 @@ export const mutateExpenseSettings = (queryClient) => ({
   onSuccess: (data, variables) => {
     // console.log(`Settings updated for expenses, returned: ${JSON.stringify(data)}`);
     // console.log(`Compared to variable settings: ${variables.settings})}`)
-    const frontendFriendlySettings = convertForFrontendSettings(variables.settings)
+    const frontendFriendlySettings = convertForFrontendSettings(
+      variables.settings
+    );
     queryClient.setQueryData(["ExpenseSettings"], frontendFriendlySettings);
   },
   onError: (error) => {
@@ -39,8 +30,25 @@ export const mutateExpenseSettings = (queryClient) => ({
 export const mutateExpenseData = (queryClient) => ({
   mutationFn: saveExpenses,
   onSuccess: (_, variables) => {
-    const frontendData = convertForFrontendData(JSON.parse(variables.data));
-    // console.log(frontendData)
-    queryClient.setQueryData(["Expenses", variables.year + variables.month], frontendData)
-  }
-})
+    //const frontendData = convertForFrontendData(JSON.parse(variables.data));
+    let finalArr = [];
+    const cachedExpenses = queryClient.getQueryData(["Expenses"]) || [];
+    console.log(cachedExpenses);
+    const toBeCached = {
+      month: variables.month,
+      year: JSON.parse(variables.year),
+      data: JSON.parse(variables.data),
+    };
+    console.log(variables.month);
+    if (cachedExpenses.length > 0) {
+      finalArr = cachedExpenses.filter((dataSet) => {
+        return !(
+          dataSet.month === toBeCached.month && dataSet.year === toBeCached.year
+        );
+      });
+    }
+    finalArr.push(toBeCached);
+    console.log(toBeCached);
+    queryClient.setQueryData(["Expenses"], finalArr);
+  },
+});
