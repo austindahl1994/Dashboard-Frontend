@@ -63,6 +63,7 @@ const ExpensePieGraph = ({ totalsArr, categories, title }) => {
           ],
         }}
         options={{
+          responsive: true,
           plugins: {
             tooltip: {
               callbacks: {

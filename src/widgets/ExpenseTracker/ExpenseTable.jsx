@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React, { useState } from "react";
 import "./styles/expenseTable.css";
-import { Modal, Table } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import { capitalizeFirstLetter } from "../CharGen/utilityFunctions";
 
 //TODO: Add styling component for table
@@ -53,8 +53,6 @@ const ExpenseTable = ({ categories, totals, subCategories, fileData }) => {
 
   const handleClick = (v) => {
     //console.log(v);
-    setSelectedSubCategory(v);
-    setShowModal(true);
     getMatchingDescriptions(v);
   };
 
@@ -94,6 +92,9 @@ const ExpenseTable = ({ categories, totals, subCategories, fileData }) => {
     });
     //console.log(sortedArr)
     setSelectedSubCategory(sortedArr);
+    if (sortedArr.length > 0) {
+      setShowModal(true);
+    }
   };
 
   const calcTotal = () => {
@@ -187,34 +188,33 @@ const ExpenseTable = ({ categories, totals, subCategories, fileData }) => {
       >
         <Modal.Header closeButton />
         <Modal.Body className="d-flex flex-column justify-content-center">
-          <table>
-            <thead>
-              <tr>
-                {selectedSubCategory.length > 0 &&
-                  Object.keys(selectedSubCategory[0]).map((key, index) => {
+          {selectedSubCategory.length > 0 && (
+            <table>
+              <thead>
+                <tr>
+                  {Object.keys(selectedSubCategory[0]).map((key, index) => {
                     return <th key={index}>{capitalizeFirstLetter(key)}</th>;
                   })}
-              </tr>
-            </thead>
-            <tbody>
-              {selectedSubCategory.length > 0 &&
-                selectedSubCategory.map((descObj, index) => (
+                </tr>
+              </thead>
+              <tbody>
+                {selectedSubCategory.map((descObj, index) => (
                   <tr key={index}>
                     <td>{descObj.date || null}</td>
                     <td>{descObj.description || null}</td>
                     <td>{descObj.amount.toFixed(2) || null}</td>
                   </tr>
                 ))}
-            </tbody>
-            {selectedSubCategory.length > 0 && (
+              </tbody>
+
               <tfoot>
                 <tr>
                   <td colSpan={2}>Total</td>
                   <td>{calcTotal()}</td>
                 </tr>
               </tfoot>
-            )}
-          </table>
+            </table>
+          )}
         </Modal.Body>
       </Modal>
     </div>
