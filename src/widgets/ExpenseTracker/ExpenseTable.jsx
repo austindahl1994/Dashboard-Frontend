@@ -59,21 +59,21 @@ const ExpenseTable = ({ categories, totals, subCategories, fileData }) => {
   };
 
   const getMatchingDescriptions = (v) => {
-    console.log(v);
+    //console.log(v);
     let descArr = [];
     subCategories.forEach((subCatObj) => {
       if (subCatObj.subCategory === v) {
-        console.log(subCatObj.subCategory);
+        //console.log(subCatObj.subCategory);
         descArr = [...subCatObj.descriptions];
       }
     });
-    console.log(descArr);
+    //console.log(descArr);
     matchDescWithFileData(descArr);
   };
 
   const matchDescWithFileData = (descArr) => {
-    console.log(`File data:`);
-    console.log(fileData);
+    // console.log(`File data:`);
+    // console.log(fileData);
     let finalArr = [];
     fileData.map((file) => {
       descArr.forEach((descString) => {
@@ -84,17 +84,17 @@ const ExpenseTable = ({ categories, totals, subCategories, fileData }) => {
         });
       });
     });
-    console.log(finalArr);
-    sortDescriptions(finalArr)
+    //console.log(finalArr);
+    sortDescriptions(finalArr);
   };
 
   const sortDescriptions = (arrToSort) => {
     const sortedArr = arrToSort.sort((obj1, obj2) => {
-      return new Date(obj1.date) - new Date(obj2.date) 
-    })
-    console.log(sortedArr)
-    setSelectedSubCategory(sortedArr)
-  }
+      return new Date(obj1.date) - new Date(obj2.date);
+    });
+    //console.log(sortedArr)
+    setSelectedSubCategory(sortedArr);
+  };
 
   const calcTotal = () => {
     const total = selectedSubCategory.reduce((acc, obj) => {
@@ -187,7 +187,7 @@ const ExpenseTable = ({ categories, totals, subCategories, fileData }) => {
         }}
       >
         <Modal.Header closeButton />
-        <Modal.Body className="d-flex justify-content-center w-100 h-100">
+        <Modal.Body className="d-flex flex-column justify-content-center">
           <table>
             <thead>
               <tr>
@@ -203,17 +203,18 @@ const ExpenseTable = ({ categories, totals, subCategories, fileData }) => {
                   <tr key={index}>
                     <td>{descObj.date || null}</td>
                     <td>{descObj.description || null}</td>
-                    <td>{descObj.amount || null}</td>
+                    <td>{descObj.amount.toFixed(2) || null}</td>
                   </tr>
                 ))}
             </tbody>
-            <tfoot>
-              <tr>
-                <td>Total</td>
-                <td></td>
-                <td colSpan={2}>{calcTotal()}</td>
-              </tr>
-            </tfoot>
+            {selectedSubCategory.length > 0 && (
+              <tfoot>
+                <tr>
+                  <td colSpan={2}>Total</td>
+                  <td>{calcTotal()}</td>
+                </tr>
+              </tfoot>
+            )}
           </table>
         </Modal.Body>
       </Modal>

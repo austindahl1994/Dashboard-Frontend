@@ -37,7 +37,7 @@ export const updateFile = (file, updateFileData) => {
             newArr.push(newObj);
           }
         });
-        console.log(newArr)
+        //console.log(newArr)
         const finalObj = { fileName: fileName, data: newArr };
         updateFileData(finalObj);
       },
