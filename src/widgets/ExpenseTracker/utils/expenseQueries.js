@@ -4,7 +4,7 @@ import { convertForFrontendSettings } from "../dataConversion";
 
 export const getExpenseSettings = () => {
   return queryOptions({
-    queryKey: ["expenseSettings"],
+    queryKey: ["ExpenseSettings"],
     queryFn: () => getSettings("Expenses"),
     retry: false,
     // staleTime: 60 * MINUTE,
@@ -30,7 +30,6 @@ export const mutateExpenseSettings = (queryClient) => ({
 export const mutateExpenseData = (queryClient) => ({
   mutationFn: saveExpenses,
   onSuccess: (_, variables) => {
-    //const frontendData = convertForFrontendData(JSON.parse(variables.data));
     let finalArr = [];
     const cachedExpenses = queryClient.getQueryData(["Expenses"]) || [];
     console.log(cachedExpenses);

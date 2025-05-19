@@ -22,6 +22,7 @@ import "./styles/expenseTracker.css";
 import {
   convertForBackendData,
   convertForBackendSettings,
+  convertForFrontendData,
 } from "./dataConversion.js";
 import {
   getExpenseSettings,
@@ -57,6 +58,18 @@ const ExpenseTracker = () => {
       setSubCategories(widgetSettings.data);
     }
   }, [widgetSettings.isSuccess, widgetSettings.data]);
+
+  useEffect(() => {
+    if (expenses) {
+      const newSorted = gu.sortArrayByDate(expenses);
+      // console.log(`New Sorted last element:`)
+      // console.log(newSorted[newSorted.length - 1]);
+      const newCategories = convertForFrontendData(newSorted[newSorted.length - 1].data);
+      // console.log(`New categories:`)
+      // console.log(newCategories)
+      setCategories(newCategories)
+    }
+  }, [expenses])
 
   const initialTotals = setInitialTotals(subCategories) || freshTotals;
   const totals =

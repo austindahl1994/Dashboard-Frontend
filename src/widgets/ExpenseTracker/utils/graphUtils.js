@@ -1,3 +1,4 @@
+import { months } from "./initialData";
 //-------CATEGORIES---------
 //get categories without income and ignore in "Other"
 const getCatwithoutIncome = (categories) => {
@@ -78,10 +79,22 @@ const createSimpleTotals = (totals) => {
   }, {});
 };
 
+//array of objects [{month, year, data}]
+const sortArrayByDate = (arr) => {
+  return arr.sort((e1, e2) => {
+    if (e1.year !== e2.year) {
+      return e1.year - e2.year
+    } else {
+      return months.indexOf(e1.month) - months.indexOf(e2.month)
+    }
+  })
+}
+
 export {
   getCatwithoutIncome,
   matchTotalsToCats,
   getModifiedSubCats,
   getModifiedSubCatTotals,
   createSimpleTotals,
+  sortArrayByDate,
 };

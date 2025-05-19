@@ -83,23 +83,18 @@ const convertForFrontendSettings = (data) => {
 //Totals: [{subCategory: 'subCatName', amount: INT}]
 const convertForFrontendData = (catObj) => {
   let newCategoryArray = [];
-  let newTotalsArray = [];
   for (const category in catObj) {
-    const newCatObj = { category: category, subCategories: new Set() };
+    const newCatObj = { category: category, subCategory: new Set() };
     catObj[category].forEach((subCatObj) => {
-      for (const subCategory in subCatObj) {
-        newCatObj.subCategories.add(subCategory);
-        newTotalsArray.push({
-          subCategory: subCategory,
-          amount: subCatObj[subCategory],
-        });
+      for (const subCat in subCatObj) {
+        newCatObj.subCategory.add(subCat);
       }
     });
     newCategoryArray.push(newCatObj);
   }
   // console.log(newCategoryArray);
   // console.log(newTotalsArray);
-  return { newCategoryArray, newTotalsArray };
+  return newCategoryArray;
 };
 
 export {
