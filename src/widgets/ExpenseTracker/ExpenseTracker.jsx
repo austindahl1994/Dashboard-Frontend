@@ -262,6 +262,8 @@ const handleSaveExpenses = (e) => {
                     <ExpenseTable
                       categories={categories}
                       totals={totals || freshTotals}
+                      subCategories={subCategories}
+                      fileData={fileData}
                     />
                   )}
                 </Col>

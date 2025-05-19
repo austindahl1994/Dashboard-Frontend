@@ -1,10 +1,14 @@
 import PropTypes from "prop-types";
-import React from "react";
+import React, { useState } from "react";
 import "./styles/expenseTable.css";
+import { Modal, Table } from "react-bootstrap";
+import { capitalizeFirstLetter } from "../CharGen/utilityFunctions";
 
 //TODO: Add styling component for table
 //Remove Ignore from table
-const ExpenseTable = ({ categories, totals }) => {
+const ExpenseTable = ({ categories, totals, subCategories, fileData }) => {
+  const [selectedSubCategory, setSelectedSubCategory] = useState([]);
+  const [showModal, setShowModal] = useState(false);
   const simpleTotals = !totals
     ? {}
     : totals.reduce((acc, obj) => {
@@ -47,6 +51,59 @@ const ExpenseTable = ({ categories, totals }) => {
     }, 0);
   };
 
+  const handleClick = (v) => {
+    //console.log(v);
+    setSelectedSubCategory(v);
+    setShowModal(true);
+    getMatchingDescriptions(v);
+  };
+
+  const getMatchingDescriptions = (v) => {
+    console.log(v);
+    let descArr = [];
+    subCategories.forEach((subCatObj) => {
+      if (subCatObj.subCategory === v) {
+        console.log(subCatObj.subCategory);
+        descArr = [...subCatObj.descriptions];
+      }
+    });
+    console.log(descArr);
+    matchDescWithFileData(descArr);
+  };
+
+  const matchDescWithFileData = (descArr) => {
+    console.log(`File data:`);
+    console.log(fileData);
+    let finalArr = [];
+    fileData.map((file) => {
+      descArr.forEach((descString) => {
+        file.data.forEach((fileObj) => {
+          if (fileObj.description === descString) {
+            finalArr.push(fileObj);
+          }
+        });
+      });
+    });
+    console.log(finalArr);
+    sortDescriptions(finalArr)
+  };
+
+  const sortDescriptions = (arrToSort) => {
+    const sortedArr = arrToSort.sort((obj1, obj2) => {
+      return new Date(obj1.date) - new Date(obj2.date) 
+    })
+    console.log(sortedArr)
+    setSelectedSubCategory(sortedArr)
+  }
+
+  const calcTotal = () => {
+    const total = selectedSubCategory.reduce((acc, obj) => {
+      const value = parseFloat(acc + obj.amount);
+      return value;
+    }, 0);
+    return total.toFixed(2);
+  };
+
   return (
     <div className="d-flex overflow-auto">
       <table>
@@ -66,7 +123,11 @@ const ExpenseTable = ({ categories, totals }) => {
                 const subCategoriesArray = Array.from(catObj.subCategory);
                 return (
                   <React.Fragment key={catIndex}>
-                    <td>{subCategoriesArray[rowIndex]}</td>
+                    <td
+                      onClick={() => handleClick(subCategoriesArray[rowIndex])}
+                    >
+                      {subCategoriesArray[rowIndex]}
+                    </td>
                     <td>
                       {subCategoriesArray[rowIndex]
                         ? simpleTotals[subCategoriesArray[rowIndex]] || 0
@@ -117,14 +178,54 @@ const ExpenseTable = ({ categories, totals }) => {
           </tr>
         </tfoot>
       </table>
+      <Modal
+        show={showModal}
+        fullscreen
+        onHide={() => {
+          setShowModal(false);
+          setSelectedSubCategory([]);
+        }}
+      >
+        <Modal.Header closeButton />
+        <Modal.Body className="d-flex justify-content-center w-100 h-100">
+          <table>
+            <thead>
+              <tr>
+                {selectedSubCategory.length > 0 &&
+                  Object.keys(selectedSubCategory[0]).map((key, index) => {
+                    return <th key={index}>{capitalizeFirstLetter(key)}</th>;
+                  })}
+              </tr>
+            </thead>
+            <tbody>
+              {selectedSubCategory.length > 0 &&
+                selectedSubCategory.map((descObj, index) => (
+                  <tr key={index}>
+                    <td>{descObj.date || null}</td>
+                    <td>{descObj.description || null}</td>
+                    <td>{descObj.amount || null}</td>
+                  </tr>
+                ))}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td>Total</td>
+                <td></td>
+                <td colSpan={2}>{calcTotal()}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };
 //[{category: "Other", subCategory: Set["Unknown"]}]
 ExpenseTable.propTypes = {
   categories: PropTypes.array,
-  subcategories: PropTypes.array,
+  subCategories: PropTypes.array,
   totals: PropTypes.array,
+  fileData: PropTypes.array,
 };
 
 export default ExpenseTable;

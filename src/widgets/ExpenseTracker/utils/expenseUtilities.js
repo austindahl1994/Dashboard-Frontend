@@ -27,9 +27,13 @@ export const updateFile = (file, updateFileData) => {
               //console.log(`Debit: ${-v}`)
               newObj.amount = -v;
             }
+            if (key === "Date" || key === "Posted Date") {
+              const d = new Date(v)
+              newObj.date = d.toDateString()
+            }
           });
           if (Object.keys(newObj).length > 0 && newObj?.amount) {
-            // console.log(`description: ${newObj.description}, amount: ${newObj.amount}`)
+            //console.log(`description: ${newObj.description}, amount: ${newObj.amount}, date: ${newObj.date}`)
             newArr.push(newObj);
           }
         });
