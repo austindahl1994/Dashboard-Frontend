@@ -180,7 +180,6 @@ const ExpenseTable = ({ categories, totals, subCategories, fileData }) => {
       </table>
       <Modal
         show={showModal}
-        fullscreen
         onHide={() => {
           setShowModal(false);
           setSelectedSubCategory([]);
