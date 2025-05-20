@@ -2,6 +2,7 @@
 //Subcategory has all of the description strings for parsing through
 //subCatArr = [{subCategory: 'subCat string', descriptions: Set(["desc string"])}]
 const convertForBackendSettings = (subCatArr) => {
+  // console.log(subCatArr)
   const newArr = [];
   subCatArr.forEach((subCatObj) => {
     let subCategory = "";
@@ -80,7 +81,6 @@ const convertForFrontendSettings = (data) => {
 //Data passed in - [{categoryName: [{subCategoryName: amount}] }]
 //Want two arrays:
 //Categories: [{category: 'someCatName', subCategories: ['subCatNames']}]
-//Totals: [{subCategory: 'subCatName', amount: INT}]
 const convertForFrontendData = (catObj) => {
   let newCategoryArray = [];
   for (const category in catObj) {
@@ -97,9 +97,29 @@ const convertForFrontendData = (catObj) => {
   return newCategoryArray;
 };
 
+const checkSubCats = (subCatArr, catArr) => {
+  const otherArr = [];
+
+  subCatArr.forEach((subCatObj) => {
+    const exists = catArr.some((catObj) =>
+      catObj.subCategory?.has(subCatObj.subCategory)
+    );
+
+    if (!exists && subCatObj.subCategory !== "Ignore") {
+      otherArr.push(subCatObj.subCategory);
+    }
+  });
+
+  // console.log("Categories missing:");
+  // console.log(otherArr);
+  return otherArr
+};
+
+
 export {
   convertForBackendData,
   convertForBackendSettings,
   convertForFrontendData,
   convertForFrontendSettings,
+  checkSubCats
 };

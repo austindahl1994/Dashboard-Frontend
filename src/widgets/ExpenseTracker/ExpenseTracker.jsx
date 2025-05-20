@@ -20,6 +20,7 @@ import ExpensePieGraph from "./ExpensePieGraph";
 import * as gu from "./utils/graphUtils.js";
 import "./styles/expenseTracker.css";
 import {
+  checkSubCats,
   convertForBackendData,
   convertForBackendSettings,
   convertForFrontendData,
@@ -46,7 +47,7 @@ const ExpenseTracker = () => {
 
   const [fileData, setFileData] = useState([]); //Arr of objects, each obj is {fileName: {parsedData}}
   //Categories is what is iterated over for table data, subcategories array is just for what strings should be in that subcat, total is for the totals of the subcat
-  const [categories, setCategories] = useState(freshCats); //Arr objects [{category: ['subcategories']}, ...]
+  const [categories, setCategories] = useState(freshCats); //Arr objects [{category: ['subcategory']}, ...]
   const [subCategories, setSubCategories] = useState(freshSubCats); //Arr objects [{subcategory: Set['strings']}, ...]
   //Want to add every subCat to totals
   const [showModal, setShowModal] = useState(false);
@@ -62,14 +63,24 @@ const ExpenseTracker = () => {
   useEffect(() => {
     if (expenses) {
       const newSorted = gu.sortArrayByDate(expenses);
-      // console.log(`New Sorted last element:`)
-      // console.log(newSorted[newSorted.length - 1]);
       const newCategories = convertForFrontendData(newSorted[newSorted.length - 1].data);
-      // console.log(`New categories:`)
-      // console.log(newCategories)
       setCategories(newCategories)
     }
   }, [expenses])
+
+  useEffect(() => {
+    const others = checkSubCats(subCategories, categories)
+    if (others.length > 0) {
+      const copyCat = structuredClone(categories)
+      const otherIndex = copyCat.findIndex((obj) => obj.category === "Other")
+      if (otherIndex) {
+        others.forEach((subCat) => {
+          copyCat[otherIndex].subCategory.add(subCat);
+        })
+        setCategories(copyCat)
+      }
+    }
+  }, [categories, subCategories])
 
   const initialTotals = setInitialTotals(subCategories) || freshTotals;
   const totals =
@@ -311,6 +322,7 @@ const handleSaveExpenses = (e) => {
               subCategories={subCategories}
               setCategories={setCategories}
               setSubCategories={setSubCategories}
+              handleSaveSettings={handleSaveSettings}
             />
           </Accordion.Body>
         </Accordion.Item>

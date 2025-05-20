@@ -12,6 +12,7 @@ const CategorizeModal = ({
   setCategories,
   subCategories,
   setSubCategories,
+  handleSaveSettings,
 }) => {
   //add for updates to cats and subcats: , modifyCatFn, modifySubCatFn
   const [settings, setSettings] = useState({
@@ -99,7 +100,10 @@ const CategorizeModal = ({
                 </form>
               ))}
           </div>
-          <Button onClick={() => setShowModal(false)}>Done</Button>
+          <Button onClick={() => {
+            setShowModal(false)
+            handleSaveSettings()
+            }}>Save</Button>
         </Modal.Footer>
       </Modal>
     </div>
@@ -113,6 +117,7 @@ CategorizeModal.propTypes = {
   subCategories: PropTypes.array,
   setCategories: PropTypes.func,
   setSubCategories: PropTypes.func,
+  handleSaveSettings: PropTypes.func
 };
 
 export default CategorizeModal;
