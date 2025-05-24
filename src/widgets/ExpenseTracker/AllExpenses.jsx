@@ -49,14 +49,10 @@ const AllExpenses = () => {
   const monthlyTotals = useMemo(() => {
     if (!sortedData) return []
     return sortedData?.map((obj) => {
-      // Gets the last 2 digits of year, makes label of Ex. "May '25" 
-      const monthStr = obj.year.toString().slice(-2)
       const newObj = {
-        label: obj.month + " '" + monthStr,
-        amount: 0,
+        label: gu.generateMonthLabels(obj.month, obj.year),
+        amount: generateTotal(obj.data), //iterate over data, getting sum of all subcategory objects in category value
       };
-      //iterate over data, getting sum of all subcategory objects in category value
-      newObj.amount = generateTotal(obj.data)
       return newObj;
     });
   }, [sortedData]);
@@ -73,15 +69,9 @@ const AllExpenses = () => {
     });
   }, [allCategories]);
 
-  const monthLabels = sortedData?.map((monthObj) => {
-    const str = monthObj.year.toString();
-    console.log(str);
-    return monthObj + " '" + str;
-  });
-
   //array of objects with month, year, and total for that month
   const categoryAverages = useMemo(() => {
-    if (!allCategories) return;
+    if (!allCategories) return [];
     Object?.keys(allCategories)?.reduce((acc, category) => {
       const values = allCategories[category];
       console.log(values)
@@ -92,7 +82,10 @@ const AllExpenses = () => {
       return acc;
     }, {});
   }, [allCategories]);
-  
+
+  // Have a component where user can select different categories to show
+  // Havbe a component where user can select different month/years to display
+  // Use list groups for display and selecting months/years and which categories to show: https://react-bootstrap.netlify.app/docs/components/list-group
   return <div>AllExpenses</div>;
 };
 
