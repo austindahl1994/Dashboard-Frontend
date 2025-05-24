@@ -1,77 +1,74 @@
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, useState } from "react";
 import { months } from "./utils/initialData";
 import { ExpenseContext } from "./ExpenseContext";
-import { generateRandomColor } from "./utils/graphUtils";
+import * as gu from "./utils/graphUtils.js";
+
+  // TODO: Allow user input for which datasets to use/look at (which months/years/categories)
 
 const AllExpenses = () => {
   const { expenses: monthlyData } = useContext(ExpenseContext);
-  const sortedData = monthlyData?.sort((m1, m2) => {
-    //if years arent the same, can easily sort, if not have to go by month
-    if (m1.year !== m2.year) {
-      return m1.year - m2.year;
-    } else {
-      return months.indexOf(m1.month) - months.indexOf(m2.month);
-    }
-  });
+  const [unusedDates, setUnusedDates] = useState([]) //{month, year} object for what not to show for bar and line charts
+  const [unselectedCategories, setUnselectedCategories] = useState([]) //{category} to not show for bar and line charts
+  
+  const sortedData = monthlyData ? gu.sortArrayByDate(monthlyData) || []
   console.log(sortedData);
-  //passed in array of subcategories and totals [{HOA: 10}, {Gas: 15}]
-  const generateTotal = (subCatArr) => {
-    return subCatArr.reduce((acc, obj) => {
-      return acc + Object.values(obj)[0];
-    }, 0);
-  };
-
-  // {Food: [0, 7, 10, 0]} based on data from multiple months
-  //MEMOIZE THIS DATA based on monthlyData
-  const allCategories = sortedData?.reduce((acc, monthObj, index) => {
-    Object.keys(monthObj.data).forEach((category) => {
-      const newCatTotal = generateTotal(monthObj.data[category]);
-      //if data exists in acc object already, add new total to the category
-      if (acc[category]) {
-        acc[category].push(newCatTotal);
-        //category is new, add it to allCategories, check what index it is to add 0's to it
-      } else {
-        //first month object, just add category and amount to allCategories
-        if (index === 0) {
-          acc[category] = newCatTotal;
-          //category was added later on, need to add zeros for previous years
+  
+  // Create an object with a kv of {category: [totals (INT)]} needed for bar (and line?) chart
+  // Checks if the category has always existed, added later on, or has been removed
+  // Ex. {Food: [0, 7, 10, 0]} based on sortedData from multiple months
+  const allCategories = useMemo(() => {
+    if (!sortedData) return []
+    return sortedData?.reduce((acc, monthObj, index) => {
+      for (const categories in monthObj.data) {
+        const newCatTotal = gu.generateTotal(monthObj.data[category])
+        //if data exists in acc object already, add new total to the category
+        if (acc[category]) {
+          acc[category].push(newCatTotal)
         } else {
-          acc[category] = Array.from({ length: index }, () => 0);
-          acc[category].push(newCatTotal);
+          //First sortedData month object, just add category and amount to allCategories
+          if (index === 0) {
+            acc[category] = newCatTotal;
+          } else {
+            //Category is new, add it to allCategories, check what index it is to add 0's for previous months
+            acc[category] = Array.from({ length: index }, () => 0);
+            acc[category].push(newCatTotal);
+          }
         }
       }
-    });
-    //iterate over each category of the acc object, if the arr length is less than the index + 1, append 0 to the end of it, since nothing added in for the current month but need chart value
-    for (const category in acc) {
-      if (acc[category].length < index + 1) {
-        acc[category].push(0);
+      //Check to see if the category has been removed, add Os for following months data
+      for (const category in acc) {
+        if (acc[category].length < index + 1) {
+          acc[category].push(0);
+        }
       }
-    }
-    return acc;
-  }, {});
+      return acc;
+    }, {})
+  }, [sortedData])
+
+  // Gets the monthly labels for X axis along with the values for them, returns array of objects [{label: "May '25", amount: 75}...]
   const monthlyTotals = useMemo(() => {
+    if (!sortedData) return []
     return sortedData?.map((obj) => {
+      // Gets the last 2 digits of year, makes label of Ex. "May '25" 
+      const monthStr = obj.year.toString().slice(-2)
       const newObj = {
-        label: obj.month + " '" + obj.year.toString().slice(-2),
+        label: obj.month + " '" + monthStr,
         amount: 0,
       };
       //iterate over data, getting sum of all subcategory objects in category value
-      for (const categories in obj.data) {
-        newObj.amount = obj.data[categories].reduce((acc, subCatObj) => {
-          return acc + Object.values(subCatObj)[0];
-        }, 0);
-      }
+      newObj.amount = generateTotal(obj.data)
       return newObj;
     });
   }, [sortedData]);
 
+  // Returns an object {label, data, backgroundColor} for charts to use
   const datasets = useMemo(() => {
-    if (!allCategories) return;
+    if (!allCategories) return [];
     Object.keys(allCategories)?.map((category) => {
       return {
         label: category,
         data: allCategories[category],
-        backgroundColor: generateRandomColor(), // user choose own colors?
+        backgroundColor: gu.generateRandomColor(), // user choose own colors?
       };
     });
   }, [allCategories]);
@@ -95,10 +92,7 @@ const AllExpenses = () => {
       return acc;
     }, {});
   }, [allCategories]);
-
-  if (!monthlyData) {
-    return <div>Loading...</div>;
-  }
+  
   return <div>AllExpenses</div>;
 };
 
