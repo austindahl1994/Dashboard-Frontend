@@ -97,6 +97,13 @@ const generateTotal = (subCatArr) => {
   }, 0);
 };
 
+//Generates label for X line of a graph, passed in string and number, returns single string "month 'year", Ex. "May '25" 
+const generateMonthLabels = (month, year) => {
+  const yearStr = monthObj.year.toString().slice(-2);
+  console.log(str);
+  return monthObj + " '" + yearStr;
+} 
+  
 const generateRandomColor = () => `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`;
 
 export {
@@ -107,5 +114,6 @@ export {
   createSimpleTotals,
   sortArrayByDate,
   generateTotal,
-  generateRandomColor
+  generateRandomColor,
+  generateMonthLabels
 };
