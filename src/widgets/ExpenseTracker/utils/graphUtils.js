@@ -90,6 +90,8 @@ const sortArrayByDate = (arr) => {
   })
 }
 
+const generateRandomColor = () => `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`;
+
 export {
   getCatwithoutIncome,
   matchTotalsToCats,
@@ -97,4 +99,5 @@ export {
   getModifiedSubCatTotals,
   createSimpleTotals,
   sortArrayByDate,
+  generateRandomColor
 };
