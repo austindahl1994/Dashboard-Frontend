@@ -90,6 +90,13 @@ const sortArrayByDate = (arr) => {
   })
 }
 
+// Takes in array of objects [{HOA: 15}, {GAS: 50}...] and returns amount sum for each of the subCategories
+const generateTotal = (subCatArr) => {
+  return subCatArr.reduce((acc, obj) => {
+    return acc + Object.values(obj)[0];
+  }, 0);
+};
+
 const generateRandomColor = () => `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`;
 
 export {
@@ -99,5 +106,6 @@ export {
   getModifiedSubCatTotals,
   createSimpleTotals,
   sortArrayByDate,
+  generateTotal,
   generateRandomColor
 };
