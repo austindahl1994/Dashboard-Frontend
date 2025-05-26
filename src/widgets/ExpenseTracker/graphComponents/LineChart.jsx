@@ -29,7 +29,7 @@ const LineChart = ({idKey, labels, datasets}) = > {
   };
   return (
     <>
-      {datasets.length === 0 ? null : 
+      {datasets.length === 0 ? <h1>No Data...</h1> : 
         <Line 
           datasetIdKey={idKey}
           datas={{
