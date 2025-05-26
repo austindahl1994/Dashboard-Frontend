@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import {
   Chart as ChartJS,
   LineElement,
@@ -27,9 +28,10 @@ const LineChart = ({idKey, labels, datasets}) = > {
       }
     },
   };
+
   return (
     <>
-      {datasets.length === 0 ? <h1>No Data...</h1> : 
+      {datasets.length === 0 ? null : 
         <Line 
           datasetIdKey={idKey}
           datas={{
@@ -42,3 +44,19 @@ const LineChart = ({idKey, labels, datasets}) = > {
     </>
   )
 }
+
+LineChart.propTypes = {
+  idKey: ProptTypes.string,
+  labels: PropTypes.string,
+  datasets: PropTypes.shape({
+    label: PropTypes.string,
+    data: PropTypes.arrayOf(
+      PropTypes.shape({
+        category: PropTypes.arrayOf(PropTypes.number)
+      })
+    ),
+    backgroundColor: PropTypes.string
+  }),
+};
+
+export default LineChart;
