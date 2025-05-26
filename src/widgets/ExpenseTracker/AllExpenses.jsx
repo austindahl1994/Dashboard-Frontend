@@ -6,9 +6,10 @@ import * as gu from "./utils/graphUtils.js";
   // TODO: Allow user input for which datasets to use/look at (which months/years/categories)
 
 const AllExpenses = () => {
-  const { expenses: monthlyData } = useContext(ExpenseContext);
-  const [unusedDates, setUnusedDates] = useState([]) //{month, year} object for what not to show for bar and line charts
-  const [unselectedCategories, setUnselectedCategories] = useState([]) //{category} to not show for bar and line charts
+  const { expenses } = useContext(ExpenseContext);
+  const [dates, setDates] = useState([]) //{month, year} object for what to show for bar and line charts
+  const [selectedCategories, setSelectedCategories] = useState([]) // which {categories} to show for bar and line charts
+  const [monthlyData, setMonthlyData] = useState(expenses || [])
   
   const sortedData = monthlyData ? gu.sortArrayByDate(monthlyData) || []
   console.log(sortedData);
@@ -72,7 +73,7 @@ const AllExpenses = () => {
   //array of objects with month, year, and total for that month
   const categoryAverages = useMemo(() => {
     if (!allCategories) return [];
-    Object?.keys(allCategories)?.reduce((acc, category) => {
+    return Object?.keys(allCategories)?.reduce((acc, category) => {
       const values = allCategories[category];
       console.log(values)
       const catAvg = values.reduce((catAcc, amount) => {
@@ -84,7 +85,7 @@ const AllExpenses = () => {
   }, [allCategories]);
 
   // Have a component where user can select different categories to show
-  // Havbe a component where user can select different month/years to display
+  // Have a component where user can select different month/years to display
   // Use list groups for display and selecting months/years and which categories to show: https://react-bootstrap.netlify.app/docs/components/list-group
   return <div>AllExpenses</div>;
 };
