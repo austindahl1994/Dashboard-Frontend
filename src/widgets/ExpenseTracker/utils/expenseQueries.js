@@ -6,6 +6,7 @@ export const getExpenseSettings = () => {
   return queryOptions({
     queryKey: ["ExpenseSettings"],
     queryFn: () => getSettings("Expenses"),
+    refetchOnWindowFocus: false,
     retry: false,
     // staleTime: 60 * MINUTE,
     // gcTime: 30 * MINUTE,
