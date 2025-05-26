@@ -1,5 +1,5 @@
 import { Bar } from 'react-chartjs-2'
-import { generateRandomColors } from '../utils/graphUtils'
+import PropTypes from 'prop-types';
 import {
   Chart as ChartJS,
   BarElement,
@@ -46,3 +46,19 @@ const BarChart = ({idKey, labels, datasets}) => {
     </>
   )
 }
+
+BarChart.propTypes = {
+  idKey: ProptTypes.string,
+  labels: PropTypes.string,
+  datasets: PropTypes.shape({
+    label: PropTypes.string,
+    data: PropTypes.arrayOf(
+      PropTypes.shape({
+        category: PropTypes.arrayOf(PropTypes.number)
+      })
+    ),
+    backgroundColor: PropTypes.string
+  }),
+};
+
+export const BarChart;
