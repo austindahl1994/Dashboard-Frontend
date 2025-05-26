@@ -12,7 +12,7 @@ import {
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
 
-const BarChart = ({labels, datasets}) => {
+const BarChart = ({idKey, labels, datasets}) => {
   const options = {
     responsive: true,
     plugins: {
@@ -33,14 +33,16 @@ const BarChart = ({labels, datasets}) => {
   
   return (
     <>
+      {datasets.length === 0 ? <h1>No data...</h1> : 
       <Bar
-        datasetIdKey="barData"
+        datasetIdKey={idKey}
         data={{
           labels: labels,
           datasets: datasets
         }}
         const options={options}
       />
+      }
     </>
   )
 }
