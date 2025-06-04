@@ -11,7 +11,13 @@ const AllExpenses = () => {
   const [selectedCategories, setSelectedCategories] = useState([]) // which {categories} to show for bar and line charts
   const [monthlyData, setMonthlyData] = useState(expenses || [])
   
-  const sortedData = monthlyData ? gu.sortArrayByDate(monthlyData) || []
+  const sortedData = useMemo(() => {
+    if (monthlyData) {
+      return gu.sortArrayByDate(monthlyData)
+    } else {
+      return []
+    }
+  }, [monthlyData])
   console.log(sortedData);
   
   // Create an object with a kv of {category: [totals (INT)]} needed for bar (and line?) chart
@@ -20,7 +26,7 @@ const AllExpenses = () => {
   const allCategories = useMemo(() => {
     if (!sortedData) return []
     return sortedData?.reduce((acc, monthObj, index) => {
-      for (const categories in monthObj.data) {
+      for (const category in monthObj.data) {
         const newCatTotal = gu.generateTotal(monthObj.data[category])
         //if data exists in acc object already, add new total to the category
         if (acc[category]) {
@@ -52,7 +58,7 @@ const AllExpenses = () => {
     return sortedData?.map((obj) => {
       const newObj = {
         label: gu.generateMonthLabels(obj.month, obj.year),
-        amount: generateTotal(obj.data), //iterate over data, getting sum of all subcategory objects in category value
+        amount: gu.generateTotal(obj.data), //iterate over data, getting sum of all subcategory objects in category value
       };
       return newObj;
     });
