@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import { Card } from "react-bootstrap";
-import "./Tile.css"; // optional external styles
+import "./tile.css"; // optional external styles
 
 interface TileProps {
   url: string;
