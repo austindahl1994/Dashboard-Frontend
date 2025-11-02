@@ -1,7 +1,7 @@
 import React from "react";
 import Board from "./Board";
 import { Container, Row } from "react-bootstrap";
-import "./BoardPage.css";
+import "./boardPage.css";
 
 const BoardPage = () => {
   return (
