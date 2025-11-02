@@ -1,72 +1,15 @@
-.hexagon {
-  width: 100px;
-  height: 115px; /* Maintain the hexagonal proportions */
-  position: relative;
-  perspective: 1000px;
-  margin: 0.3em 0.15em;
-}
-
-.hexagon-inner {
-  width: 100px;
-  height: 115px;
-  position: absolute;
-  transform-style: preserve-3d;
-  transition: transform 0.3s;
-}
-
-.hexagon:hover .hexagon-inner {
-  transform: rotateY(180deg);
-}
-
-.fake-hover {
-  transform: rotateY(180deg);
-}
-
-/* Hexagon shape */
-.hexagon-front, .hexagon-back {
-  width: 100px;
-  height: 115px;
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-  position: absolute;
+.tile-card {
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  backface-visibility: hidden;
+  width: 90%;
+  height: 90%;
 }
 
-.hexagon-front {
-  background-color: black;
-  background-image: url("https://oldschool.runescape.wiki/images/Cabbage_detail.png?08f34");
-  background-size: 100%;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.hexagon-back {
-  background-size: 50%;
-  background-repeat: no-repeat;
-  background-position: center;
-  transform: rotateY(180deg);
-}
-
-.hexagon-selected {
-  width: 115px;
-  height: 137px;
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: yellow;
-  z-index: -1;
-}
-
-.board {
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-  background-color: white;
-  justify-content: center;
-  align-items: center;
+.tile-img {
+  width: 60%;
+  height: 60%;
+  object-fit: contain;
+  overflow: hidden;
 }

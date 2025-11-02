@@ -1,11 +1,16 @@
+import { Suspense, lazy } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./main-components/AuthContext";
 import ProtectedRoutes from "./main-components/ProtectedRoutes";
 import Dashboard from "./main-components/Dashboard";
 import Login from "./main-components/Login";
 import Home from "./main-components/Home";
-import Bingo from "./bingo/Bingo";
-
+// import Bingo from "./bingo/Bingo";
+const Bingo = lazy(() => import("./bingo/Bingo"));
+const Rules = lazy(() => import("./bingo/Rules"));
+const Setup = lazy(() => import("./bingo/Setup"));
+const BoardPage = lazy(() => import("./bingo/BoardPage"));
+const BingoHome = lazy(() => import("./bingo/BingoHome"));
 /*
 // routes.js
 import WeatherWidget from './components/WeatherWidget';
@@ -27,7 +32,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/bingo" element={<Bingo />} />
           {/* map through allWidgets, each surrounded by ProtectedRoutes */}
           <Route
             path="/dashboard/*"
@@ -37,6 +41,13 @@ function App() {
               </ProtectedRoutes>
             }
           />
+          {/* <Route path="/bingo" element={<Bingo />} /> */}
+          <Route path="/bingo" element={<Bingo />}>
+            <Route index element={<BingoHome />} />
+            <Route path="rules" element={<Rules />} />
+            <Route path="setup" element={<Setup />} />
+            <Route path="board" element={<BoardPage />} />
+          </Route>
         </Routes>
       </AuthProvider>
     </BrowserRouter>
