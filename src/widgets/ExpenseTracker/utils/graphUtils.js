@@ -90,6 +90,22 @@ const sortArrayByDate = (arr) => {
   })
 }
 
+// Takes in array of objects [{HOA: 15}, {GAS: 50}...] and returns amount sum for each of the subCategories
+const generateTotal = (subCatArr) => {
+  return subCatArr.reduce((acc, obj) => {
+    return acc + Object.values(obj)[0];
+  }, 0);
+};
+
+//Generates label for X line of a graph, passed in string and number, returns single string "month 'year", Ex. "May '25" 
+const generateMonthLabels = (monthObj) => {
+  const yearStr = monthObj.year.toString().slice(-2);
+  console.log(yearStr);
+  return monthObj.month + " '" + yearStr;
+} 
+  
+const generateRandomColor = () => `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`;
+
 export {
   getCatwithoutIncome,
   matchTotalsToCats,
@@ -97,4 +113,7 @@ export {
   getModifiedSubCatTotals,
   createSimpleTotals,
   sortArrayByDate,
+  generateTotal,
+  generateRandomColor,
+  generateMonthLabels
 };

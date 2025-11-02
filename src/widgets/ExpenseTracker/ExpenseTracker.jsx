@@ -31,6 +31,7 @@ import {
   mutateExpenseData
 } from "./utils/expenseQueries.js";
 import { ExpenseContext } from "./ExpenseContext.jsx";
+import AllExpenses from "./AllExpenses.jsx";
 //LEAVING OFF: Finish updating totals for table, setup front/backend data updates
 
 const ExpenseTracker = () => {
@@ -332,9 +333,9 @@ const handleSaveExpenses = (e) => {
             activeKey !== "0" ? "flex-grow-1" : ""
           }`}
         >
-          <Accordion.Header>Database Data</Accordion.Header>
+          <Accordion.Header>Yearly Data</Accordion.Header>
           <Accordion.Body>
-            <h1>Data Body</h1>
+            <AllExpenses />
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
