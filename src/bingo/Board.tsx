@@ -1,47 +1,91 @@
-import { FC } from "react";
-import { Card, Col, Container, Row } from "react-bootstrap";
+import { FC, useState } from "react";
+import { Col, Container, Row } from "react-bootstrap";
 import Tile from "./Tile";
+import TileModal from "./TileModal";
 
-const BOARD_DIMENSION = 5;
+const BOARD_DIMENSION = 10;
+
+interface Tile {
+  title: string;
+  url: string;
+  tier: number;
+  notes: string;
+  quantity: number;
+  completed: number;
+}
+
+const generateFakeTile = (): Tile => {
+  return {
+    title: "Sample Tile",
+    url: images[Math.floor(Math.random() * images.length)],
+    tier: Math.ceil(Math.random() * 5),
+    notes:
+      "You <strong>MUST</strong> get the drop from a cabbage. Nothing else is accesptabled, unless you bribe Vinny with some money. Man's gotta make his money back from this event somehow.",
+    quantity: Math.floor(Math.random() * 5) + 5,
+    completed: Math.floor(Math.random() * 10),
+  };
+};
+
+const fakeTile = {
+  title: "Sample Tile",
+  url: "https://oldschool.runescape.wiki/images/Cabbage_detail.png?08f34",
+  tier: 1,
+  notes:
+    "You <strong>MUST</strong> get the drop from a cabbage. Nothing else is accesptabled, unless you bribe Vinny with some money. Man's gotta make his money back from this event somehow.",
+  quantity: 10,
+  completed: 5,
+};
 
 const Board: FC = () => {
+  const [selectedTile, setSelectedTile] = useState<Tile | null>(null);
+
   const gridArr: undefined[] = Array.from<undefined>({
     length: BOARD_DIMENSION,
   });
 
-  images.forEach(() => {
-    const randomNumber = Math.floor(Math.random() * 101);
-    randomCompletions.push(randomNumber > 77);
+  Array.from({ length: 81 }).forEach((_, rowIndex) => {
+    FakeData.push(generateFakeTile());
   });
 
   return (
-    <Container className="border p-0 m-0 justify-content-evenly">
-      {gridArr.map((_, rowIndex) => (
-        <Row
-          key={rowIndex}
-          className="d-flex justify-content-evenly p-0 m-1 w-100 h-100 overflow-hidden"
-        >
-          {gridArr.map((_, colIndex) => (
-            <Col
-              key={colIndex}
-              xs={2}
-              className="d-flex justify-content-center align-items-center m-0 p-0"
-            >
-              {/* <p className="border m-0 p-0 h-100 w-100">
-                {rowIndex * BOARD_DIMENSION + colIndex + 1}
-              </p> */}
+    <>
+      <Container className="p-0 m-0 justify-content-evenly">
+        {gridArr.map((_, rowIndex) => (
+          <Row
+            key={rowIndex}
+            className="d-flex justify-content-evenly p-0 m-0 w-100 h-100 overflow-hidden"
+          >
+            {gridArr.map((_, colIndex) => (
+              <Col
+                key={colIndex}
+                className="d-flex justify-content-center align-items-center m-0 p-0"
+              >
+                {/* <p className="border m-0 p-0 h-100 w-100">
+                  {rowIndex * BOARD_DIMENSION + colIndex + 1}
+                </p> */}
 
-              <Tile
-                url={images[rowIndex * BOARD_DIMENSION + colIndex]}
-                completed={
-                  randomCompletions[rowIndex * BOARD_DIMENSION + colIndex]
-                }
-              />
-            </Col>
-          ))}
-        </Row>
-      ))}
-    </Container>
+                <Tile
+                  {...FakeData[rowIndex * BOARD_DIMENSION + colIndex]}
+                  setSelectedTile={setSelectedTile}
+                />
+              </Col>
+            ))}
+          </Row>
+        ))}
+      </Container>
+      {selectedTile && (
+        <TileModal
+          show={!!selectedTile}
+          handleClose={() => setSelectedTile(null)}
+          title={selectedTile.title}
+          url={selectedTile.url}
+          tier={selectedTile.tier}
+          notes={selectedTile.notes}
+          quantity={selectedTile.quantity}
+          completed={selectedTile.completed}
+        />
+      )}
+    </>
   );
 };
 
@@ -73,7 +117,7 @@ const images: string[] = [
   "https://oldschool.runescape.wiki/images/Ultor_ring_detail.png?784a8",
 ];
 
-const randomCompletions: boolean[] = [];
+const FakeData: Tile[] = [];
 
 export default Board;
 //Toughts - have the board be a separate component, so that we can have other parts added as well, like sidebar, player data, etc

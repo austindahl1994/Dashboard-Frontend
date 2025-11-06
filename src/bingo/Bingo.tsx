@@ -4,9 +4,9 @@ import { Col, Container, Row } from "react-bootstrap";
 
 const Bingo = () => {
   return (
-    <Container fluid className="vh-100 p-0">
+    <Container fluid className="vh-100 vw-100 p-0">
       <Row>
-        <Col xs={3} sm={2} md={2} lg={1} className="bg-light vh-100">
+        <Col xs={3} sm={2} md={2} lg={1} className="d-flex vh-100 text-center">
           <BingoNavbar />
         </Col>
         <Col xs={9} sm={10} md={10} lg={11} className="m-0 p-0 vh-100">

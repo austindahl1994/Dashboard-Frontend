@@ -1,11 +1,11 @@
-import { Container, Image, Nav, Navbar } from "react-bootstrap";
+import { Button, Container, Image, Nav, Navbar } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "./bingoNav.css";
 
 function BingoNavbar() {
   return (
     <div>
-      <Nav className="flex-column justify-content-center align-items-center p-1 Bingo-Nav">
+      <Nav className="d-flex h-100 m-0 p-0">
         <Container fluid>
           <Navbar.Brand as={Link} to="/bingo">
             <Image
@@ -13,19 +13,19 @@ function BingoNavbar() {
               fluid
             />
           </Navbar.Brand>
+          <Nav.Link as={Link} to="/bingo">
+            Home
+          </Nav.Link>
+          <Nav.Link as={Link} to="/bingo/rules">
+            Rules
+          </Nav.Link>
+          <Nav.Link as={Link} to="/bingo/setup">
+            Setup
+          </Nav.Link>
+          <Nav.Link as={Link} to="/bingo/board">
+            Board
+          </Nav.Link>
         </Container>
-        <Nav.Link as={Link} to="/bingo">
-          Home
-        </Nav.Link>
-        <Nav.Link as={Link} to="/bingo/rules">
-          Rules
-        </Nav.Link>
-        <Nav.Link as={Link} to="/bingo/setup">
-          Setup
-        </Nav.Link>
-        <Nav.Link as={Link} to="/bingo/board">
-          Board
-        </Nav.Link>
       </Nav>
     </div>
   );
