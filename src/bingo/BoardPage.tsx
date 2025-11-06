@@ -5,11 +5,11 @@ import "./boardPage.css";
 
 const BoardPage = () => {
   return (
-    <Container>
-      <Row className="overflow-hidden">
+    <Container className="m-0 p-0">
+      {/* <Row className="overflow-hidden">
         <h1 className="text-center team-text">Team "Cabbage Fanatics" Board</h1>
-      </Row>
-      <Row className="d-flex justify-content-center board-wrapper">
+      </Row> */}
+      <Row className="d-flex justify-content-center board-wrapper m-0 p-0">
         <Board />
       </Row>
     </Container>
