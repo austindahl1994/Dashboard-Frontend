@@ -29,7 +29,7 @@ const Tile: FC<TileProps> = ({
   setSelectedTile,
 }) => {
   // completed > quantity ? "green" :
-  const color: string = completed > quantity ? "black" : getColor(tier);
+  const color: string = completed >= quantity ? "black" : getColor(tier);
 
   //Can break it down into completedLabel and leftLabel for 0/8 or 8/8 OR 10/7 as examples
   const completedLabel: string =
