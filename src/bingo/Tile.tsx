@@ -28,11 +28,26 @@ const Tile: FC<TileProps> = ({
   completed,
   setSelectedTile,
 }) => {
-  const color: string = completed > quantity ? "green" : getColor(tier);
-  const label: string = completed === 0 ? "" : `${completed}/${quantity}`;
+  // completed > quantity ? "green" :
+  const color: string = completed > quantity ? "black" : getColor(tier);
+
+  //Can break it down into completedLabel and leftLabel for 0/8 or 8/8 OR 10/7 as examples
+  const completedLabel: string =
+    completed === 0
+      ? ""
+      : completed >= quantity
+      ? `COMPLETED`
+      : completed.toString();
+  const leftLabel: string =
+    completed > quantity
+      ? ""
+      : completed === 0
+      ? `0 / ${quantity}`
+      : quantity.toString();
   const completion: number =
     completed === 0 ? 0 : Math.min((completed / quantity) * 100, 100);
   const left: number = completed === 0 ? 100 : Math.max(100 - completion, 0);
+
   return (
     <>
       <Card
@@ -50,16 +65,25 @@ const Tile: FC<TileProps> = ({
         }
       >
         <Card.Body className="w-100 h-50 m-0 p-1 d-flex flex-column justify-content-evenly align-items-center">
-          <Card.Img src={url} alt="Tile" className="tile-img" variant="top" />
+          <Card.Img
+            src={
+              completed >= quantity
+                ? "https://cabbage-bounty.s3.us-east-2.amazonaws.com/bingo/Tick.png"
+                : url
+            }
+            alt="Tile"
+            className="tile-img"
+            variant="top"
+          />
           <ProgressBar className="w-100">
             <ProgressBar
-              label={label}
+              label={completedLabel}
               now={completion}
-              animated
-              striped
+              animated={completed < quantity}
+              striped={completed < quantity}
               variant="success"
             />
-            <ProgressBar now={left} variant="danger" />
+            <ProgressBar label={leftLabel} now={left} variant="danger" />
           </ProgressBar>
         </Card.Body>
       </Card>
@@ -74,7 +98,7 @@ const getColor = (tier: number): string => {
       color = "rgba(0, 128, 0, 0.25)";
       break;
     case 2:
-      color = "rgba(173, 216, 230, 0.25)";
+      color = "rgba(85, 169, 197, .25)";
       break;
     case 3:
       color = "rgba(128, 0, 128, 0.25)";
