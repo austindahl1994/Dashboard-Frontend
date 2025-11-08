@@ -20,7 +20,7 @@ const generateFakeTile = (): Tile => {
     url: images[Math.floor(Math.random() * images.length)],
     tier: Math.ceil(Math.random() * 5),
     notes:
-      "You <strong>MUST</strong> get the drop from a cabbage. Nothing else is accesptabled, unless you bribe Vinny with some money. Man's gotta make his money back from this event somehow.",
+      "You *MUST* get the drop from a cabbage. Nothing else is accesptabled, unless you bribe Vinny with some money. Man's gotta make his money back from this event somehow.",
     quantity: Math.floor(Math.random() * 5) + 5,
     completed: Math.floor(Math.random() * 10),
   };
@@ -43,7 +43,7 @@ const Board: FC = () => {
     length: BOARD_DIMENSION,
   });
 
-  Array.from({ length: 81 }).forEach((_, rowIndex) => {
+  Array.from({ length: 100 }).forEach((_, rowIndex) => {
     FakeData.push(generateFakeTile());
   });
 

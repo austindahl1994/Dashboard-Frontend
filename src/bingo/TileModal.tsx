@@ -27,16 +27,24 @@ const TileModal: FC<TileProps> = ({
 
   const getBadgeColor = (): string => {
     if (progress === 100) return "success";
-    if (progress >= 50) return "warning";
+    if (progress >= 10) return "warning";
     return "danger";
   };
 
+  const modifiedNotes: string = notes
+    .split("*")
+    .map((part, index) => (index % 2 === 1 ? `<strong>${part}</strong>` : part))
+    .join("");
+
+  const badgeText: string =
+    completed >= quantity ? "COMPLETED" : `${completed}/${quantity}`;
+
   return (
-    <Modal show={show} onHide={handleClose} centered size="lg">
+    <Modal show={show} onHide={handleClose} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>
           <h1>{title}</h1>
-          <Badge bg={getBadgeColor()}>{`${completed}/${quantity}`}</Badge>
+          <Badge bg={getBadgeColor()}>{badgeText}</Badge>
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -53,7 +61,7 @@ const TileModal: FC<TileProps> = ({
             <p
               dangerouslySetInnerHTML={{
                 __html:
-                  notes ||
+                  modifiedNotes ||
                   "No special notes for this tile, just go out and get it done!",
               }}
             />
