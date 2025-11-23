@@ -28,9 +28,9 @@ export const getSession = async () => {
 // #endregion
 // #region ALL Widgets ----------------------------
 // #region Widget Settings ----------------------------
-export const updateSettings = async ({settings, location}) => {
-  const widgetName = location
-  const data = settings
+export const updateSettings = async ({ settings, location }) => {
+  const widgetName = location;
+  const data = settings;
   //console.log(`Update settings called with ${location}, data of: ${settings}`);
   const response = await api.put(
     `/widgetSettings/update/${encodeURIComponent(widgetName)}`,
@@ -48,10 +48,9 @@ export const getSettings = async (widgetName) => {
 // #endregion
 // #region Character Generation ----------------------------
 export const saveProfile = async (name, properties) => {
-  const response = await api.post(
-    `/profile/save/${encodeURIComponent(name)}`,
-    { properties }
-  );
+  const response = await api.post(`/profile/save/${encodeURIComponent(name)}`, {
+    properties,
+  });
   //console.log(response.data)
   return response.data;
 };
@@ -81,9 +80,17 @@ export const getExpenses = async () => {
 };
 
 export const saveExpenses = async ({ year, month, data }) => {
-  const response = await api.put(`/expenses/update/${encodeURIComponent(year)}/${encodeURIComponent(month)}`, { data })
-  return response.data
-}
+  const response = await api.put(
+    `/expenses/update/${encodeURIComponent(year)}/${encodeURIComponent(month)}`,
+    { data }
+  );
+  return response.data;
+};
+
+export const getBoard = async () => {
+  const response = await api.get(`/bingo/board`);
+  return response.data;
+};
 // #endregion
 // #endregion
 
