@@ -40,7 +40,7 @@ const TileModal: FC<TileProps> = ({
     completed >= quantity ? "COMPLETED" : `${completed}/${quantity}`;
 
   return (
-    <Modal show={show} onHide={handleClose} size="lg">
+    <Modal show={show} onHide={handleClose} fullscreen>
       <Modal.Header closeButton>
         <Modal.Title>
           <h1>{title}</h1>
@@ -51,9 +51,15 @@ const TileModal: FC<TileProps> = ({
         <Row>
           <Col>
             <Image
+              className="modal-image"
               src={url}
               alt="Tile Image"
-              style={{ width: "100%", height: "100%" }}
+              style={{
+                width: "100%",
+                height: "100%",
+                maxHeight: "512px",
+                maxWidth: "512px",
+              }}
             />
           </Col>
           <Col>

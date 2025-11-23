@@ -5,6 +5,8 @@
   justify-content: center;
   width: 95%;
   height: 95%;
+  /* max-width: 90px;
+  max-height: 90px; */
 }
 
 .tile-img {

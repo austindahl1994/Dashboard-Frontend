@@ -130,13 +130,14 @@ const CharacterGeneration = () => {
     onSuccess: () => {
       createToast(`Successfully saved profile: ${title}`, 1);
       // console.log(`Successfully saved title: ${title} with properties of: ${table}`)
-      const oldRecentProfiles = JSON.parse(localStorage.getItem("recentProfiles")) || [];
+      const oldRecentProfiles =
+        JSON.parse(localStorage.getItem("recentProfiles")) || [];
       if (!oldRecentProfiles.includes(title)) {
         // console.log(`Old profiles does not include the new one for cookies, adding it in`)
         let finalArr = [...oldRecentProfiles, title];
         // console.log(`Saved profile now need to add it to recent`);
         // console.log(`Final profile array is ${finalArr}`);
-        setLoadedProfiles(finalArr)
+        setLoadedProfiles(finalArr);
         localStorage.setItem("recentProfiles", JSON.stringify(finalArr));
       }
       queryClient.setQueryData(["profile", title], table);
@@ -149,7 +150,7 @@ const CharacterGeneration = () => {
 
   //When clicking on a new profile to start fresh
   const handleNew = () => {
-    setAllData(blankProfile, "New Profile")
+    setAllData(blankProfile, "New Profile");
   };
 
   //Button calls to show modals
@@ -161,19 +162,19 @@ const CharacterGeneration = () => {
   const handleLoad = async (profileName) => {
     const cachedData = queryClient.getQueryData(["profile", profileName]);
     if (cachedData) {
-      console.log(`Data was cached with title: ${profileName}`)
-      console.log(cachedData)
-      setAllData(cachedData, profileName)
+      console.log(`Data was cached with title: ${profileName}`);
+      console.log(cachedData);
+      setAllData(cachedData, profileName);
     } else {
       try {
         const data = await queryClient.fetchQuery({
           queryKey: ["profile", profileName],
           queryFn: () => getProfile(profileName),
-          staleTime: Infinity
-        })
-        setAllData(data, profileName)
+          staleTime: Infinity,
+        });
+        setAllData(data, profileName);
       } catch (error) {
-        console.log(`Error getting profile: ${error}`)
+        console.log(`Error getting profile: ${error}`);
       }
     }
   };
@@ -184,7 +185,7 @@ const CharacterGeneration = () => {
     setSaved(true);
     localStorage.setItem("title", JSON.stringify(title));
     localStorage.setItem("profile", JSON.stringify(data.properties));
-  }
+  };
 
   //Deletes the profile from database
   const handleDelete = async () => {
@@ -202,7 +203,7 @@ const CharacterGeneration = () => {
         console.log(`New Array after filter: ${newArr}`);
         localStorage.setItem("recentProfiles", JSON.stringify(newArr));
         createToast("Successfully deleted profile", 1);
-        queryClient.removeQueries(["recentProfiles", title])
+        queryClient.removeQueries(["recentProfiles", title]);
         queryClient.removeQueries(["profile", title]);
         handleNew();
       }
@@ -381,7 +382,9 @@ const CharacterGeneration = () => {
                 className="custom-btn"
                 variant="success"
                 onClick={() => {
-                  !checkEmptyObject() && !saved ? setShowConfirmModal(true) : handleNew();
+                  !checkEmptyObject() && !saved
+                    ? setShowConfirmModal(true)
+                    : handleNew();
                 }}
               >
                 New Profile
@@ -484,7 +487,7 @@ const CharacterGeneration = () => {
               className="m-2"
               onClick={() => {
                 setShowLoadModal(false);
-                handleLoad(element)
+                handleLoad(element);
               }}
             >
               {element}

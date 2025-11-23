@@ -1,31 +1,31 @@
 import React, { FC } from "react";
 import { Card, ProgressBar } from "react-bootstrap";
 import "./tile.css"; // optional external styles
+import { BoardTile } from "./Board";
 
 interface TileProps {
+  id: number;
   title: string;
+  description: string;
   url: string;
+  items: string[];
   tier: number;
-  notes: string;
   quantity: number;
-  completed: number;
-  setSelectedTile: (tile: {
-    title: string;
-    url: string;
-    tier: number;
-    notes: string;
-    quantity: number;
-    completed: number;
-  }) => void;
+  source: string;
+  completed?: number;
+  setSelectedTile: (tile: BoardTile) => void;
 }
 
 const Tile: FC<TileProps> = ({
+  id,
   title,
   url = "https://oldschool.runescape.wiki/images/Cabbage_detail.png?08f34",
   tier,
-  notes,
+  description,
   quantity,
-  completed,
+  source,
+  items,
+  completed = 0,
   setSelectedTile,
 }) => {
   // completed > quantity ? "green" :
@@ -55,12 +55,15 @@ const Tile: FC<TileProps> = ({
         style={{ backgroundColor: color }}
         onClick={() =>
           setSelectedTile({
+            id,
             title,
-            url,
+            description,
+            source,
+            items,
             tier,
-            notes,
             quantity,
-            completed,
+            url,
+            // completed,
           })
         }
       >
