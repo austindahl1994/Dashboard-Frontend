@@ -105,6 +105,8 @@ const Board: FC = () => {
           title={selectedTile.title}
           url={selectedTile.url}
           tier={selectedTile.tier}
+          source={selectedTile.source}
+          items={selectedTile.items}
           notes={selectedTile.description}
           quantity={selectedTile.quantity}
           completed={3}

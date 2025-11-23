@@ -7,6 +7,8 @@ interface TileProps {
   title: string;
   url: string;
   tier: number;
+  items: string[];
+  source: string;
   notes: string;
   quantity: number;
   completed: number;
@@ -18,6 +20,8 @@ const TileModal: FC<TileProps> = ({
   title,
   url,
   tier,
+  items,
+  source,
   notes,
   quantity,
   completed,
@@ -64,6 +68,11 @@ const TileModal: FC<TileProps> = ({
           </Col>
           <Col>
             <h2>Tier: {tier || "Unknown"}</h2>
+            {source ? (
+              <h2>{`Must be obtained from: ${
+                source[0].toUpperCase() + source.slice(1)
+              }`}</h2>
+            ) : null}
             <p
               dangerouslySetInnerHTML={{
                 __html:
@@ -72,6 +81,15 @@ const TileModal: FC<TileProps> = ({
               }}
             />
           </Col>
+          <Col>
+            <h3>Items:</h3>
+            <ul>
+              {items.map((item, i) => (
+                <li key={i}>{item}</li>
+              ))}
+            </ul>
+          </Col>
+
           {/* <Col>
             <ProgressBar>
               <ProgressBar striped animated now={progress} variant="success" />
