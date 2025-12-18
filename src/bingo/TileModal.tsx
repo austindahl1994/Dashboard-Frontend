@@ -69,9 +69,9 @@ const TileModal: FC<TileProps> = ({
           <Col>
             <h2>Tier: {tier || "Unknown"}</h2>
             {source ? (
-              <h2>{`Must be obtained from: ${
+              <h4>{`Must be obtained from: ${
                 source[0].toUpperCase() + source.slice(1)
-              }`}</h2>
+              }`}</h4>
             ) : null}
             <p
               dangerouslySetInnerHTML={{
