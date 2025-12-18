@@ -87,10 +87,13 @@ export const saveExpenses = async ({ year, month, data }) => {
   return response.data;
 };
 
+// #endregion
+// #region Vingo ----------------------------
 export const getBoard = async () => {
   const response = await api.get(`/bingo/board`);
   return response.data;
 };
+
 // #endregion
 // #endregion
 
