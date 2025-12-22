@@ -88,13 +88,27 @@ export const saveExpenses = async ({ year, month, data }) => {
 };
 
 // #endregion
+// #endregion
+
 // #region Vingo ----------------------------
 export const getBoard = async () => {
   const response = await api.get(`/bingo/board`);
   return response.data;
 };
 
-// #endregion
+export const getPlayer = async ({ passcode }) => {
+  console.log(`Called Get player in API`);
+  const response = await api.post(`/bingo/team`, { passcode });
+  // console.log(`Returned data: ${JSON.stringify(response.data)}`);
+  return response.data;
+};
+
+export const getCompletions = async ({ passcode }) => {
+  console.log(`Called Get completions in API`);
+  const response = await api.post(`/bingo/completions`, { passcode });
+  return response.data;
+};
+
 // #endregion
 
 //get all the data, each month/year combination

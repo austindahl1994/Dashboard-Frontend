@@ -1,4 +1,4 @@
-import { Suspense, lazy } from "react";
+import { lazy } from "react"; //use suspense for lazy loading
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./main-components/AuthContext";
 import ProtectedRoutes from "./main-components/ProtectedRoutes";
