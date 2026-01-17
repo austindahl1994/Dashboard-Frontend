@@ -14,6 +14,7 @@ interface TileProps {
   source: string;
   completed?: number;
   setSelectedTile: (tile: BoardTile) => void;
+  getColor?: (tier: number) => string;
 }
 
 const Tile: FC<TileProps> = ({
@@ -27,23 +28,25 @@ const Tile: FC<TileProps> = ({
   items,
   completed = 0,
   setSelectedTile,
+  getColor: getColorProp,
 }) => {
   // completed > quantity ? "green" :
-  const color: string = completed >= quantity ? "black" : getColor(tier);
+  const color: string =
+    completed >= quantity ? "black" : getColorProp ? getColorProp(tier) : getColor(tier);
 
   //Can break it down into completedLabel and leftLabel for 0/8 or 8/8 OR 10/7 as examples
   const completedLabel: string =
     completed === 0
       ? ""
       : completed >= quantity
-      ? `COMPLETED`
-      : completed.toString();
+        ? `COMPLETED`
+        : completed.toString();
   const leftLabel: string =
     completed > quantity
       ? ""
       : completed === 0
-      ? `0 / ${quantity}`
-      : quantity.toString();
+        ? `0 / ${quantity}`
+        : quantity.toString();
   const completion: number =
     completed === 0 ? 0 : Math.min((completed / quantity) * 100, 100);
   const left: number = completed === 0 ? 100 : Math.max(100 - completion, 0);

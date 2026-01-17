@@ -1,16 +1,21 @@
 import { lazy } from "react"; //use suspense for lazy loading
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./main-components/AuthContext";
+import { ToastProvider } from "./main-components/ToastContext";
+import Toasts from "./main-components/Toasts";
 import ProtectedRoutes from "./main-components/ProtectedRoutes";
 import Dashboard from "./main-components/Dashboard";
-import Login from "./main-components/Login";
 import Home from "./main-components/Home";
+import Login from "./bingo/login/Login";
 // import Bingo from "./bingo/Bingo";
 const Bingo = lazy(() => import("./bingo/Bingo"));
-const Rules = lazy(() => import("./bingo/Rules"));
-const Setup = lazy(() => import("./bingo/Setup"));
-const BoardPage = lazy(() => import("./bingo/BoardPage"));
-const BingoHome = lazy(() => import("./bingo/BingoHome"));
+const Rules = lazy(() => import("./bingo/rules/Rules"));
+const Setup = lazy(() => import("./bingo/setup/Setup"));
+const BoardPage = lazy(() => import("./bingo/board/BoardPage"));
+const BingoHome = lazy(() => import("./bingo/home/BingoHome"));
+const VingoLogin = lazy(() => import("./bingo/login/Login"));
+const Shame = lazy(() => import("./bingo/shame/Shame"));
+const Highscores = lazy(() => import("./bingo/scores/Highscores"));
 /*
 // routes.js
 import WeatherWidget from './components/WeatherWidget';
@@ -28,7 +33,8 @@ export const allWidgets = {
 function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
+      <ToastProvider>
+        <Toasts />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -36,20 +42,25 @@ function App() {
           <Route
             path="/dashboard/*"
             element={
-              <ProtectedRoutes>
-                <Dashboard />
-              </ProtectedRoutes>
+              <AuthProvider>
+                <ProtectedRoutes>
+                  <Dashboard />
+                </ProtectedRoutes>
+              </AuthProvider>
             }
           />
           {/* <Route path="/bingo" element={<Bingo />} /> */}
           <Route path="/bingo" element={<Bingo />}>
             <Route index element={<BingoHome />} />
             <Route path="rules" element={<Rules />} />
+            <Route path="login" element={<VingoLogin />} />
             <Route path="setup" element={<Setup />} />
             <Route path="board" element={<BoardPage />} />
+            <Route path="shame" element={<Shame />} />
+            <Route path="scores" element={<Highscores />} />
           </Route>
         </Routes>
-      </AuthProvider>
+      </ToastProvider>
     </BrowserRouter>
   );
 }

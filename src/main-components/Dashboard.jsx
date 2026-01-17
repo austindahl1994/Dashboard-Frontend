@@ -1,11 +1,9 @@
 //List all widget objects saved in DB, iterate through and show cards for each, the card content dependent on content
 import { Route, Routes } from "react-router-dom";
 //import { useState, useEffect } from 'react'
-import { ToastProvider } from "./ToastContext";
 import Navbar from "./Navbar";
-import Toasts from "./Toasts";
 import CharacterGeneration from "../widgets/CharGen/CharacterGeneration"; //elsewhere
-import '../main-styles/dashboard.css'
+import "../main-styles/dashboard.css";
 import ExpenseTracker from "../widgets/ExpenseTracker/ExpenseTracker";
 import { ExpenseProvider } from "../widgets/ExpenseTracker/ExpenseContext";
 /*
@@ -58,27 +56,21 @@ const Dashboard = () => {
   return (
     <div className="dash vh-100">
       <Navbar />
-      <ToastProvider>
-        <Toasts />
-        {/* iterate widgets state, passing info to <Widget /> component */}
-        {/* Widget component will display correct widget information as a card */}
-        <Routes>
-          <Route
-            path="/characterGeneration"
-            element={<CharacterGeneration />}
-          />
-          <Route
-            path="/expensetracker"
-            element={
-              <ExpenseProvider>
-                <ExpenseTracker />
-              </ExpenseProvider>
-            }
-          />
-        </Routes>
-        <br />
-        {/* Remove logout button */}
-      </ToastProvider>
+      {/* iterate widgets state, passing info to <Widget /> component */}
+      {/* Widget component will display correct widget information as a card */}
+      <Routes>
+        <Route path="/characterGeneration" element={<CharacterGeneration />} />
+        <Route
+          path="/expensetracker"
+          element={
+            <ExpenseProvider>
+              <ExpenseTracker />
+            </ExpenseProvider>
+          }
+        />
+      </Routes>
+      <br />
+      {/* Remove logout button */}
     </div>
   );
 };
