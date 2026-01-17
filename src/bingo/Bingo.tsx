@@ -1,15 +1,41 @@
+import React, { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import BingoNavbar from "./BingoNavbar";
 import { Col, Container, Row } from "react-bootstrap";
+import { useQueryClient } from "@tanstack/react-query";
+import { getBoard } from "../api";
 
 const Bingo = () => {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const passcode = localStorage.getItem("passcode");
+    const board = localStorage.getItem("board");
+    if (!passcode || board) return; // do nothing unless a valid passcode is cached and board is not already cached
+
+    // Fetch and cache the board when entering any bingo page
+    queryClient
+      .fetchQuery({ queryKey: ["board"], queryFn: getBoard })
+      .then((data) => {
+        if (data) {
+          try {
+            localStorage.setItem("board", JSON.stringify(data));
+          } catch (err) {
+            console.error("Failed to write board to localStorage:", err);
+          }
+        }
+      })
+      .catch((err) =>
+        console.error("Error fetching board on Bingo mount:", err),
+      );
+  }, [queryClient]);
   return (
     <Container fluid className="vh-100 vw-100 p-0">
       <Row>
-        <Col xs={3} sm={2} md={2} lg={1} className="d-flex vh-100 text-center">
+        <Col xs={3} sm={3} md={3} lg={2} className="d-flex vh-100 text-center">
           <BingoNavbar />
         </Col>
-        <Col xs={9} sm={10} md={10} lg={11} className="m-0 p-0 vh-100">
+        <Col xs={9} sm={9} md={9} lg={10} className="m-0 p-0 vh-100">
           <Outlet />
         </Col>
       </Row>

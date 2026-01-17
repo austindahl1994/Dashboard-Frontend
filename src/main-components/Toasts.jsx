@@ -1,21 +1,9 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { ToastContext } from "./ToastContext";
 import Toast from "react-bootstrap/Toast";
 import "../main-styles/toasts.css";
 const Toasts = () => {
   const { toasts, removeToast } = useContext(ToastContext);
-
-  useEffect(() => {
-    const timeoutIds = toasts.map((toast) => {
-      setTimeout(() => {
-        removeToast(toast.id);
-      }, 5000);
-    });
-
-    return () => {
-      timeoutIds.forEach(clearTimeout);
-    };
-  }, [toasts, removeToast]);
 
   return (
     <div className="toast-container">
@@ -27,6 +15,9 @@ const Toasts = () => {
           onClose={() => {
             removeToast(toast.id);
           }}
+          autohide
+          delay={3000}
+          animation={true}
         >
           <Toast.Header>
             <strong className="w-100">Notification:</strong>

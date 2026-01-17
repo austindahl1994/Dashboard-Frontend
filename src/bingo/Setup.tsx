@@ -1,7 +1,1 @@
-import React from "react";
-
-const Setup = () => {
-  return <div>Setup</div>;
-};
-
-export default Setup;
+export { default } from "./setup/Setup";
