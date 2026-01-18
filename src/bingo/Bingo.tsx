@@ -50,7 +50,7 @@ const Bingo = () => {
           sm={9}
           md={9}
           lg={10}
-          className="m-0 p-0 vh-100 d-flex flex-column justify-content-center align-items-center"
+          className="m-0 p-1 vh-100 d-flex flex-column justify-content-center align-items-center"
           style={{ backgroundColor: "rgb(55, 55, 55)" }}
         >
           <Outlet />
