@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { Badge, Col, Image, Modal, ProgressBar, Row } from "react-bootstrap";
 
 interface TileProps {
@@ -26,6 +26,9 @@ const TileModal: FC<TileProps> = ({
   quantity,
   completed,
 }) => {
+  const [isMobile, setIsMobile] = useState<boolean>(
+    () => window.innerWidth < 768,
+  );
   const progress: number =
     quantity === 0 ? 0 : Math.min((completed / quantity) * 100, 100);
 
@@ -44,7 +47,14 @@ const TileModal: FC<TileProps> = ({
     completed >= quantity ? "COMPLETED" : `${completed}/${quantity}`;
 
   return (
-    <Modal show={show} onHide={handleClose} fullscreen>
+    <Modal
+      show={show}
+      onHide={handleClose}
+      size={isMobile ? "sm" : "xl"}
+      centered
+      animation
+      style={{ marginLeft: "10em" }}
+    >
       <Modal.Header closeButton>
         <Modal.Title>
           <h1>{title}</h1>
@@ -59,10 +69,10 @@ const TileModal: FC<TileProps> = ({
               src={url}
               alt="Tile Image"
               style={{
-                width: "100%",
+                width: "auto",
                 height: "100%",
-                maxHeight: "512px",
-                maxWidth: "512px",
+                maxHeight: "300px",
+                padding: "10px",
               }}
             />
           </Col>
@@ -96,6 +106,12 @@ const TileModal: FC<TileProps> = ({
               <ProgressBar now={remaining} variant="danger" />
             </ProgressBar>
           </Col> */}
+        </Row>
+        <Row className="mt-2">
+          <Image
+            style={{ height: "12rem", width: "auto" }}
+            src="https://cabbage-bounty.s3.us-east-2.amazonaws.com/completions/2/24/Lilcheenz-1768696470565"
+          />
         </Row>
       </Modal.Body>
     </Modal>

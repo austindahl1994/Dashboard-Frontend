@@ -2,7 +2,7 @@ import React from "react";
 
 const Highscores = () => {
   return (
-    <div>
+    <div className="text-white">
       <h2>Highscores</h2>
       <h6>
         Highscores will appear here as 3 (or number of teams if not 3) vertical
