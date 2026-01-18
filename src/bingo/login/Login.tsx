@@ -95,6 +95,7 @@ const Login = () => {
           borderRadius: 8,
           padding: 20,
           boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+          backgroundColor: "lightgray",
         }}
       >
         <Form onSubmit={handleSubmit}>
@@ -105,8 +106,9 @@ const Login = () => {
               placeholder="Passcode"
               onChange={(e) => setInputPasscode(e.target.value)}
             />
-            <Form.Text className="text-muted">
-              Run "/passcode" in Discord to get your unique passcode.
+            <Form.Text className="text-muted text-center">
+              Run "/passcode" in ANY Cabbage Discord channel to get your unique
+              passcode.
             </Form.Text>
           </Form.Group>
           <div className="d-flex justify-content-end">
