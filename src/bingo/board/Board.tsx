@@ -125,7 +125,10 @@ const Board: FC = () => {
       ) : (
         <>
           {isMobile ? (
-            <Container className="p-2">
+            <Container
+              className="p-2"
+              style={{ backgroundColor: "rgb(55,55,55)" }}
+            >
               <Form.Group>
                 <Form.Label>Select Tier</Form.Label>
                 <Form.Select
@@ -174,7 +177,10 @@ const Board: FC = () => {
               </ListGroup>
             </Container>
           ) : (
-            <Container className="p-0 m-0 justify-content-evenly">
+            <Container
+              className="p-0 m-0 justify-content-evenly"
+              style={{ backgroundColor: "rgb(55,55,55)" }}
+            >
               {finalBoard.map((partialBoard, rowIndex) => (
                 <Row
                   key={rowIndex}

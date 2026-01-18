@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Card, Image, Modal } from "react-bootstrap";
-
+// Only show shame for your team
 const Shame = () => {
   const [show, setShow] = useState(false);
 
   return (
-    <div>
+    <div className="text-white">
       <h2>Shame</h2>
       <h6>
         Was thinking about being sneaky about this, but talked with Vinny and

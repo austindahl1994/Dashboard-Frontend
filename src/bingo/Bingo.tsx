@@ -30,12 +30,29 @@ const Bingo = () => {
       );
   }, [queryClient]);
   return (
-    <Container fluid className="vh-100 vw-100 p-0">
+    <Container
+      fluid
+      className="vh-100 vw-100 p-0"
+      style={{ backgroundColor: "rgb(55,55,55)" }}
+    >
       <Row>
-        <Col xs={3} sm={3} md={3} lg={2} className="d-flex vh-100 text-center">
+        <Col
+          xs={3}
+          sm={3}
+          md={3}
+          lg={2}
+          className="d-flex vh-100 text-center bg-light"
+        >
           <BingoNavbar />
         </Col>
-        <Col xs={9} sm={9} md={9} lg={10} className="m-0 p-0 vh-100">
+        <Col
+          xs={9}
+          sm={9}
+          md={9}
+          lg={10}
+          className="m-0 p-0 vh-100 d-flex flex-column justify-content-center align-items-center"
+          style={{ backgroundColor: "rgb(55, 55, 55)" }}
+        >
           <Outlet />
         </Col>
       </Row>

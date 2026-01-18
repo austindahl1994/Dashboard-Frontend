@@ -51,7 +51,7 @@ const Setup = () => {
   };
 
   return (
-    <div>
+    <div className="text-white">
       <h2>Setup</h2>
       <h4>Temp Dink setup instructions:</h4>
       <ListGroup>
