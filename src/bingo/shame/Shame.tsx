@@ -7,10 +7,7 @@ const Shame = () => {
   return (
     <div className="text-white">
       <h2>Shame</h2>
-      <h6>
-        Was thinking about being sneaky about this, but talked with Vinny and
-        got the A OK to proceed with the event shame
-      </h6>
+      <h6>Will only show shameful images for your team</h6>
       <h6>
         Will be a bunch of cards showing player deaths during the events along
         with what killed them OR instead of cards just have a grid of images?
