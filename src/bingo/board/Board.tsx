@@ -126,8 +126,8 @@ const Board: FC = () => {
         <>
           {isMobile ? (
             <Container
-              className="p-2"
-              style={{ backgroundColor: "rgb(55,55,55)" }}
+              className="p-2 h-100"
+              style={{ backgroundColor: "rgb(55,55,55)", overflowY: "auto" }}
             >
               <Form.Group>
                 <Form.Label>Select Tier</Form.Label>

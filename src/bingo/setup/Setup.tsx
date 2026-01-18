@@ -51,7 +51,7 @@ const Setup = () => {
   };
 
   return (
-    <div className="text-white">
+    <div className="text-white w-50">
       <h2>Setup</h2>
       <h4>Temp Dink setup instructions:</h4>
       <ListGroup>
@@ -61,8 +61,9 @@ const Setup = () => {
             className="d-flex align-items-start"
             style={{
               backgroundColor: completed[idx]
-                ? "rgba(0,128,0,0.12)"
+                ? "rgba(0,128,0,0.25)"
                 : undefined,
+              color: completed[idx] ? "#ffffff" : undefined,
             }}
           >
             <Form.Check
