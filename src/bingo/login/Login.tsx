@@ -80,7 +80,15 @@ const Login = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (inputPasscode.trim() === "") return;
-    playerMutation.mutate(inputPasscode.trim());
+    let finalPasscode = inputPasscode.trim();
+    if (inputPasscode.includes("Passcode")) {
+      finalPasscode = inputPasscode
+        .split("Passcode:")[1]
+        .trim()
+        .replaceAll("`", "")
+        .trim();
+    }
+    playerMutation.mutate(finalPasscode);
   };
 
   return (
@@ -90,7 +98,10 @@ const Login = () => {
     >
       <div
         style={{
-          width: "35rem",
+          width: "100%",
+          maxWidth: "35rem",
+          boxSizing: "border-box",
+          margin: "0 1rem",
           border: "1px solid rgba(0,0,0,0.12)",
           borderRadius: 8,
           padding: 20,

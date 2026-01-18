@@ -126,7 +126,7 @@ const Board: FC = () => {
         <>
           {isMobile ? (
             <Container
-              className="p-2 h-100"
+              className="p-2 h-100 text-white"
               style={{ backgroundColor: "rgb(55,55,55)", overflowY: "auto" }}
             >
               <Form.Group>
@@ -151,7 +151,10 @@ const Board: FC = () => {
                       key={tile.id}
                       action
                       onClick={() => setSelectedTile(tile)}
-                      style={{ backgroundColor: getColor(tile.tier) }}
+                      style={{
+                        backgroundColor: getColor(tile.tier),
+                        color: "white",
+                      }}
                     >
                       <div style={{ display: "flex", alignItems: "center" }}>
                         <div style={{ flex: "0 0 25%", paddingRight: 8 }}>

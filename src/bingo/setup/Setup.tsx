@@ -8,7 +8,7 @@ const Setup = () => {
 
   const handleCopy = async () => {
     try {
-      console.log(`Clicked handleCopy`);
+      // console.log(`Clicked handleCopy`);
       const text = JSON.stringify(dinkSetup);
       await navigator.clipboard.writeText(text);
       createToast("Copied Dink Settings to clipboard", 1);
@@ -51,7 +51,7 @@ const Setup = () => {
   };
 
   return (
-    <div className="text-white w-50">
+    <div className="text-white w-75" style={{ overflowY: "auto" }}>
       <h2>Setup</h2>
       <h4>Temp Dink setup instructions:</h4>
       <ListGroup>

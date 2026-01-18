@@ -63,6 +63,7 @@ function BingoNavbar() {
               <Image
                 src="https://cabbage-bounty.s3.us-east-2.amazonaws.com/bingo/VinnyLogo.png"
                 fluid
+                roundedCircle
                 style={{ padding: "1em" }}
               />
             </Navbar.Brand>
