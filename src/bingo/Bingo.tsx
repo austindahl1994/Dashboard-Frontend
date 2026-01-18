@@ -36,17 +36,11 @@ const Bingo = () => {
       style={{ backgroundColor: "rgb(55,55,55)" }}
     >
       <Row>
-        <Col
-          xs={3}
-          sm={3}
-          md={3}
-          lg={2}
-          className="d-flex vh-100 text-center bg-light"
-        >
+        <Col xs={5} sm={3} md={3} lg={2} className="d-flex vh-100 text-center">
           <BingoNavbar />
         </Col>
         <Col
-          xs={9}
+          xs={7}
           sm={9}
           md={9}
           lg={10}

@@ -4,7 +4,7 @@ import { rulesHeaders, rulesData } from "./RulesData";
 
 const Rules: React.FC = () => {
   return (
-    <div style={{ marginTop: 20 }}>
+    <div style={{ marginTop: 20, overflowY: "auto" }}>
       <Accordion defaultActiveKey={"0"}>
         {rulesHeaders.map((header, idx) => (
           <Accordion.Item eventKey={String(idx)} key={idx}>
