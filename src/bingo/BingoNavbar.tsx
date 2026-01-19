@@ -78,14 +78,14 @@ function BingoNavbar() {
             </Nav.Link>
             {hasPasscode ? (
               <>
-                <Nav.Link as={Link} to="/bingo/board">
-                  Board
-                </Nav.Link>
                 <Nav.Link as={Link} to="/bingo/scores">
                   Highscores
                 </Nav.Link>
                 <Nav.Link as={Link} to="/bingo/shame">
                   Shame
+                </Nav.Link>
+                <Nav.Link as={Link} to="/bingo/board">
+                  <h4>Board</h4>
                 </Nav.Link>
               </>
             ) : (

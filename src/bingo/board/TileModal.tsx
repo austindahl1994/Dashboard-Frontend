@@ -3,6 +3,7 @@ import {
   Badge,
   Button,
   Card,
+  Carousel,
   Col,
   Form,
   Image,
@@ -22,6 +23,12 @@ interface TileProps {
   notes: string;
   quantity: number;
   completed: number;
+  previews?: {
+    rsn: string;
+    url: string;
+    item: string;
+    obtained_at: string;
+  }[];
 }
 
 const TileModal: FC<TileProps> = ({
@@ -35,6 +42,7 @@ const TileModal: FC<TileProps> = ({
   notes,
   quantity,
   completed,
+  previews,
 }) => {
   const [isMobile, setIsMobile] = useState<boolean>(
     () => window.innerWidth < 768,
@@ -57,18 +65,8 @@ const TileModal: FC<TileProps> = ({
     completed >= quantity ? "COMPLETED" : `${completed}/${quantity}`;
 
   const itemBadgeColor = (): string => {
-    switch (tier) {
-      case 1:
-        return "success";
-      case 2:
-        return "info";
-      case 3:
-        return "primary";
-      case 4:
-        return "secondary";
-      default:
-        return "danger";
-    }
+    // UPDATE TO INSTEAD CHECK COMPLETIONS DATA SENT FOR THIS TILE, CHANGE COLOR IF ITEM COUNT > 0
+    return "secondary";
   };
 
   const [selectedItem, setSelectedItem] = useState<string>(
@@ -89,6 +87,43 @@ const TileModal: FC<TileProps> = ({
     console.log("Upload Completion submitted:", { selectedItem, selectedFile });
     // TODO: wire up upload logic here (API call or parent callback)
   };
+
+  type Preview = {
+    rsn: string;
+    url: string;
+    item: string;
+    obtained_at: string;
+  };
+
+  const exampleUrl =
+    "https://cabbage-bounty.s3.us-east-2.amazonaws.com/completions/2/24/Lilcheenz-1768696470565";
+
+  const previewsList: Preview[] =
+    previews && previews.length
+      ? previews
+      : [
+          {
+            rsn: "Lilcheenz",
+            url: exampleUrl,
+            item: "Thammaron's sceptre (u)",
+            obtained_at:
+              "Sun Jan 18 2026 11:26:10 GMT-0600 (Central Standard Time)",
+          },
+          {
+            rsn: "Lilcheenz",
+            url: exampleUrl,
+            item: "Thammaron's sceptre (u)",
+            obtained_at:
+              "Sun Jan 18 2026 11:26:10 GMT-0600 (Central Standard Time)",
+          },
+          {
+            rsn: "Lilcheenz",
+            url: exampleUrl,
+            item: "Thammaron's sceptre (u)",
+            obtained_at:
+              "Sun Jan 18 2026 11:26:10 GMT-0600 (Central Standard Time)",
+          },
+        ];
 
   return (
     <Modal
@@ -160,61 +195,103 @@ const TileModal: FC<TileProps> = ({
             </div>
           </Col>
         </Row>
-        <Row className="m-2 d-flex flex-nowrap overflow-x-auto">
-          <Card
-            style={{
-              height: "12rem",
-              width: "auto",
-              border: "1px solid black",
-            }}
-          >
-            <Card.Body className="d-flex justify-content-center align-items-center">
-              <Form onSubmit={handleSubmit} style={{ width: "90%" }}>
-                <Form.Group controlId="selectItem" className="mb-2">
-                  <Form.Select
-                    value={selectedItem}
-                    onChange={handleSelectChange}
-                    aria-label="Select item"
+        <Row className="mt-2 d-flex">
+          <Col xs={12} md={8} className="p-1">
+            <Card
+              style={{
+                height: "12rem",
+                width: "auto",
+                border: "1px solid black",
+                backgroundColor: "#222",
+              }}
+            >
+              <Card.Body className="d-flex justify-content-center align-items-center">
+                <Form onSubmit={handleSubmit} style={{ width: "90%" }}>
+                  <Form.Group controlId="selectItem" className="mb-2">
+                    <Form.Select
+                      value={selectedItem}
+                      onChange={handleSelectChange}
+                      aria-label="Select item"
+                    >
+                      {items.map((item, idx) => (
+                        <option key={idx} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </Form.Group>
+
+                  <Form.Group controlId="uploadImage" className="mb-2">
+                    <Form.Control
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                    />
+                    {selectedFile ? (
+                      <div className="mt-1 text-truncate">
+                        {selectedFile.name}
+                      </div>
+                    ) : null}
+                  </Form.Group>
+
+                  <Button variant="light" type="submit" className="w-100">
+                    Upload Completion
+                  </Button>
+                </Form>
+              </Card.Body>
+            </Card>
+          </Col>
+          {/*Once we get completion data, don't show this column if no completions for the field? Or just say no completions in text instead of carosel*/}
+          <Col className="p-1">
+            <Carousel
+              interval={5000}
+              slide
+              wrap
+              style={{
+                border: "1px solid black",
+                borderRadius: 4,
+                backgroundColor: "#222",
+              }}
+            >
+              {previewsList.map((p, i) => (
+                <Carousel.Item key={i} style={{ position: "relative" }}>
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      textAlign: "center",
+                      color: "#fff",
+                      padding: "0.25rem 0",
+                      zIndex: 2,
+                    }}
                   >
-                    {items.map((item, idx) => (
-                      <option key={idx} value={item}>
-                        {item}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Form.Group>
+                    <strong>{p.rsn}</strong>
+                  </div>
 
-                <Form.Group controlId="uploadImage" className="mb-2">
-                  <Form.Control
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
+                  <Image
+                    className="d-block mx-auto"
+                    style={{
+                      height: "12rem",
+                      width: "auto",
+                      display: "block",
+                      cursor: "pointer",
+                    }}
+                    src={p.url}
+                    alt={`preview-${i}`}
+                    onClick={() =>
+                      window.open(p.url, "_blank", "noopener,noreferrer")
+                    }
                   />
-                  {selectedFile ? (
-                    <div className="mt-1 text-truncate">
-                      {selectedFile.name}
-                    </div>
-                  ) : null}
-                </Form.Group>
 
-                <Button variant="dark" type="submit" className="w-100">
-                  Upload Completion
-                </Button>
-              </Form>
-            </Card.Body>
-          </Card>
-          <Image
-            style={{ height: "12rem", width: "auto" }}
-            src="https://cabbage-bounty.s3.us-east-2.amazonaws.com/completions/2/24/Lilcheenz-1768696470565"
-          />
-          <Image
-            style={{ height: "12rem", width: "auto" }}
-            src="https://cabbage-bounty.s3.us-east-2.amazonaws.com/completions/2/24/Lilcheenz-1768696470565"
-          />
-          <Image
-            style={{ height: "12rem", width: "auto" }}
-            src="https://cabbage-bounty.s3.us-east-2.amazonaws.com/completions/2/24/Lilcheenz-1768696470565"
-          />
+                  <Carousel.Caption>
+                    <p>{p.item}</p>
+                  </Carousel.Caption>
+                </Carousel.Item>
+              ))}
+            </Carousel>
+          </Col>
         </Row>
       </Modal.Body>
     </Modal>

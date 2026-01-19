@@ -16,12 +16,8 @@ const Login = () => {
   useEffect(() => {
     const saved = localStorage.getItem("passcode");
     if (saved) {
-      // console.log(`Localstorage contained passcode: ${saved}`);
       playerMutation.mutate(saved);
     }
-    // else {
-    //  console.log(`Localstorage did not contain passcode`);
-    // }
   }, []);
   // Just need to validate team, if validates backend will send completions data back, board called separately
   const playerMutation = useMutation({
@@ -29,7 +25,9 @@ const Login = () => {
       // console.log(`Using passcode for mutation: ${passcode}`);
       return getPlayer({ passcode });
     },
-    onSuccess: (_, passcode: string) => {
+    onSuccess: (data, passcode: string) => {
+      const rsn = data.rsn;
+      //{"team":2,"rsn":"ItzDubz","role":"admin"}
       localStorage.setItem("passcode", passcode);
       // Notify same-tab listeners that passcode changed
       try {
@@ -58,7 +56,7 @@ const Login = () => {
               } catch (err) {
                 console.error("Failed to cache board to localStorage:", err);
               }
-              createToast("Successfully logged in with passcode!", 1);
+              createToast(`Welcome to Vinny's bingo ${rsn}!`, 1);
               navigate("/bingo/board");
             }
           })
