@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, Image, Modal } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 // Only show shame for your team
 const Shame = () => {
   const [show, setShow] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const passcode = localStorage.getItem("passcode");
+    if (!passcode) navigate("/bingo/login", { replace: true });
+  }, [navigate]);
 
   return (
     <div className="text-white">

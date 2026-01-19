@@ -1,6 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Highscores = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const passcode = localStorage.getItem("passcode");
+    if (!passcode) navigate("/bingo/login", { replace: true });
+  }, [navigate]);
+
   return (
     <div className="text-white">
       <h2>Highscores</h2>

@@ -85,7 +85,7 @@ function BingoNavbar() {
                   Shame
                 </Nav.Link>
                 <Nav.Link as={Link} to="/bingo/board">
-                  <h2>Board</h2>
+                  <h4>Board</h4>
                 </Nav.Link>
               </>
             ) : (
