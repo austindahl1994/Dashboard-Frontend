@@ -16,7 +16,7 @@ const Shame = () => {
         <Card.Title className="text-center mt-1">Example Card</Card.Title>
         <div style={{ overflow: "hidden", borderRadius: 8 }}>
           <Image
-            src="https://cabbage-bounty.s3.us-east-2.amazonaws.com/shame/GIMP+Yzero1768659844812"
+            src="https://cabbage-bounty.s3.us-east-2.amazonaws.com/shame/GIMP%2520Yzero-1768778485424"
             alt="A shameful display"
             fluid
             onClick={() => setShow(true)}
@@ -43,7 +43,7 @@ const Shame = () => {
           style={{ background: "#000" }}
         >
           <Image
-            src="https://cabbage-bounty.s3.us-east-2.amazonaws.com/shame/GIMP+Yzero1768659844812"
+            src="https://cabbage-bounty.s3.us-east-2.amazonaws.com/shame/GIMP%2520Yzero-1768778485424"
             alt="shame fullscreen"
             fluid
             style={{ maxHeight: "90vh", objectFit: "contain" }}

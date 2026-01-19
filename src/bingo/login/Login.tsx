@@ -29,7 +29,10 @@ const Login = () => {
       // console.log(`Using passcode for mutation: ${passcode}`);
       return getPlayer({ passcode });
     },
-    onSuccess: (_, passcode: string) => {
+    onSuccess: (data, passcode: string) => {
+      // console.log(`getPlayer success:`);
+      // console.log(JSON.stringify(data));
+      //{"team":2,"rsn":"ItzDubz","role":"admin"}
       localStorage.setItem("passcode", passcode);
       // Notify same-tab listeners that passcode changed
       try {
