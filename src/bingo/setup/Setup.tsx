@@ -33,7 +33,6 @@ const Setup = () => {
     "Exit the dink plugin then go back in, checking that there is a webhook URL at the top of your dink settings.",
   ];
 
-  const [visibleCount, setVisibleCount] = useState<number>(1);
   const [completed, setCompleted] = useState<boolean[]>(
     Array(steps.length).fill(false),
   );
@@ -44,10 +43,6 @@ const Setup = () => {
       next[idx] = !next[idx];
       return next;
     });
-    // reveal next instruction when this one is checked
-    if (idx + 1 > visibleCount - 1) {
-      setVisibleCount((v) => Math.max(v, idx + 2));
-    }
   };
 
   return (
@@ -55,7 +50,7 @@ const Setup = () => {
       <h2>Setup</h2>
       <h4>Temp Dink setup instructions:</h4>
       <ListGroup>
-        {steps.slice(0, visibleCount).map((text, idx) => (
+        {steps.map((text, idx) => (
           <ListGroup.Item
             key={idx}
             className="d-flex align-items-start"

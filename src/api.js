@@ -96,7 +96,7 @@ export const getBoard = async () => {
   return response.data;
 };
 
-export const getPlayer = async ({ passcode }) => {
+export const getTeam = async ({ passcode }) => {
   // console.log(`Called Get player in API`);
   const response = await api.post(`/bingo/team`, { passcode });
   // console.log(`Returned data: ${JSON.stringify(response.data)}`);
@@ -104,8 +104,18 @@ export const getPlayer = async ({ passcode }) => {
 };
 
 export const getCompletions = async ({ passcode }) => {
-  // console.log(`Called Get completions in API`);
+  console.log(`Called Get completions in API`);
   const response = await api.post(`/bingo/completions`, { passcode });
+  return response.data;
+};
+
+export const getShame = async ({ passcode }) => {
+  const response = await api.post(`/bingo/shame`, { passcode });
+  return response.data;
+};
+
+export const getHighscores = async () => {
+  const response = await api.get(`/bingo/highscores`);
   return response.data;
 };
 

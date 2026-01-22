@@ -1,0 +1,52 @@
+/* Highscores styling */
+.highscores-root {
+  padding: 8px 0;
+}
+
+.hs-container {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.hs-card {
+  width: 120px;
+  text-align: center;
+  background: #111;
+  border: 1px solid #333;
+}
+
+.hs-card-body {
+  padding: 12px;
+}
+
+.hs-bar-outer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.hs-bar-track {
+  width: 48px;
+  background: #222;
+  border-radius: 4px;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.hs-bar-fill {
+  width: 100%;
+  border-radius: 4px;
+  transition: height 300ms ease;
+}
+
+.hs-team {
+  margin-top: 8px;
+}
+
+.hs-score {
+  font-size: 14px;
+  color: #ccc;
+}
