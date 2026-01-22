@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { getBoard, getPlayer } from "../../api";
+import { getBoard, getTeam } from "../../api";
 import { BoardTile } from "../board/Board";
 import { Form } from "react-bootstrap";
 import { Button } from "react-bootstrap";
@@ -23,7 +23,7 @@ const Login = () => {
   const playerMutation = useMutation({
     mutationFn: (passcode: string) => {
       // console.log(`Using passcode for mutation: ${passcode}`);
-      return getPlayer({ passcode });
+      return getTeam({ passcode });
     },
     onSuccess: (data, passcode: string) => {
       const rsn = data.rsn;

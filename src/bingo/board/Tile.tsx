@@ -3,6 +3,15 @@ import { Card, ProgressBar } from "react-bootstrap";
 import "./tile.css"; // optional external styles
 import { BoardTile } from "./Board";
 
+type Completion = {
+  team: number;
+  tile_id: number;
+  rsn: string;
+  url: string;
+  item: string;
+  obtained_at: string;
+};
+
 interface TileProps {
   id: number;
   title: string;
@@ -12,7 +21,8 @@ interface TileProps {
   tier: number;
   quantity: number;
   source: string;
-  completed?: number;
+  completed?: number; // legacy but allowed
+  completions?: Completion[]; // array of completion objects for this tile
   setSelectedTile: (tile: BoardTile) => void;
   getColor?: (tier: number) => string;
 }
@@ -27,29 +37,44 @@ const Tile: FC<TileProps> = ({
   source,
   items,
   completed = 0,
+  completions = [],
   setSelectedTile,
   getColor: getColorProp,
 }) => {
   // completed > quantity ? "green" :
+  const completionCount = completions ? completions.length : completed || 0;
+  const getOpaqueColor = (colorStr: string): string => {
+    const m = colorStr.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([0-9.]+)\)/);
+    if (m) return `rgba(${m[1]}, ${m[2]}, ${m[3]}, 1)`;
+    return colorStr;
+  };
+
   const color: string =
-    completed >= quantity ? "black" : getColorProp ? getColorProp(tier) : getColor(tier);
+    completionCount >= quantity
+      ? getOpaqueColor(getColorProp ? getColorProp(tier) : getColor(tier))
+      : getColorProp
+        ? getColorProp(tier)
+        : getColor(tier);
 
   //Can break it down into completedLabel and leftLabel for 0/8 or 8/8 OR 10/7 as examples
   const completedLabel: string =
-    completed === 0
+    completionCount === 0
       ? ""
-      : completed >= quantity
+      : completionCount >= quantity
         ? `COMPLETED`
-        : completed.toString();
+        : completionCount.toString();
   const leftLabel: string =
-    completed > quantity
+    completionCount > quantity
       ? ""
-      : completed === 0
+      : completionCount === 0
         ? `0 / ${quantity}`
         : quantity.toString();
-  const completion: number =
-    completed === 0 ? 0 : Math.min((completed / quantity) * 100, 100);
-  const left: number = completed === 0 ? 100 : Math.max(100 - completion, 0);
+  const completionPercent: number =
+    completionCount === 0
+      ? 0
+      : Math.min((completionCount / quantity) * 100, 100);
+  const left: number =
+    completionCount === 0 ? 100 : Math.max(100 - completionPercent, 0);
 
   return (
     <>
@@ -66,27 +91,33 @@ const Tile: FC<TileProps> = ({
             tier,
             quantity,
             url,
-            // completed,
           })
         }
       >
         <Card.Body className="w-100 h-50 m-0 p-1 d-flex flex-column justify-content-evenly align-items-center">
+          {/* Apply grayscale filter if completed */}
           <Card.Img
             src={
-              completed >= quantity
+              completionCount >= quantity
                 ? "https://cabbage-bounty.s3.us-east-2.amazonaws.com/bingo/Tick.png"
                 : url
             }
-            alt="Tile"
+            alt={title}
             className="tile-img"
             variant="top"
+            // style={{
+            //   filter:
+            //     completionCount >= quantity
+            //       ? "brightness(0) saturate(100%)"
+            //       : undefined,
+            // }}
           />
           <ProgressBar className="w-100">
             <ProgressBar
               label={completedLabel}
-              now={completion}
-              animated={completed < quantity}
-              striped={completed < quantity}
+              now={completionPercent}
+              animated={completionCount < quantity}
+              striped={completionCount < quantity}
               variant="success"
             />
             <ProgressBar label={leftLabel} now={left} variant="danger" />

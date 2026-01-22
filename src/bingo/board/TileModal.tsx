@@ -12,6 +12,15 @@ import {
   Row,
 } from "react-bootstrap";
 
+interface Completion {
+  team: number;
+  tile_id: number;
+  rsn: string;
+  url: string;
+  item: string;
+  obtained_at: string;
+}
+
 interface TileProps {
   show: boolean;
   handleClose: () => void;
@@ -22,13 +31,7 @@ interface TileProps {
   source: string;
   notes: string;
   quantity: number;
-  completed: number;
-  previews?: {
-    rsn: string;
-    url: string;
-    item: string;
-    obtained_at: string;
-  }[];
+  completions?: Completion[];
 }
 
 const TileModal: FC<TileProps> = ({
@@ -41,14 +44,18 @@ const TileModal: FC<TileProps> = ({
   source,
   notes,
   quantity,
-  completed,
-  previews,
+  completions,
 }) => {
   const [isMobile, setIsMobile] = useState<boolean>(
     () => window.innerWidth < 768,
   );
   const progress: number =
-    quantity === 0 ? 0 : Math.min((completed / quantity) * 100, 100);
+    quantity === 0
+      ? 0
+      : Math.min(
+          ((completions ? completions.length : 0) / quantity) * 100,
+          100,
+        );
 
   const getBadgeColor = (): string => {
     if (progress === 100) return "success";
@@ -62,11 +69,17 @@ const TileModal: FC<TileProps> = ({
     .join("");
 
   const badgeText: string =
-    completed >= quantity ? "COMPLETED" : `${completed}/${quantity}`;
+    completions && completions.length >= quantity
+      ? `COMPLETED (${completions.length}/${quantity})`
+      : `${completions ? completions.length : 0}/${quantity}`;
 
-  const itemBadgeColor = (): string => {
-    // UPDATE TO INSTEAD CHECK COMPLETIONS DATA SENT FOR THIS TILE, CHANGE COLOR IF ITEM COUNT > 0
-    return "secondary";
+  const itemBadgeColor = (itemName: string): string => {
+    const count = completions
+      ? completions.filter(
+          (p) => p.item.toLowerCase() === itemName.toLowerCase(),
+        ).length
+      : 0;
+    return count > 0 ? "primary" : "dark";
   };
 
   const [selectedItem, setSelectedItem] = useState<string>(
@@ -84,46 +97,51 @@ const TileModal: FC<TileProps> = ({
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+    if (!selectedFile) {
+      console.warn("No file selected for upload");
+      return;
+    }
     console.log("Upload Completion submitted:", { selectedItem, selectedFile });
     // TODO: wire up upload logic here (API call or parent callback)
   };
 
-  type Preview = {
-    rsn: string;
-    url: string;
-    item: string;
-    obtained_at: string;
+  const hasCompletions = completions && completions.length > 0;
+  const completionCount = completions ? completions.length : 0;
+  const isCompleted = completionCount >= quantity;
+
+  const getColor = (tier: number): string => {
+    let color: string;
+    switch (tier) {
+      case 1:
+        color = "rgba(0, 128, 0, 0.25)";
+        break;
+      case 2:
+        color = "rgba(85, 169, 197, .25)";
+        break;
+      case 3:
+        color = "rgba(128, 0, 128, 0.25)";
+        break;
+      case 4:
+        color = "rgba(255, 255, 0, 0.25)";
+        break;
+      case 5:
+        color = "rgba(255, 0, 0, 0.25)";
+        break;
+      default:
+        color = "rgba(211, 211, 211, 0.25)";
+        break;
+    }
+
+    return color;
   };
 
-  const exampleUrl =
-    "https://cabbage-bounty.s3.us-east-2.amazonaws.com/completions/2/24/Lilcheenz-1768696470565";
+  const getOpaqueColor = (color: string): string => {
+    const m = color.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([0-9.]+)\)/);
+    if (m) return `rgba(${m[1]}, ${m[2]}, ${m[3]}, 1)`;
+    return color;
+  };
 
-  const previewsList: Preview[] =
-    previews && previews.length
-      ? previews
-      : [
-          {
-            rsn: "Lilcheenz",
-            url: exampleUrl,
-            item: "Thammaron's sceptre (u)",
-            obtained_at:
-              "Sun Jan 18 2026 11:26:10 GMT-0600 (Central Standard Time)",
-          },
-          {
-            rsn: "Lilcheenz",
-            url: exampleUrl,
-            item: "Thammaron's sceptre (u)",
-            obtained_at:
-              "Sun Jan 18 2026 11:26:10 GMT-0600 (Central Standard Time)",
-          },
-          {
-            rsn: "Lilcheenz",
-            url: exampleUrl,
-            item: "Thammaron's sceptre (u)",
-            obtained_at:
-              "Sun Jan 18 2026 11:26:10 GMT-0600 (Central Standard Time)",
-          },
-        ];
+  const cardBg = isCompleted ? getOpaqueColor(getColor(tier)) : getColor(tier);
 
   return (
     <Modal
@@ -146,7 +164,7 @@ const TileModal: FC<TileProps> = ({
           <h1 className="m-0 p-0">{title}</h1>
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body style={{ backgroundColor: "#f6f6f6" }}>
         <Row>
           <Col xs="auto" md={4} className="d-flex justify-content-center">
             <Image
@@ -165,9 +183,7 @@ const TileModal: FC<TileProps> = ({
           <Col md={8} style={{ overflow: "auto" }}>
             <h2>Tier: {tier || "Unknown"}</h2>
             {source ? (
-              <h4>{`Must be obtained from: ${
-                source[0].toUpperCase() + source.slice(1)
-              }`}</h4>
+              <h4>{`Must be obtained from: ${source[0].toUpperCase() + source.slice(1)}`}</h4>
             ) : null}
             <p
               dangerouslySetInnerHTML={{
@@ -187,22 +203,30 @@ const TileModal: FC<TileProps> = ({
             >
               {items.map((item, i) => (
                 <h6 className="m-0 p-0" key={i}>
-                  <Badge className="m-0 p-1" bg={itemBadgeColor()}>
-                    {item}
+                  <Badge className="m-0 p-1" bg={itemBadgeColor(item)}>
+                    {item ? item[0].toUpperCase() + item.slice(1) : item}
+                    {completions &&
+                    completions.filter((p) => p.item === item).length ? (
+                      <span
+                        style={{ marginLeft: 6, fontSize: 12, opacity: 0.9 }}
+                      >
+                        ({completions.filter((p) => p.item === item).length})
+                      </span>
+                    ) : null}
                   </Badge>
                 </h6>
               ))}
             </div>
           </Col>
         </Row>
-        <Row className="mt-2 d-flex">
-          <Col xs={12} md={8} className="p-1">
+        <Row className="m-1 d-flex">
+          <Col xs={12} md={hasCompletions ? 8 : 12} className="p-1">
             <Card
               style={{
                 height: "12rem",
                 width: "auto",
                 border: "1px solid black",
-                backgroundColor: "#222",
+                backgroundColor: cardBg,
               }}
             >
               <Card.Body className="d-flex justify-content-center align-items-center">
@@ -215,7 +239,7 @@ const TileModal: FC<TileProps> = ({
                     >
                       {items.map((item, idx) => (
                         <option key={idx} value={item}>
-                          {item}
+                          {item ? item[0].toUpperCase() + item.slice(1) : item}
                         </option>
                       ))}
                     </Form.Select>
@@ -227,14 +251,14 @@ const TileModal: FC<TileProps> = ({
                       accept="image/*"
                       onChange={handleFileChange}
                     />
-                    {selectedFile ? (
-                      <div className="mt-1 text-truncate">
-                        {selectedFile.name}
-                      </div>
-                    ) : null}
                   </Form.Group>
 
-                  <Button variant="light" type="submit" className="w-100">
+                  <Button
+                    variant={!selectedFile ? "secondary" : "primary"}
+                    type="submit"
+                    className="w-100"
+                    disabled={!selectedFile}
+                  >
                     Upload Completion
                   </Button>
                 </Form>
@@ -242,56 +266,58 @@ const TileModal: FC<TileProps> = ({
             </Card>
           </Col>
           {/*Once we get completion data, don't show this column if no completions for the field? Or just say no completions in text instead of carosel*/}
-          <Col className="p-1">
-            <Carousel
-              interval={5000}
-              slide
-              wrap
-              style={{
-                border: "1px solid black",
-                borderRadius: 4,
-                backgroundColor: "#222",
-              }}
-            >
-              {previewsList.map((p, i) => (
-                <Carousel.Item key={i} style={{ position: "relative" }}>
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      textAlign: "center",
-                      color: "#fff",
-                      padding: "0.25rem 0",
-                      zIndex: 2,
-                    }}
-                  >
-                    <strong>{p.rsn}</strong>
-                  </div>
+          {hasCompletions && (
+            <Col md={4} className="p-1">
+              <Carousel
+                interval={5000}
+                slide
+                wrap
+                style={{
+                  border: "1px solid black",
+                  borderRadius: 4,
+                  backgroundColor: "#222",
+                }}
+              >
+                {completions!.map((p, i) => (
+                  <Carousel.Item key={i} style={{ position: "relative" }}>
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        textAlign: "center",
+                        color: "#fff",
+                        padding: "0.25rem 0",
+                        zIndex: 2,
+                      }}
+                    >
+                      <strong>{p.rsn}</strong>
+                    </div>
 
-                  <Image
-                    className="d-block mx-auto"
-                    style={{
-                      height: "12rem",
-                      width: "auto",
-                      display: "block",
-                      cursor: "pointer",
-                    }}
-                    src={p.url}
-                    alt={`preview-${i}`}
-                    onClick={() =>
-                      window.open(p.url, "_blank", "noopener,noreferrer")
-                    }
-                  />
+                    <Image
+                      className="d-block mx-auto"
+                      style={{
+                        height: "12rem",
+                        width: "auto",
+                        display: "block",
+                        cursor: "pointer",
+                      }}
+                      src={p.url}
+                      alt={`preview-${i}`}
+                      onClick={() =>
+                        window.open(p.url, "_blank", "noopener,noreferrer")
+                      }
+                    />
 
-                  <Carousel.Caption>
-                    <p>{p.item}</p>
-                  </Carousel.Caption>
-                </Carousel.Item>
-              ))}
-            </Carousel>
-          </Col>
+                    <Carousel.Caption>
+                      <p>{p.item}</p>
+                    </Carousel.Caption>
+                  </Carousel.Item>
+                ))}
+              </Carousel>
+            </Col>
+          )}
         </Row>
       </Modal.Body>
     </Modal>

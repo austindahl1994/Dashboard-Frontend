@@ -2,9 +2,9 @@ import { FC, useEffect, useState } from "react";
 import { Col, Container, Row, Spinner, ListGroup, Form } from "react-bootstrap";
 import Tile from "./Tile";
 import TileModal from "./TileModal";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { getBoard } from "../../api";
+import { getBoard, getCompletions } from "../../api";
 
 export interface BoardTile {
   id: number;
@@ -35,6 +35,23 @@ const Board: FC = () => {
     () => window.innerWidth < 768,
   );
   const [selectedTier, setSelectedTier] = useState<number>(1);
+
+  const passcode = localStorage.getItem("passcode") || "";
+
+  // Fetch completions when we have a board cached/loaded
+  const { data: completions, isLoading: isLoadingCompletions } = useQuery({
+    queryKey: ["completions", passcode],
+    queryFn: () => getCompletions({ passcode }),
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
+    enabled: !!boardArray && !!passcode,
+  });
+
+  useEffect(() => {
+    if (completions) {
+      console.log("Completions returned:", completions);
+    }
+  }, [completions]);
 
   function chunkArray<T>(arr: T[], size: number): T[][] {
     const result: T[][] = [];
@@ -67,6 +84,12 @@ const Board: FC = () => {
         break;
     }
 
+    return color;
+  };
+
+  const getOpaqueColor = (color: string): string => {
+    const m = color.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([0-9.]+)\)/);
+    if (m) return `rgba(${m[1]}, ${m[2]}, ${m[3]}, 1)`;
     return color;
   };
 
@@ -146,37 +169,50 @@ const Board: FC = () => {
               <ListGroup className="mt-3">
                 {boardArray
                   .filter((t) => t.tier === selectedTier)
-                  .map((tile) => (
-                    <ListGroup.Item
-                      key={tile.id}
-                      action
-                      onClick={() => setSelectedTile(tile)}
-                      style={{
-                        backgroundColor: getColor(tile.tier),
-                        color: "white",
-                      }}
-                    >
-                      <div style={{ display: "flex", alignItems: "center" }}>
-                        <div style={{ flex: "0 0 25%", paddingRight: 8 }}>
-                          <img
-                            src={tile.url}
-                            alt={tile.title}
-                            style={{
-                              width: "100%",
-                              height: 48,
-                              objectFit: "contain",
-                              borderRadius: 4,
-                            }}
-                          />
+                  .map((tile) => {
+                    const tileCompletions = completions
+                      ? completions.filter((c: any) => c.tile_id === tile.id)
+                          .length
+                      : 0;
+                    const isCompleted = tileCompletions >= tile.quantity;
+                    return (
+                      <ListGroup.Item
+                        key={tile.id}
+                        action
+                        onClick={() => setSelectedTile(tile)}
+                        style={{
+                          backgroundColor: isCompleted
+                            ? getOpaqueColor(getColor(tile.tier))
+                            : getColor(tile.tier),
+                          color: "white",
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                          <div style={{ flex: "0 0 25%", paddingRight: 8 }}>
+                            <img
+                              src={
+                                isCompleted
+                                  ? "https://cabbage-bounty.s3.us-east-2.amazonaws.com/bingo/Tick.png"
+                                  : tile.url
+                              }
+                              alt={tile.title}
+                              style={{
+                                width: "100%",
+                                height: 48,
+                                objectFit: "contain",
+                                borderRadius: 4,
+                              }}
+                            />
+                          </div>
+                          <div
+                            style={{ flex: "1 1 75%", wordBreak: "break-word" }}
+                          >
+                            {tile.title}
+                          </div>
                         </div>
-                        <div
-                          style={{ flex: "1 1 75%", wordBreak: "break-word" }}
-                        >
-                          {tile.title}
-                        </div>
-                      </div>
-                    </ListGroup.Item>
-                  ))}
+                      </ListGroup.Item>
+                    );
+                  })}
               </ListGroup>
             </Container>
           ) : (
@@ -197,6 +233,13 @@ const Board: FC = () => {
                       <Tile
                         {...tile}
                         setSelectedTile={setSelectedTile}
+                        completions={
+                          completions
+                            ? completions.filter(
+                                (c: any) => c.tile_id === tile.id,
+                              )
+                            : []
+                        }
                         getColor={getColor}
                       />
                     </Col>
@@ -220,7 +263,11 @@ const Board: FC = () => {
           items={selectedTile.items}
           notes={selectedTile.description}
           quantity={selectedTile.quantity}
-          completed={0}
+          completions={
+            completions
+              ? completions.filter((c: any) => c.tile_id === selectedTile.id)
+              : []
+          }
         />
       )}
     </>
