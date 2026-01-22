@@ -49,6 +49,9 @@ const TileModal: FC<TileProps> = ({
   const [isMobile, setIsMobile] = useState<boolean>(
     () => window.innerWidth < 768,
   );
+
+  const fixUrl = (u?: string | null): string | null =>
+    u ? u.replace(/%20/g, "%2520") : null;
   const progress: number =
     quantity === 0
       ? 0
@@ -169,7 +172,7 @@ const TileModal: FC<TileProps> = ({
           <Col xs="auto" md={4} className="d-flex justify-content-center">
             <Image
               className="modal-image"
-              src={url}
+              src={fixUrl(url) || undefined}
               alt="Tile Image"
               style={{
                 width: "auto",
@@ -303,10 +306,14 @@ const TileModal: FC<TileProps> = ({
                         display: "block",
                         cursor: "pointer",
                       }}
-                      src={p.url}
+                      src={fixUrl(p.url) || undefined}
                       alt={`preview-${i}`}
                       onClick={() =>
-                        window.open(p.url, "_blank", "noopener,noreferrer")
+                        window.open(
+                          fixUrl(p.url) || p.url,
+                          "_blank",
+                          "noopener,noreferrer",
+                        )
                       }
                     />
 

@@ -39,10 +39,13 @@ const Shame: React.FC = () => {
   })();
 
   const openModal = (item: ShameItem) => {
-    setModalUrl(item.url);
+    setModalUrl(fixUrl(item.url));
     const caption = `${item.playerName}${item.killer ? `killed by ${item.killer}` : item.pvp ? " — PvP" : ""}`;
     setModalCaption(caption);
   };
+
+  const fixUrl = (u?: string | null): string | null =>
+    u ? u.replace(/%20/g, "%2520") : null;
 
   return (
     <div className="text-white d-flex w-100 h-100 overflow-auto">
@@ -78,7 +81,7 @@ const Shame: React.FC = () => {
               </Card.Title>
               <div style={{ overflow: "hidden", borderRadius: 8 }}>
                 <Image
-                  src={item.url}
+                  src={fixUrl(item.url) || undefined}
                   alt={`${item.playerName} shame`}
                   fluid
                   style={{
