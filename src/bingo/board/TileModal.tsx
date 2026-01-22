@@ -318,7 +318,11 @@ const TileModal: FC<TileProps> = ({
                     />
 
                     <Carousel.Caption>
-                      <p>{p.item}</p>
+                      <p>
+                        {p.item
+                          ? p.item[0].toUpperCase() + p.item.slice(1)
+                          : p.item}
+                      </p>
                     </Carousel.Caption>
                   </Carousel.Item>
                 ))}
