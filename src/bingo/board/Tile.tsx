@@ -105,12 +105,12 @@ const Tile: FC<TileProps> = ({
             alt={title}
             className="tile-img"
             variant="top"
-            // style={{
-            //   filter:
-            //     completionCount >= quantity
-            //       ? "brightness(0) saturate(100%)"
-            //       : undefined,
-            // }}
+            style={{
+              filter:
+                completionCount >= quantity
+                  ? "brightness(0) saturate(100%)"
+                  : undefined,
+            }}
           />
           <ProgressBar className="w-100">
             <ProgressBar
