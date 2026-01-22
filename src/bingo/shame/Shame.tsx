@@ -40,12 +40,12 @@ const Shame: React.FC = () => {
 
   const openModal = (item: ShameItem) => {
     setModalUrl(item.url);
-    const caption = `${item.playerName}${item.killer ? ` — killed by ${item.killer}` : item.pvp ? " — PvP" : ""}`;
+    const caption = `${item.playerName}${item.killer ? `killed by ${item.killer}` : item.pvp ? " — PvP" : ""}`;
     setModalCaption(caption);
   };
 
   return (
-    <div className="text-white d-flex w-100 h-100">
+    <div className="text-white d-flex w-100 h-100 overflow-auto">
       {isLoading ? (
         <div className="d-flex justify-content-center py-4">
           <Spinner animation="border" />
@@ -53,7 +53,15 @@ const Shame: React.FC = () => {
       ) : isError ? (
         <div className="text-danger">Failed to load shame data.</div>
       ) : (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 16,
+            alignContent: "flex-start",
+            alignItems: "flex-start",
+          }}
+        >
           {shameItems.map((item: ShameItem, idx: number) => (
             <Card
               key={idx}
