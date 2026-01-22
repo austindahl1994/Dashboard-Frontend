@@ -47,11 +47,11 @@ const Board: FC = () => {
     enabled: !!boardArray && !!passcode,
   });
 
-  useEffect(() => {
-    if (completions) {
-      console.log("Completions returned:", completions);
-    }
-  }, [completions]);
+  // useEffect(() => {
+  //   if (completions) {
+  //     console.log("Completions returned:", completions);
+  //   }
+  // }, [completions]);
 
   function chunkArray<T>(arr: T[], size: number): T[][] {
     const result: T[][] = [];
@@ -201,6 +201,9 @@ const Board: FC = () => {
                                 height: 48,
                                 objectFit: "contain",
                                 borderRadius: 4,
+                                filter: isCompleted
+                                  ? "brightness(0) saturate(100%)"
+                                  : undefined,
                               }}
                             />
                           </div>

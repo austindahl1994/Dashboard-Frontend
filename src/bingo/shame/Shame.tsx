@@ -40,7 +40,7 @@ const Shame: React.FC = () => {
 
   const openModal = (item: ShameItem) => {
     setModalUrl(fixUrl(item.url));
-    const caption = `${item.playerName}${item.killer ? `killed by ${item.killer}` : item.pvp ? " — PvP" : ""}`;
+    const caption = `${item.playerName}${item.killer ? `- killed by ${item.killer}` : item.pvp ? " - PvP" : ""}`;
     setModalCaption(caption);
   };
 

@@ -104,7 +104,7 @@ export const getTeam = async ({ passcode }) => {
 };
 
 export const getCompletions = async ({ passcode }) => {
-  console.log(`Called Get completions in API`);
+  // console.log(`Called Get completions in API`);
   const response = await api.post(`/bingo/completions`, { passcode });
   return response.data;
 };

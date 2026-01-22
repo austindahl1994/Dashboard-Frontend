@@ -46,7 +46,7 @@ const Setup = () => {
   };
 
   return (
-    <div className="text-white w-75" style={{ overflowY: "auto" }}>
+    <div className="text-white w-100" style={{ overflowY: "auto" }}>
       <h2>Setup</h2>
       <h4>Temp Dink setup instructions:</h4>
       <ListGroup>

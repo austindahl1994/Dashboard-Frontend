@@ -30,10 +30,11 @@ const Highscores: React.FC = () => {
     return [];
   })();
 
-  const MAX_POINTS = 444;
+  // Actual points - 444
+  const MAX_POINTS = 50;
 
   return (
-    <div className="text-white highscores-root">
+    <div className="text-white highscores-root overflow-auto p-3">
       <h2>Highscores</h2>
       {isLoading ? (
         <div>Loading highscores...</div>
