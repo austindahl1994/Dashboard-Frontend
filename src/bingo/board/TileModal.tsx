@@ -106,22 +106,13 @@ const TileModal: FC<TileProps> = ({
   const queryClient = useQueryClient();
   const { createToast } = useContext(ToastContext);
 
-  const fileToBase64 = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result));
-      reader.onerror = (err) => reject(err);
-      reader.readAsDataURL(file);
-    });
-
-  const mutation = useMutation({
-    mutationFn: async ({ passcode, selectedItem, selectedFile, id }: any) => {
-      return postCompletion({ passcode, selectedItem, selectedFile, id });
-    },
-    onSuccess: (_data, variables) => {
+  const mutation = useMutation<any, any, any>({
+    mutationFn: (payload: any) => postCompletion(payload),
+    onSuccess: (_data, variables: any) => {
       createToast("Upload successful", 1);
-      if (variables?.passcode) {
-        queryClient.invalidateQueries({ queryKey: ["completions", variables.passcode] });
+      const passcode = variables instanceof FormData ? variables.get("passcode") : variables?.passcode;
+      if (passcode) {
+        queryClient.invalidateQueries({ queryKey: ["completions", passcode] });
       }
       handleClose();
     },
@@ -140,13 +131,12 @@ const TileModal: FC<TileProps> = ({
 
     try {
       const passcode = localStorage.getItem("passcode") || "";
-      const fileBase64 = await fileToBase64(selectedFile);
-      mutation.mutate({
-        passcode,
-        selectedItem,
-        selectedFile: fileBase64,
-        id,
-      });
+      const form = new FormData();
+      form.append("passcode", passcode);
+      form.append("selectedItem", selectedItem);
+      form.append("id", String(id));
+      form.append("selectedFile", selectedFile);
+      mutation.mutate(form);
     } catch (err) {
       console.error("Error preparing file for upload", err);
       createToast("Upload failed", 0);

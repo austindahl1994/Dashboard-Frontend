@@ -119,12 +119,17 @@ export const getHighscores = async () => {
   return response.data;
 };
 
-export const postCompletion = async ({
-  passcode,
-  selectedItem,
-  selectedFile,
-  id,
-}) => {
+export const postCompletion = async (payload) => {
+  // If payload is FormData, send as multipart/form-data
+  if (payload instanceof FormData) {
+    const response = await api.post(`/bingo/completion`, payload, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data;
+  }
+
+  // Fallback: accept object with fields and send JSON
+  const { passcode, selectedItem, selectedFile, id } = payload;
   const response = await api.post(`/bingo/completion`, {
     passcode,
     selectedItem,
