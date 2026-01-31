@@ -259,6 +259,7 @@ const Board: FC = () => {
         <TileModal
           show={!!selectedTile}
           handleClose={() => setSelectedTile(null)}
+          id={selectedTile.id}
           title={selectedTile.title}
           url={selectedTile.url}
           tier={selectedTile.tier}

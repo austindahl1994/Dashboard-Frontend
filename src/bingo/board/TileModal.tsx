@@ -1,4 +1,4 @@
-import { FC, useState, ChangeEvent, FormEvent } from "react";
+import { FC, useState, ChangeEvent, FormEvent, useContext } from "react";
 import {
   Badge,
   Button,
@@ -11,6 +11,9 @@ import {
   ProgressBar,
   Row,
 } from "react-bootstrap";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { postCompletion } from "../../api";
+import { ToastContext } from "../../main-components/ToastContext";
 
 interface Completion {
   team: number;
@@ -24,6 +27,7 @@ interface Completion {
 interface TileProps {
   show: boolean;
   handleClose: () => void;
+  id: number;
   title: string;
   url: string;
   tier: number;
@@ -37,6 +41,7 @@ interface TileProps {
 const TileModal: FC<TileProps> = ({
   show,
   handleClose,
+  id,
   title,
   url,
   tier,
@@ -98,14 +103,54 @@ const TileModal: FC<TileProps> = ({
       e.target.files && e.target.files[0] ? e.target.files[0] : null,
     );
 
-  const handleSubmit = (e: FormEvent) => {
+  const queryClient = useQueryClient();
+  const { createToast } = useContext(ToastContext);
+
+  const fileToBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = (err) => reject(err);
+      reader.readAsDataURL(file);
+    });
+
+  const mutation = useMutation({
+    mutationFn: async ({ passcode, selectedItem, selectedFile, id }: any) => {
+      return postCompletion({ passcode, selectedItem, selectedFile, id });
+    },
+    onSuccess: (_data, variables) => {
+      createToast("Upload successful", 1);
+      if (variables?.passcode) {
+        queryClient.invalidateQueries({ queryKey: ["completions", variables.passcode] });
+      }
+      handleClose();
+    },
+    onError: (err: any) => {
+      console.error("Upload failed", err);
+      createToast("Upload failed", 0);
+    },
+  });
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!selectedFile) {
       console.warn("No file selected for upload");
       return;
     }
-    console.log("Upload Completion submitted:", { selectedItem, selectedFile });
-    // TODO: wire up upload logic here (API call or parent callback)
+
+    try {
+      const passcode = localStorage.getItem("passcode") || "";
+      const fileBase64 = await fileToBase64(selectedFile);
+      mutation.mutate({
+        passcode,
+        selectedItem,
+        selectedFile: fileBase64,
+        id,
+      });
+    } catch (err) {
+      console.error("Error preparing file for upload", err);
+      createToast("Upload failed", 0);
+    }
   };
 
   const hasCompletions = completions && completions.length > 0;

@@ -119,6 +119,21 @@ export const getHighscores = async () => {
   return response.data;
 };
 
+export const postCompletion = async ({
+  passcode,
+  selectedItem,
+  selectedFile,
+  id,
+}) => {
+  const response = await api.post(`/bingo/completion`, {
+    passcode,
+    selectedItem,
+    selectedFile,
+    id,
+  });
+  return response.data;
+};
+
 // #endregion
 
 //get all the data, each month/year combination
