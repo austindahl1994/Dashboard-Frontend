@@ -7,6 +7,7 @@ import ProtectedRoutes from "./main-components/ProtectedRoutes";
 import Dashboard from "./main-components/Dashboard";
 import Home from "./main-components/Home";
 import Login from "./bingo/login/Login";
+import Admin from "./bingo/admin/Admin";
 // import Bingo from "./bingo/Bingo";
 const Bingo = lazy(() => import("./bingo/Bingo"));
 const Rules = lazy(() => import("./bingo/rules/Rules"));
@@ -58,6 +59,8 @@ function App() {
             <Route path="board" element={<BoardPage />} />
             <Route path="shame" element={<Shame />} />
             <Route path="scores" element={<Highscores />} />
+            <Route path="admin" element={<Admin />} />
+            <Route path="*" element={<BingoHome />} />
           </Route>
         </Routes>
       </ToastProvider>

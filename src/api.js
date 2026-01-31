@@ -119,24 +119,25 @@ export const getHighscores = async () => {
   return response.data;
 };
 
-export const postCompletion = async (payload) => {
-  // If payload is FormData, send as multipart/form-data
-  if (payload instanceof FormData) {
-    const response = await api.post(`/bingo/completion`, payload, {
+export const postCompletion = async (data) => {
+  try {
+    const response = await api.post(`/bingo/webImage`, data, {
       headers: { "Content-Type": "multipart/form-data" },
     });
-    return response.data;
-  }
 
-  // Fallback: accept object with fields and send JSON
-  const { passcode, selectedItem, selectedFile, id } = payload;
-  const response = await api.post(`/bingo/completion`, {
-    passcode,
-    selectedItem,
-    selectedFile,
-    id,
-  });
-  return response.data;
+    // If server encodes success in the payload, treat explicit failure as error
+    if (response && response.data && response.data.success === false) {
+      const msg = response.data.message || "Upload failed";
+      throw new Error(msg);
+    }
+
+    return response.data;
+  } catch (err) {
+    // Normalize axios/network errors to a thrown Error with useful message
+    const message =
+      err?.response?.data?.message || err?.message || "Upload failed";
+    throw new Error(message);
+  }
 };
 
 // #endregion

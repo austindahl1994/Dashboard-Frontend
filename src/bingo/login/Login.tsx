@@ -27,6 +27,18 @@ const Login = () => {
     },
     onSuccess: (data, passcode: string) => {
       const rsn = data.rsn;
+      const role = data.role;
+      if (role.toLowerCase() === "admin") {
+        localStorage.setItem("isAdmin", "true");
+      } else {
+        localStorage.removeItem("isAdmin");
+      }
+      // Cache the logged-in user in TanStack Query so other components can read role
+      try {
+        queryClient.setQueryData(["User"], data);
+      } catch (err) {
+        console.warn("Failed to set User in queryClient:", err);
+      }
       //{"team":2,"rsn":"ItzDubz","role":"admin"}
       localStorage.setItem("passcode", passcode);
       // Notify same-tab listeners that passcode changed

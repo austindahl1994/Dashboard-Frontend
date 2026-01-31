@@ -77,6 +77,7 @@ const Shame: React.FC = () => {
               onClick={() => openModal(item)}
             >
               <Card.Title className="text-center mt-1">
+                {idx + 1 + ". "}
                 {item.playerName}
               </Card.Title>
               <div style={{ overflow: "hidden", borderRadius: 8 }}>

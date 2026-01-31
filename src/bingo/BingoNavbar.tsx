@@ -1,12 +1,19 @@
 import { Button, Container, Image, Nav, Navbar } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import "./bingoNav.css";
 
 function BingoNavbar() {
   const [hasPasscode, setHasPasscode] = useState<boolean>(
     () => !!localStorage.getItem("passcode"),
   );
+
+  const queryClient = useQueryClient();
+  const cachedUser: any =
+    queryClient.getQueryData(["User"]) || localStorage.getItem("isAdmin")
+      ? { role: "admin" }
+      : null;
 
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
@@ -55,7 +62,7 @@ function BingoNavbar() {
   };
 
   return (
-    <div>
+    <div className="bingo-nav">
       <Nav className="d-flex h-100 m-0 p-0">
         <Container fluid className="d-flex flex-column h-100">
           <div>
@@ -67,6 +74,11 @@ function BingoNavbar() {
                 style={{ padding: "1em" }}
               />
             </Navbar.Brand>
+            {cachedUser?.role?.toLowerCase() === "admin" && (
+              <Nav.Link as={Link} to="/bingo/admin">
+                <h3 style={{ color: "red" }}>Admin</h3>
+              </Nav.Link>
+            )}
             <Nav.Link as={Link} to="/bingo">
               Home
             </Nav.Link>

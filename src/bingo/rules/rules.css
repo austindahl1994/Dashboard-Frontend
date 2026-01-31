@@ -1,0 +1,52 @@
+/* Rules card styles extracted from inline styles */
+.rule-card {
+  background: #2f2f2f;
+  border-radius: 10px;
+  border: none;
+  color: #ddd;
+  overflow: hidden;
+}
+.rule-row {
+  min-height: 100px;
+  display: flex;
+  width: 100%;
+}
+.rule-number-col {
+  background: #1f1f1f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.rule-number {
+  font-size: 2.25rem;
+  color: #fff;
+  font-weight: 700;
+}
+.rule-header {
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+.rule-text {
+  color: #bfbfbf;
+}
+/* Ensure the left column fills card height and number is centered */
+.rule-card .row.g-0 {
+  height: 100%;
+}
+.rule-card .col-xs-3,
+.rule-number-col {
+  height: 100%;
+}
+.rule-card .card-body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+@media (max-width: 576px) {
+  .rule-number {
+    font-size: 1.5rem;
+  }
+}

@@ -8,8 +8,8 @@ import {
   Form,
   Image,
   Modal,
-  ProgressBar,
   Row,
+  Spinner,
 } from "react-bootstrap";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { postCompletion } from "../../api";
@@ -110,7 +110,10 @@ const TileModal: FC<TileProps> = ({
     mutationFn: (payload: any) => postCompletion(payload),
     onSuccess: (_data, variables: any) => {
       createToast("Upload successful", 1);
-      const passcode = variables instanceof FormData ? variables.get("passcode") : variables?.passcode;
+      const passcode =
+        variables instanceof FormData
+          ? variables.get("passcode")
+          : variables?.passcode;
       if (passcode) {
         queryClient.invalidateQueries({ queryKey: ["completions", passcode] });
       }
@@ -128,14 +131,17 @@ const TileModal: FC<TileProps> = ({
       console.warn("No file selected for upload");
       return;
     }
-
+    if (completionCount >= quantity) {
+      createToast("Tile already completed the required number of times", 0);
+      return;
+    }
     try {
       const passcode = localStorage.getItem("passcode") || "";
       const form = new FormData();
       form.append("passcode", passcode);
       form.append("selectedItem", selectedItem);
       form.append("id", String(id));
-      form.append("selectedFile", selectedFile);
+      form.append("file", selectedFile);
       mutation.mutate(form);
     } catch (err) {
       console.error("Error preparing file for upload", err);
@@ -202,7 +208,27 @@ const TileModal: FC<TileProps> = ({
           <h1 className="m-0 p-0">{title}</h1>
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body style={{ backgroundColor: "#f6f6f6" }}>
+      <Modal.Body style={{ backgroundColor: "#f6f6f6", position: "relative" }}>
+        {mutation.status === "pending" && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: "rgba(255,255,255,0.75)",
+              zIndex: 1050,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+            }}
+          >
+            <Spinner animation="border" role="status" />
+            <div style={{ marginTop: 8 }}>Uploading...</div>
+          </div>
+        )}
         <Row>
           <Col xs="auto" md={4} className="d-flex justify-content-center">
             <Image
@@ -223,13 +249,10 @@ const TileModal: FC<TileProps> = ({
             {source ? (
               <h4>{`Must be obtained from: ${source[0].toUpperCase() + source.slice(1)}`}</h4>
             ) : null}
-            <p
-              dangerouslySetInnerHTML={{
-                __html:
-                  modifiedNotes ||
-                  "No special notes for this tile, just go out and get it done!",
-              }}
-            />
+            <p>
+              {notes ||
+                "No special notes for this tile, just go out and get it done!"}
+            </p>
             <h3>Items:</h3>
             <div
               style={{
@@ -288,6 +311,7 @@ const TileModal: FC<TileProps> = ({
                       type="file"
                       accept="image/*"
                       onChange={handleFileChange}
+                      disabled={mutation.status === "pending"}
                     />
                   </Form.Group>
 
@@ -295,7 +319,7 @@ const TileModal: FC<TileProps> = ({
                     variant={!selectedFile ? "secondary" : "primary"}
                     type="submit"
                     className="w-100"
-                    disabled={!selectedFile}
+                    disabled={!selectedFile || mutation.status === "pending"}
                   >
                     Upload Completion
                   </Button>

@@ -1,21 +1,34 @@
 import React from "react";
-import Accordion from "react-bootstrap/Accordion";
+import { Card, Col, Container, Row } from "react-bootstrap";
 import { rulesHeaders, rulesData } from "./RulesData";
+import "./rules.css";
 
 const Rules: React.FC = () => {
   return (
     <div style={{ marginTop: 20, overflowY: "auto", width: "100%" }}>
-      <style>{`.rules-accordion .accordion-button { background-color: black !important; color: white !important; }
-      .rules-accordion .accordion-button:focus { box-shadow: none; }
-      `}</style>
-      <Accordion defaultActiveKey={"0"} className="rules-accordion">
-        {rulesHeaders.map((header, idx) => (
-          <Accordion.Item eventKey={String(idx)} key={idx}>
-            <Accordion.Header>{header}</Accordion.Header>
-            <Accordion.Body>{rulesData[idx]}</Accordion.Body>
-          </Accordion.Item>
-        ))}
-      </Accordion>
+      <Container fluid className="p-0">
+        <Row>
+          {rulesHeaders.map((header, idx) => (
+            <Col md={6} sm={12} key={idx} className="p-2">
+              <Card className="rule-card h-100">
+                <Row className="g-0 rule-row">
+                  <Col xs={3} className="rule-number-col">
+                    <div className="rule-number">{idx}</div>
+                  </Col>
+                  <Col xs={9}>
+                    <Card.Body>
+                      <Card.Title className="rule-header">{header}</Card.Title>
+                      <Card.Text className="rule-text">
+                        {rulesData[idx]}
+                      </Card.Text>
+                    </Card.Body>
+                  </Col>
+                </Row>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      </Container>
     </div>
   );
 };
