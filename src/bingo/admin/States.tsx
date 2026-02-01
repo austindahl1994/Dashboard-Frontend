@@ -1,7 +1,7 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getStates } from "../../api";
-import { Card } from "react-bootstrap";
+import { Card, Row, Col } from "react-bootstrap";
 
 type TeamState = {
   teamNumber: number;
@@ -87,6 +87,7 @@ const States: React.FC<{ data?: any }> = ({ data: propData }) => {
                 <Card
                   key={s.teamNumber}
                   style={{ width: "100%", minWidth: 240 }}
+                  className="overflow-auto h-75"
                 >
                   <Card.Body>
                     <Card.Title>{`Team ${s.teamNumber}`}</Card.Title>
@@ -117,27 +118,25 @@ const States: React.FC<{ data?: any }> = ({ data: propData }) => {
                       <span>{(s.completedCols || []).length}</span>
                     </div>
 
-                    <div style={{ marginTop: 5 }}>
-                      <strong>Row counts:</strong>
-                      <div
-                        style={{ fontFamily: "monospace", overflowX: "auto" }}
-                      >
-                        {(s.rowCounts || []).map((v, i) => (
-                          <div key={i}>{`Row ${i + 1}: ${v}`}</div>
-                        ))}
-                      </div>
-                    </div>
+                    <Row style={{ marginTop: 5 }}>
+                      <Col>
+                        <strong>Row counts:</strong>
+                        <div style={{ fontFamily: "monospace", overflowX: "auto" }}>
+                          {(s.rowCounts || []).map((v, i) => (
+                            <div key={i}>{`Row ${i + 1}: ${v}`}</div>
+                          ))}
+                        </div>
+                      </Col>
 
-                    <div style={{ marginTop: 5 }}>
-                      <strong>Col counts:</strong>
-                      <div
-                        style={{ fontFamily: "monospace", overflowX: "auto" }}
-                      >
-                        {(s.colCounts || []).map((v, i) => (
-                          <div key={i}>{`Col ${i + 1}: ${v}`}</div>
-                        ))}
-                      </div>
-                    </div>
+                      <Col>
+                        <strong>Col counts:</strong>
+                        <div style={{ fontFamily: "monospace", overflowX: "auto" }}>
+                          {(s.colCounts || []).map((v, i) => (
+                            <div key={i}>{`Col ${i + 1}: ${v}`}</div>
+                          ))}
+                        </div>
+                      </Col>
+                    </Row>
 
                     {s.completedTiles && s.completedTiles.length > 0 && (
                       <div style={{ marginTop: 5 }}>
@@ -145,7 +144,9 @@ const States: React.FC<{ data?: any }> = ({ data: propData }) => {
                         <div
                           style={{ fontFamily: "monospace", overflowX: "auto" }}
                         >
-                          {(s.completedTiles || []).map(String).join(", ")}
+                          {(s.completedTiles.sort() || [])
+                            .map(String)
+                            .join(", ")}
                         </div>
                       </div>
                     )}
@@ -156,7 +157,7 @@ const States: React.FC<{ data?: any }> = ({ data: propData }) => {
                         <div
                           style={{ fontFamily: "monospace", overflowX: "auto" }}
                         >
-                          {(s.completedRows || []).map(
+                          {(s.completedRows.sort() || []).map(
                             (r: any, idx: number) => (
                               <div key={idx}>{String(r)}</div>
                             ),
