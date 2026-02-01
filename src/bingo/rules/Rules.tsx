@@ -13,7 +13,7 @@ const Rules: React.FC = () => {
               <Card className="rule-card h-100">
                 <Row className="g-0 rule-row">
                   <Col xs={3} className="rule-number-col">
-                    <div className="rule-number">{idx}</div>
+                    <div className="rule-number">{idx + 1}</div>
                   </Col>
                   <Col xs={9}>
                     <Card.Body>

@@ -1,7 +1,8 @@
 import React, { useState, useContext } from "react";
-import { Button, ListGroup, Form } from "react-bootstrap";
+import { Button, ListGroup, Form, Tabs, Tab } from "react-bootstrap";
 import dinkSetup from "./dinkSetup.json";
 import { ToastContext } from "../../main-components/ToastContext";
+import "./setup.css";
 
 const Setup = () => {
   const { createToast } = useContext(ToastContext);
@@ -46,48 +47,66 @@ const Setup = () => {
   };
 
   return (
-    <div className="text-white w-100" style={{ overflowY: "auto" }}>
-      <h2>Setup</h2>
-      <h4>Temp Dink setup instructions:</h4>
-      <ListGroup>
-        {steps.map((text, idx) => (
-          <ListGroup.Item
-            key={idx}
-            className="d-flex align-items-start"
-            style={{
-              backgroundColor: completed[idx]
-                ? "rgba(0,128,0,0.25)"
-                : undefined,
-              color: completed[idx] ? "#ffffff" : undefined,
-            }}
-          >
-            <Form.Check
-              type="checkbox"
-              id={`setup-step-${idx}`}
-              checked={completed[idx]}
-              onChange={() => handleToggle(idx)}
-              className="me-2"
-            />
-            <div>
-              {idx === 3 ? (
-                // step with the copy button inline
-                <>
-                  <div style={{ marginBottom: 8 }}>{text}</div>
+    <div className="setup-root text-white w-100 overflow-auto">
+      <Tabs
+        defaultActiveKey="dink"
+        id="setup-tabs"
+        className="setup-tabs w-100"
+      >
+        <Tab eventKey="dink" title="Dink Setup" className="setup-card">
+          <div className="setup-card-body overflow-auto">
+            <ListGroup>
+              {steps.map((text, idx) => (
+                <ListGroup.Item
+                  key={idx}
+                  className="d-flex align-items-start"
+                  style={{
+                    backgroundColor: completed[idx]
+                      ? "rgba(0,128,0,0.25)"
+                      : undefined,
+                    color: completed[idx] ? "#ffffff" : undefined,
+                  }}
+                >
+                  <Form.Check
+                    type="checkbox"
+                    id={`setup-step-${idx}`}
+                    checked={completed[idx]}
+                    onChange={() => handleToggle(idx)}
+                    className="me-2"
+                  />
                   <div>
-                    <Button onClick={handleCopy}>
-                      Copy dinkSetup to clipboard
-                    </Button>
+                    {idx === 3 ? (
+                      // step with the copy button inline
+                      <>
+                        <div style={{ marginBottom: 8 }}>{text}</div>
+                        <div>
+                          <Button onClick={handleCopy}>
+                            Copy dinkSetup to clipboard
+                          </Button>
+                        </div>
+                      </>
+                    ) : (
+                      <div>{text}</div>
+                    )}
                   </div>
-                </>
-              ) : (
-                <div>{text}</div>
-              )}
+                </ListGroup.Item>
+              ))}
+            </ListGroup>
+          </div>
+        </Tab>
+
+        <Tab eventKey="illiterate" title="I Can't Read" className="setup-card">
+          <div className="p-0 d-flex flex-column">
+            <div className="flex-fill video-placeholder d-flex align-items-center justify-content-center h-75">
+              <video
+                className="setup-video"
+                src="https://cabbage-bounty.s3.us-east-2.amazonaws.com/bingo/eventInstructions.mp4"
+                controls
+              />
             </div>
-          </ListGroup.Item>
-        ))}
-      </ListGroup>
-      <h6 className="my-2">Need WOM/Clan events setup as well?</h6>
-      <h6 className="my-2">Need videos for illiterate folks as well?</h6>
+          </div>
+        </Tab>
+      </Tabs>
     </div>
   );
 };

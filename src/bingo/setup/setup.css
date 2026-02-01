@@ -1,0 +1,131 @@
+/* Layout for the two stacked cards in Setup */
+.setup-root {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  min-height: 0;
+}
+
+.setup-card {
+  flex: 1 1 50%;
+  min-height: 0; /* allow children to scroll */
+  display: flex;
+  flex-direction: column;
+}
+
+.setup-card .setup-card-body {
+  padding: 12px;
+}
+
+/* card header: centered, h4-like, bold */
+.setup-card .card-header {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+/* dark gray card bodies */
+.setup-card .card-body {
+  background-color: #2b2b2b;
+  color: #fff;
+}
+
+.setup-video {
+  max-width: 880px; /* maximum player width */
+  width: 90%; /* responsive downscaling */
+  max-height: 60vh; /* limit height relative to viewport */
+  height: auto;
+  object-fit: contain; /* preserve aspect ratio, show letterbox/pillarbox */
+  background-color: #000; /* ensure black bars behind video content */
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+}
+
+.video-placeholder {
+  flex: 1 1 auto;
+  min-height: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  background-color: #000; /* black background fills any gaps */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-placeholder video {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  background-color: #000;
+}
+
+/* Accordion header styling: light gray bg, big black centered text */
+.setup-accordion .accordion-button {
+  background-color: #f0f0f0;
+  color: #000;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  justify-content: center;
+}
+
+.setup-accordion .accordion-button::after {
+  display: none; /* remove caret */
+}
+
+.setup-accordion .accordion-body {
+  background-color: #2b2b2b;
+  color: #fff;
+  padding: 12px;
+}
+
+/* Compact tab bar styling */
+.setup-tabs .nav {
+  background-color: #f0f0f0;
+  border-radius: 6px;
+  padding: 6px;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.setup-tabs .nav-link {
+  color: #000;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 4px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.setup-tabs .nav-link.active {
+  background-color: #e9e9e9;
+}
+
+.setup-tabs .nav {
+  background-color: #222; /* dark bar so inactive (white) text is readable */
+  border-radius: 6px;
+  padding: 4px 6px;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.setup-tabs .nav-link {
+  color: #fff; /* inactive tab text: white */
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 4px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+}
+
+.setup-tabs .nav-link.active {
+  color: #000; /* active tab text: black */
+  background-color: #e9e9e9;
+}

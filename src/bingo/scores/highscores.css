@@ -22,8 +22,8 @@
   justify-content: flex-end;
   align-items: center;
   height: 100%;
-
   border-radius: 8px;
+  padding-bottom: 12px;
 }
 
 .hs-card-body {
@@ -71,4 +71,145 @@
 .hs-score {
   font-size: 14px;
   color: #ccc;
+}
+
+/* Death counts layout */
+.death-container {
+  gap: 18px;
+  width: 100%;
+  padding: 12px 0;
+}
+.death-item {
+  min-width: 120px;
+  max-width: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff; /* white text for death counts */
+  flex: 1 1 140px;
+  padding: 8px;
+  position: relative; /* allow absolute skull positioning */
+  padding-top: 28px; /* room for skull above without pushing content */
+}
+.death-count {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: #fff; /* white count */
+  line-height: 1;
+}
+.death-divider {
+  width: 60%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.12); /* subtle white divider */
+  margin: 8px 0;
+}
+.death-team {
+  color: #fff; /* white team label */
+  font-size: 0.95rem;
+}
+
+/* Center death content vertically inside the card body */
+.death-card .card-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* skull image above highest count */
+.death-skull {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+@media (max-width: 576px) {
+  .death-count {
+    font-size: 2.5rem;
+  }
+  .death-skull {
+    width: 32px;
+    height: 32px;
+    top: -6px;
+  }
+}
+
+/* Submission counts use similar styling but without skull */
+.submission-container {
+  gap: 18px;
+  width: 100%;
+  padding: 12px 0;
+}
+.submission-item {
+  min-width: 120px;
+  max-width: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff; /* white text for submissions */
+  flex: 1 1 140px;
+  padding: 8px;
+  position: relative;
+  padding-top: 28px; /* room for gif above without pushing content */
+}
+.submission-count {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+}
+.submission-divider {
+  width: 60%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.12);
+  margin: 8px 0;
+}
+.submission-team {
+  color: #fff;
+  font-size: 0.95rem;
+}
+.submission-card .card-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* gif above highest submission count */
+.submission-gif {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+@media (max-width: 576px) {
+  .submission-gif {
+    width: 36px;
+    height: 36px;
+    top: -6px;
+  }
+}
+
+@media (max-width: 576px) {
+  .submission-count {
+    font-size: 2.5rem;
+  }
+}
+
+/* Make each card title large and bold (like an h3) */
+.hs-main-card .card-header,
+.death-card .card-header,
+.submission-card .card-header,
+.other-card .card-header,
+.col .card > .card-header {
+  font-size: 1.25rem;
+  font-weight: 700;
 }

@@ -190,7 +190,11 @@ const TileModal: FC<TileProps> = ({
   return (
     <Modal
       show={show}
-      onHide={handleClose}
+      onHide={() => {
+        if (mutation.status !== "pending") handleClose();
+      }}
+      backdrop={mutation.status === "pending" ? "static" : true}
+      keyboard={mutation.status !== "pending"}
       size={isMobile ? "sm" : "xl"}
       centered
       animation
@@ -200,7 +204,7 @@ const TileModal: FC<TileProps> = ({
         fontFamily: "Garamond",
       }}
     >
-      <Modal.Header closeButton>
+      <Modal.Header closeButton={mutation.status !== "pending"}>
         <Modal.Title className="d-flex flex-row align-items-center gap-3">
           <Badge className="h-50" bg={getBadgeColor()}>
             {badgeText}
@@ -249,10 +253,26 @@ const TileModal: FC<TileProps> = ({
             {source ? (
               <h4>{`Must be obtained from: ${source[0].toUpperCase() + source.slice(1)}`}</h4>
             ) : null}
-            <p>
-              {notes ||
-                "No special notes for this tile, just go out and get it done!"}
-            </p>
+            {(() => {
+              const defaultText =
+                "No special notes for this tile, just go out and get it done!";
+              if (!notes) return <p>{defaultText}</p>;
+              const marker = "Fun Fact:";
+              const idx = notes.indexOf(marker);
+              if (idx === -1) return <p>{notes}</p>;
+              const before = notes.slice(0, idx).trim();
+              const rest = notes.slice(idx).trim();
+              const after = rest.slice(marker.length).trim();
+              return (
+                <>
+                  {before ? <p>{before}</p> : null}
+                  <p>
+                    <strong>{marker}</strong>
+                    {after ? ` ${after}` : null}
+                  </p>
+                </>
+              );
+            })()}
             <h3>Items:</h3>
             <div
               style={{

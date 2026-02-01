@@ -48,7 +48,9 @@ const Shame: React.FC = () => {
     u ? u.replace(/%20/g, "%2520") : null;
 
   return (
-    <div className="text-white d-flex w-100 h-100 overflow-auto">
+    <div className="text-white d-flex flex-column w-100 h-100">
+      <h1 className="w-100 text-center">Shameful Acts</h1>
+
       {isLoading ? (
         <div className="d-flex justify-content-center py-4">
           <Spinner animation="border" />
@@ -63,6 +65,9 @@ const Shame: React.FC = () => {
             gap: 16,
             alignContent: "flex-start",
             alignItems: "flex-start",
+            flex: 1,
+            overflow: "auto",
+            padding: 8,
           }}
         >
           {shameItems.map((item: ShameItem, idx: number) => (
@@ -94,15 +99,11 @@ const Shame: React.FC = () => {
                   rounded
                 />
               </div>
-              <Card.Body>
-                <p className="text-center mb-0">
-                  {item.killer
-                    ? `Killed by ${item.killer}`
-                    : item.pvp
-                      ? "PvP"
-                      : "PvE"}
-                </p>
-              </Card.Body>
+              {item.playerName.toLowerCase() === "kirk iron" && (
+                <Card.Body>
+                  <p className="text-center mb-0">What a dumbass</p>
+                </Card.Body>
+              )}
             </Card>
           ))}
         </div>
@@ -118,10 +119,12 @@ const Shame: React.FC = () => {
         centered
       >
         <Modal.Header closeButton>
-          <Modal.Title>{modalCaption}</Modal.Title>
+          <Modal.Title className="w-100 text-center">
+            {modalCaption}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body
-          className="d-flex justify-content-center align-items-center"
+          className="d-flex justify-content-center align-items-center p-0 m-0"
           style={{ background: "#000" }}
         >
           {modalUrl && (

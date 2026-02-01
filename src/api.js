@@ -140,6 +140,18 @@ export const postCompletion = async (data) => {
   }
 };
 
+//ADMIN ACTIONS
+
+export const getStates = async ({ passcode }) => {
+  const response = await api.post(`/bingo/admin/states`, { passcode });
+  return response.data;
+};
+
+export const getPlayers = async ({ passcode }) => {
+  const response = await api.post(`/bingo/admin/players`, { passcode });
+  return response.data;
+};
+
 // #endregion
 
 //get all the data, each month/year combination
