@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Container } from "react-bootstrap";
 import Completions from "./Completions";
 import Shames from "./Shames";
@@ -7,7 +7,6 @@ import Teams from "./Teams";
 import States from "./States";
 import Settings from "./Settings";
 import { getPlayers, getStates, getCompletions, getShame } from "../../api";
-import { Card, Row, Col, Button } from "react-bootstrap";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 

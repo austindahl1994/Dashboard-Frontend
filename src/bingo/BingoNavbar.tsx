@@ -42,6 +42,7 @@ function BingoNavbar() {
     try {
       localStorage.removeItem("passcode");
       localStorage.removeItem("board");
+      localStorage.removeItem("isAdmin");
       setHasPasscode(false);
       try {
         window.dispatchEvent(
