@@ -150,7 +150,9 @@ const States: React.FC<{ data?: any }> = ({ data: propData }) => {
                         >
                           {(s.completedTiles || [])
                             .map(String)
-                            .sort()
+                            .sort((a: string, b: string) =>
+                              a.localeCompare(b, undefined, { numeric: true }),
+                            )
                             .join(", ")}
                         </div>
                       </div>
