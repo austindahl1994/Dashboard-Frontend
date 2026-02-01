@@ -145,9 +145,7 @@ const States: React.FC<{ data?: any }> = ({ data: propData }) => {
                         <div
                           style={{ fontFamily: "monospace", overflowX: "auto" }}
                         >
-                          {s.completedTiles.map((t: any, idx: number) => (
-                            <div key={idx}>{t}</div>
-                          ))}
+                          {(s.completedTiles || []).map(String).join(", ")}
                         </div>
                       </div>
                     )}
