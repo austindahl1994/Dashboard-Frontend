@@ -87,7 +87,7 @@ const States: React.FC<{ data?: any }> = ({ data: propData }) => {
                 <Card
                   key={s.teamNumber}
                   style={{ width: "100%", minWidth: 240 }}
-                  className="overflow-auto h-75"
+                  className="overflow-auto"
                 >
                   <Card.Body>
                     <Card.Title>{`Team ${s.teamNumber}`}</Card.Title>
@@ -121,7 +121,9 @@ const States: React.FC<{ data?: any }> = ({ data: propData }) => {
                     <Row style={{ marginTop: 5 }}>
                       <Col>
                         <strong>Row counts:</strong>
-                        <div style={{ fontFamily: "monospace", overflowX: "auto" }}>
+                        <div
+                          style={{ fontFamily: "monospace", overflowX: "auto" }}
+                        >
                           {(s.rowCounts || []).map((v, i) => (
                             <div key={i}>{`Row ${i + 1}: ${v}`}</div>
                           ))}
@@ -130,7 +132,9 @@ const States: React.FC<{ data?: any }> = ({ data: propData }) => {
 
                       <Col>
                         <strong>Col counts:</strong>
-                        <div style={{ fontFamily: "monospace", overflowX: "auto" }}>
+                        <div
+                          style={{ fontFamily: "monospace", overflowX: "auto" }}
+                        >
                           {(s.colCounts || []).map((v, i) => (
                             <div key={i}>{`Col ${i + 1}: ${v}`}</div>
                           ))}
@@ -144,8 +148,9 @@ const States: React.FC<{ data?: any }> = ({ data: propData }) => {
                         <div
                           style={{ fontFamily: "monospace", overflowX: "auto" }}
                         >
-                          {(s.completedTiles.sort() || [])
+                          {(s.completedTiles || [])
                             .map(String)
+                            .sort()
                             .join(", ")}
                         </div>
                       </div>
@@ -157,7 +162,7 @@ const States: React.FC<{ data?: any }> = ({ data: propData }) => {
                         <div
                           style={{ fontFamily: "monospace", overflowX: "auto" }}
                         >
-                          {(s.completedRows.sort() || []).map(
+                          {(s.completedRows || []).map(
                             (r: any, idx: number) => (
                               <div key={idx}>{String(r)}</div>
                             ),
