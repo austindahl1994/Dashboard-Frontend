@@ -3,8 +3,12 @@ import { Container } from "react-bootstrap";
 import Completions from "./Completions";
 import Shames from "./Shames";
 import Players from "./Players";
+import Teams from "./Teams";
 import States from "./States";
+import Settings from "./Settings";
 import { getPlayers, getStates, getCompletions, getShame } from "../../api";
+import { Card, Row, Col, Button } from "react-bootstrap";
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 
 const Admin = () => {
@@ -17,11 +21,18 @@ const Admin = () => {
 
   const [team, setTeam] = useState<number | null>(1);
   const [outerTab, setOuterTab] = useState<
-    "completions" | "shames" | "players" | "states" | null
+    | "completions"
+    | "shames"
+    | "players"
+    | "teams"
+    | "states"
+    | "settings"
+    | null
   >("completions");
   const [fetchedData, setFetchedData] = useState<any>(null);
   const [isFetching, setIsFetching] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   const fetchData = async () => {
     if (!outerTab) return;
@@ -30,17 +41,44 @@ const Admin = () => {
     try {
       const passcode = localStorage.getItem("passcode");
       let res = null;
+
       if (outerTab === "players") {
-        res = await getPlayers({ passcode });
+        const key = ["players", passcode];
+        res = await queryClient.fetchQuery({
+          queryKey: key,
+          queryFn: () => getPlayers({ passcode }),
+        });
+      } else if (outerTab === "teams") {
+        // teams use players data
+        const key = ["players", passcode];
+        res = await queryClient.fetchQuery({
+          queryKey: key,
+          queryFn: () => getPlayers({ passcode }),
+        });
       } else if (outerTab === "states") {
-        res = await getStates({ passcode });
+        const key = ["states", passcode];
+        res = await queryClient.fetchQuery({
+          queryKey: key,
+          queryFn: () => getStates({ passcode }),
+        });
       } else if (outerTab === "completions") {
-        res = await getCompletions({ passcode });
+        const key = ["completions", passcode, team ?? "all"];
+        res = await queryClient.fetchQuery({
+          queryKey: key,
+          queryFn: () =>
+            getCompletions({ passcode, adminTeam: team ?? undefined } as any),
+        });
       } else if (outerTab === "shames") {
-        res = await getShame({ passcode });
+        const key = ["shames", passcode, team ?? "all"];
+        res = await queryClient.fetchQuery({
+          queryKey: key,
+          queryFn: () =>
+            getShame({ passcode, adminTeam: team ?? undefined } as any),
+        });
       }
-      console.log(`Data from server: `);
-      console.log(JSON.stringify(res, null, 2));
+
+      // console.log(`Data from server: `);
+      // console.log(JSON.stringify(res, null, 2));
       setFetchedData(res);
     } catch (err: any) {
       console.error(err);
@@ -58,17 +96,41 @@ const Admin = () => {
         style={{ justifyContent: "space-between", width: "100%" }}
       >
         <div style={{ display: "flex", gap: 8, justifyContent: "flex-start" }}>
-          {["completions", "shames", "players", "states"].map((tab) => (
+          {[
+            "completions",
+            "shames",
+            "players",
+            "teams",
+            "states",
+            "settings",
+          ].map((tab) => (
             <button
               key={tab}
               type="button"
               className={`btn ${outerTab === tab ? "btn-primary" : "btn-outline-light"}`}
               onClick={() => {
+                const defaultTeam =
+                  tab === "completions" || tab === "shames" ? 1 : null;
                 setOuterTab(tab as any);
-                setTeam(tab === "completions" || tab === "shames" ? 1 : null);
-                setFetchedData(null);
+                setTeam(defaultTeam);
                 setFetchError(null);
                 setIsFetching(false);
+
+                const passcode = localStorage.getItem("passcode");
+                let key: any = null;
+                if (tab === "players") key = ["players", passcode];
+                else if (tab === "states") key = ["states", passcode];
+                else if (tab === "completions")
+                  key = ["completions", passcode, defaultTeam ?? "all"];
+                else if (tab === "shames")
+                  key = ["shames", passcode, defaultTeam ?? "all"];
+                else if (tab === "teams") key = ["players", passcode];
+                else if (tab === "settings") key = null;
+
+                const cached = key
+                  ? queryClient.getQueryData(key as any)
+                  : null;
+                setFetchedData(cached ?? null);
               }}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -99,10 +161,18 @@ const Admin = () => {
                       : "btn-outline-light"
                     : "btn-outline-light"
                 }`}
-                onClick={() =>
-                  (outerTab === "completions" || outerTab === "shames") &&
-                  setTeam(t)
-                }
+                onClick={() => {
+                  if (!(outerTab === "completions" || outerTab === "shames"))
+                    return;
+                  const passcode = localStorage.getItem("passcode");
+                  const key =
+                    outerTab === "completions"
+                      ? ["completions", passcode, t ?? "all"]
+                      : ["shames", passcode, t ?? "all"];
+                  const cached = queryClient.getQueryData(key as any);
+                  setTeam(t);
+                  setFetchedData(cached ?? null);
+                }}
               >
                 {`Team ${t}`}
               </button>
@@ -115,6 +185,7 @@ const Admin = () => {
               onClick={fetchData}
               className={`btn ${
                 !outerTab ||
+                outerTab === "settings" ||
                 ((outerTab === "completions" || outerTab === "shames") &&
                   team == null)
                   ? "btn-outline-light"
@@ -124,6 +195,7 @@ const Admin = () => {
               }`}
               disabled={
                 !outerTab ||
+                outerTab === "settings" ||
                 ((outerTab === "completions" || outerTab === "shames") &&
                   team == null) ||
                 isFetching
@@ -153,7 +225,9 @@ const Admin = () => {
         )}
         {outerTab === "shames" && <Shames team={team} data={fetchedData} />}
         {outerTab === "players" && <Players data={fetchedData} />}
+        {outerTab === "teams" && <Teams data={fetchedData} />}
         {outerTab === "states" && <States data={fetchedData} />}
+        {outerTab === "settings" && <Settings />}
       </div>
     </Container>
   );

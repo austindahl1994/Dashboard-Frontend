@@ -103,14 +103,17 @@ export const getTeam = async ({ passcode }) => {
   return response.data;
 };
 
-export const getCompletions = async ({ passcode }) => {
+export const getCompletions = async ({ passcode, adminTeam = undefined }) => {
   // console.log(`Called Get completions in API`);
-  const response = await api.post(`/bingo/completions`, { passcode });
+  const response = await api.post(`/bingo/completions`, {
+    passcode,
+    adminTeam,
+  });
   return response.data;
 };
 
-export const getShame = async ({ passcode }) => {
-  const response = await api.post(`/bingo/shame`, { passcode });
+export const getShame = async ({ passcode, adminTeam = undefined }) => {
+  const response = await api.post(`/bingo/shame`, { passcode, adminTeam });
   return response.data;
 };
 
@@ -149,6 +152,23 @@ export const getStates = async ({ passcode }) => {
 
 export const getPlayers = async ({ passcode }) => {
   const response = await api.post(`/bingo/admin/players`, { passcode });
+  return response.data;
+};
+
+export const adminRefresh = async ({ passcode, targets }) => {
+  // console.log(`Admin refresh call maid with targets: ${targets}`);
+  const response = await api.post(`/bingo/admin/refresh`, {
+    passcode,
+    targets,
+  });
+  return response.data;
+};
+
+export const adminDelete = async ({ passcode, url }) => {
+  const response = await api.post(`/bingo/admin/delete`, {
+    passcode,
+    url,
+  });
   return response.data;
 };
 

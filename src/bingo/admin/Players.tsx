@@ -25,6 +25,14 @@ const Players: React.FC<PlayersProps> = ({ data }) => {
       ? data!.data!
       : [];
 
+  const BUYIN_M = 10; // 10M static buyin
+  const totalBuyins = players.length * BUYIN_M;
+  const donationTotal = players.reduce((sum, p) => {
+    const n = Number(p?.donation) || 0;
+    return sum + n;
+  }, 0);
+  const combinedTotal = totalBuyins + donationTotal;
+
   const formatOSRSGold = (value: any) => {
     if (value === null || value === undefined || value === "") return "-";
     const n = Number(value);
@@ -70,11 +78,11 @@ const Players: React.FC<PlayersProps> = ({ data }) => {
           <thead>
             <tr>
               <th />
-              <th style={{ whiteSpace: "nowrap" }}>discord</th>
-              <th style={{ whiteSpace: "nowrap" }}>nickname</th>
-              <th style={{ whiteSpace: "nowrap" }}>rsn</th>
-              <th style={{ whiteSpace: "nowrap" }}>team</th>
-              <th style={{ whiteSpace: "nowrap" }}>donation</th>
+              <th style={{ whiteSpace: "nowrap" }}>Discord</th>
+              <th style={{ whiteSpace: "nowrap" }}>Nickname</th>
+              <th style={{ whiteSpace: "nowrap" }}>RSN</th>
+              <th style={{ whiteSpace: "nowrap" }}>Team</th>
+              <th style={{ whiteSpace: "nowrap" }}>Donation</th>
             </tr>
           </thead>
           <tbody>
@@ -138,6 +146,22 @@ const Players: React.FC<PlayersProps> = ({ data }) => {
                     </td>
                   </tr>
                 ))}
+            {players.length > 0 && (
+              <tr>
+                <td colSpan={5} style={{ textAlign: "right", fontWeight: 700 }}>
+                  <div>
+                    Buyins ({BUYIN_M}M × {players.length} Players):
+                  </div>
+                  <div>Donations total:</div>
+                  <div>Combined total:</div>
+                </td>
+                <td style={{ fontWeight: 700 }}>
+                  <div>{formatOSRSGold(totalBuyins)}</div>
+                  <div>{formatOSRSGold(donationTotal)}</div>
+                  <div>{formatOSRSGold(combinedTotal)}</div>
+                </td>
+              </tr>
+            )}
           </tbody>
         </Table>
       )}

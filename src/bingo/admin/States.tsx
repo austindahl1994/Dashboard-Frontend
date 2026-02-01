@@ -48,7 +48,7 @@ const States: React.FC<{ data?: any }> = ({ data: propData }) => {
   } = useQuery({
     queryKey: ["states", passcode],
     queryFn: () => getStates({ passcode }),
-    enabled: !!passcode && !propData,
+    enabled: !!passcode && propData === undefined,
   });
 
   const source = propData ?? fetched;
