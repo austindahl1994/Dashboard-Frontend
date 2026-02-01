@@ -52,12 +52,15 @@ const Highscores: React.FC = () => {
       ) : isError ? (
         <div className="text-danger">Failed to load highscores.</div>
       ) : (
-        <Container className="p-0 h-100 w-100">
-          <Row className="g-3 h-100 w-100">
-            <Col md={6} className="p-3">
-              <Card className="h-100 hs-main-card">
+        <Container
+          fluid
+          className="p-0 h-100 w-100 d-flex justify-content-center align-items-center"
+        >
+          <Row className="g-0 w-100 justify-content-center">
+            <Col xs={12} md={10} lg={8} className="p-3">
+              <Card className="hs-main-card" style={{ height: "80vh" }}>
                 <Card.Header className="text-center">Highscores</Card.Header>
-                <Card.Body className="overflow-auto bg-black">
+                <Card.Body className="overflow-auto bg-black d-flex align-items-center justify-content-center">
                   <div className="hs-container d-flex h-100 w-100 align-items-center justify-content-around">
                     {highscoresEntries.map(([team, score]) => {
                       const pct = Math.max(0, Math.min(1, score / MAX_POINTS));
@@ -86,86 +89,6 @@ const Highscores: React.FC = () => {
                       );
                     })}
                   </div>
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col md={6} className="p-3">
-              <Card className="h-100 death-card">
-                <Card.Header className="text-center">Death Counts</Card.Header>
-                <Card.Body className="bg-black">
-                  {deathCountEntries.length ? (
-                    (() => {
-                      const maxCount = Math.max(
-                        ...deathCountEntries.map(([, c]) => c),
-                        0,
-                      );
-                      return (
-                        <div className="death-container d-flex align-items-center justify-content-around flex-wrap">
-                          {deathCountEntries.map(([team, count]) => (
-                            <div key={team} className="death-item text-center">
-                              {count === maxCount && maxCount > 0 ? (
-                                <img
-                                  src="https://oldschool.runescape.wiki/images/Skull_%28status%29_icon.png?fa6d8"
-                                  alt="highest"
-                                  className="death-skull"
-                                />
-                              ) : null}
-                              <div className="death-count">{count}</div>
-                              <div className="death-divider" />
-                              <div className="death-team">Team {team}</div>
-                            </div>
-                          ))}
-                        </div>
-                      );
-                    })()
-                  ) : (
-                    <div>No data</div>
-                  )}
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col md={6} className="p-3">
-              <Card className="h-100 submission-card">
-                <Card.Header className="text-center">
-                  Tile Submissions
-                </Card.Header>
-                <Card.Body style={{ backgroundColor: "rgba(16, 16, 16)" }}>
-                  {completionEntries.length ? (
-                    <div className="submission-container d-flex align-items-center justify-content-around flex-wrap">
-                      {completionEntries.map(([team, count]) => (
-                        <div key={team} className="submission-item text-center">
-                          {count === maxSubmission && maxSubmission > 0 ? (
-                            <img
-                              src="https://oldschool.runescape.wiki/images/Dance.gif?dbc16"
-                              alt="top"
-                              className="submission-gif"
-                            />
-                          ) : null}
-                          <div className="submission-count">{count}</div>
-                          <div className="submission-divider" />
-                          <div className="submission-team">Team {team}</div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div>No data</div>
-                  )}
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col md={6} className="p-3">
-              <Card className="h-100 other-card">
-                <Card.Header className="text-center">
-                  Something else?
-                </Card.Header>
-                <Card.Body
-                  className="text-white"
-                  style={{ backgroundColor: "rgba(16, 16, 16)" }}
-                >
-                  ...
                 </Card.Body>
               </Card>
             </Col>

@@ -13,7 +13,7 @@
 }
 
 .hs-card {
-  width: 120px;
+  width: 160px;
   text-align: center;
   background: #111;
   border: 1px solid #333;
@@ -48,7 +48,7 @@
 }
 
 .hs-bar-track {
-  width: 48px;
+  width: 72px;
   height: calc(100% - 16px);
   background: #222;
   border-radius: 6px;
@@ -69,8 +69,16 @@
 }
 
 .hs-score {
-  font-size: 14px;
+  font-size: 20px;
+  font-weight: 800;
   color: #ccc;
+  line-height: 1;
+}
+
+@media (max-width: 767.98px) {
+  .hs-score {
+    font-size: 18px;
+  }
 }
 
 /* Death counts layout */
@@ -135,6 +143,26 @@
     width: 32px;
     height: 32px;
     top: -6px;
+  }
+}
+
+/* Stack each highscores card on small screens (below md) */
+@media (max-width: 767.98px) {
+  .hs-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: nowrap;
+  }
+
+  .hs-card {
+    width: 90%;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  .hs-bar-track {
+    width: 96px; /* make the track even wider on small screens for readability */
   }
 }
 
