@@ -9,15 +9,16 @@ function BingoNavbar() {
     () => !!localStorage.getItem("passcode"),
   );
 
+  const [isAdmin, setIsAdmin] = useState<boolean>(
+    () => localStorage.getItem("isAdmin") === "true",
+  );
+
   const queryClient = useQueryClient();
-  const cachedUser: any =
-    queryClient.getQueryData(["User"]) || localStorage.getItem("isAdmin")
-      ? { role: "admin" }
-      : null;
 
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
       if (e.key === "passcode") setHasPasscode(!!e.newValue);
+      if (e.key === "isAdmin") setIsAdmin(e.newValue === "true");
     };
     const onPasscodeChanged = (e: Event) => {
       try {
@@ -30,12 +31,36 @@ function BingoNavbar() {
         setHasPasscode(!!localStorage.getItem("passcode"));
       }
     };
+    const onIsAdminChanged = (e: Event) => {
+      try {
+        const custom = e as CustomEvent;
+        const val = custom?.detail?.isAdmin ?? localStorage.getItem("isAdmin");
+        setIsAdmin(val === true || val === "true");
+      } catch (err) {
+        setIsAdmin(localStorage.getItem("isAdmin") === "true");
+      }
+    };
+
     window.addEventListener("storage", onStorage);
     window.addEventListener(
       "passcodeChanged",
       onPasscodeChanged as EventListener,
     );
-    return () => window.removeEventListener("storage", onStorage);
+    window.addEventListener(
+      "isAdminChanged",
+      onIsAdminChanged as EventListener,
+    );
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener(
+        "passcodeChanged",
+        onPasscodeChanged as EventListener,
+      );
+      window.removeEventListener(
+        "isAdminChanged",
+        onIsAdminChanged as EventListener,
+      );
+    };
   }, []);
 
   const handleReset = () => {
@@ -44,9 +69,13 @@ function BingoNavbar() {
       localStorage.removeItem("board");
       localStorage.removeItem("isAdmin");
       setHasPasscode(false);
+      setIsAdmin(false);
       try {
         window.dispatchEvent(
           new CustomEvent("passcodeChanged", { detail: { passcode: null } }),
+        );
+        window.dispatchEvent(
+          new CustomEvent("isAdminChanged", { detail: { isAdmin: null } }),
         );
       } catch (err) {
         /* ignore */
@@ -75,7 +104,7 @@ function BingoNavbar() {
                 style={{ padding: "1em" }}
               />
             </Navbar.Brand>
-            {cachedUser?.role?.toLowerCase() === "admin" && (
+            {isAdmin && (
               <Nav.Link as={Link} to="/bingo/admin">
                 <h3 style={{ color: "red" }}>Admin</h3>
               </Nav.Link>

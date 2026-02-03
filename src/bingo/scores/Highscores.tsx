@@ -23,8 +23,8 @@ const Highscores: React.FC = () => {
   // Expect backend to return: { highscores, deathCounts, completions }
   const {
     highscores = {},
-    deathCounts = {},
-    completions: completionMap = {},
+    // deathCounts = {},
+    // completions: completionMap = {},
   } = data && typeof data === "object" ? (data as any) : {};
 
   const mapToEntries = (m: Record<string, any>) =>
@@ -33,11 +33,11 @@ const Highscores: React.FC = () => {
     );
 
   const highscoresEntries = mapToEntries(highscores);
-  const deathCountEntries = mapToEntries(deathCounts);
-  const completionEntries = mapToEntries(completionMap);
-  const maxSubmission = completionEntries.length
-    ? Math.max(...completionEntries.map(([, c]) => c))
-    : 0;
+  // const deathCountEntries = mapToEntries(deathCounts);
+  // const completionEntries = mapToEntries(completionMap);
+  // const maxSubmission = completionEntries.length
+  //   ? Math.max(...completionEntries.map(([, c]) => c))
+  //   : 0;
   // if (data) {
   //   console.log(data);
   // }

@@ -73,7 +73,7 @@ const Settings = () => {
   const cards = [
     { title: "Refresh Players", targets: ["players"] },
     { title: "Refresh Board", targets: ["board"] },
-    { title: "Refresh teamStates", targets: ["teamStates"] },
+    { title: "Refresh Points", targets: ["teamStates"] },
     { title: "Refresh Completions", targets: ["completions"] },
     { title: "Refresh All", targets: ["all"] },
   ];
