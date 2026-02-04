@@ -6,7 +6,7 @@ import Toasts from "./main-components/Toasts";
 import ProtectedRoutes from "./main-components/ProtectedRoutes";
 import Dashboard from "./main-components/Dashboard";
 import Home from "./main-components/Home";
-import Login from "./bingo/login/Login";
+import Login from "./main-components/Login";
 import Admin from "./bingo/admin/Admin";
 // import Bingo from "./bingo/Bingo";
 const Bingo = lazy(() => import("./bingo/Bingo"));
@@ -17,6 +17,9 @@ const BingoHome = lazy(() => import("./bingo/home/BingoHome"));
 const VingoLogin = lazy(() => import("./bingo/login/Login"));
 const Shame = lazy(() => import("./bingo/shame/Shame"));
 const Highscores = lazy(() => import("./bingo/scores/Highscores"));
+const AWC = lazy(() => import("./awc/AWC"));
+const AWCHome = lazy(() => import("./awc/AWCHome"));
+const Labels = lazy(() => import("./awc/labels/Labels"));
 /*
 // routes.js
 import WeatherWidget from './components/WeatherWidget';
@@ -34,36 +37,41 @@ export const allWidgets = {
 function App() {
   return (
     <BrowserRouter>
-      <ToastProvider>
-        <Toasts />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          {/* map through allWidgets, each surrounded by ProtectedRoutes */}
-          <Route
-            path="/dashboard/*"
-            element={
-              <AuthProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <Toasts />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/awc" element={<AWC />}>
+              <Route index element={<AWCHome />} />
+              <Route path="labels" element={<Labels />} />
+              <Route path="*" element={<AWCHome />} />
+            </Route>
+            {/* map through allWidgets, each surrounded by ProtectedRoutes */}
+            <Route
+              path="/dashboard/*"
+              element={
                 <ProtectedRoutes>
                   <Dashboard />
                 </ProtectedRoutes>
-              </AuthProvider>
-            }
-          />
-          {/* <Route path="/bingo" element={<Bingo />} /> */}
-          <Route path="/bingo" element={<Bingo />}>
-            <Route index element={<BingoHome />} />
-            <Route path="rules" element={<Rules />} />
-            <Route path="login" element={<VingoLogin />} />
-            <Route path="setup" element={<Setup />} />
-            <Route path="board" element={<BoardPage />} />
-            <Route path="shame" element={<Shame />} />
-            <Route path="scores" element={<Highscores />} />
-            <Route path="admin" element={<Admin />} />
-            <Route path="*" element={<BingoHome />} />
-          </Route>
-        </Routes>
-      </ToastProvider>
+              }
+            />
+            {/* <Route path="/bingo" element={<Bingo />} /> */}
+            <Route path="/bingo" element={<Bingo />}>
+              <Route index element={<BingoHome />} />
+              <Route path="rules" element={<Rules />} />
+              <Route path="login" element={<VingoLogin />} />
+              <Route path="setup" element={<Setup />} />
+              <Route path="board" element={<BoardPage />} />
+              <Route path="shame" element={<Shame />} />
+              <Route path="scores" element={<Highscores />} />
+              <Route path="admin" element={<Admin />} />
+              <Route path="*" element={<BingoHome />} />
+            </Route>
+          </Routes>
+        </ToastProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

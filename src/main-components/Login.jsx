@@ -4,7 +4,7 @@ import { AuthContext } from "./AuthContext";
 
 const Login = () => {
   const { authLogin } = useContext(AuthContext);
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const email = e.target.email.value;

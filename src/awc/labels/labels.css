@@ -1,0 +1,152 @@
+.labels-root {
+  height: 100%;
+  padding: 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.labels-main {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  gap: 16px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+.labels-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 8px;
+}
+.labels-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.labels-top {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 10%;
+  min-height: 72px;
+}
+.labels-root > h3 {
+  margin: 0 0 8px 0;
+}
+.labels-top {
+  margin-top: 0;
+}
+.top-cards {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  max-width: 1200px;
+}
+.top-cards > .labels-card {
+  flex: 1 1 0;
+}
+.labels-grid-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  flex: 1 1 auto;
+}
+.labels-grid-card {
+  flex: 1;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+}
+.labels-card-body {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}
+.top-card-body {
+  justify-content: space-between;
+}
+.labels-divider {
+  border: none;
+  height: 2px;
+  background: #bdbdbd;
+  margin: 12px 0;
+}
+.export-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.export-card-body {
+  align-items: stretch;
+}
+.export-pair {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1 1 0;
+}
+.export-pair > button {
+  width: 100%;
+}
+.labels-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.labels-grid-container {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+.labels-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+  gap: 8px;
+  flex: 1;
+  height: 100%;
+}
+.labels-cell {
+  border: 1px solid #ccc;
+  padding: 8px;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.labels-cell.highlight {
+  outline: 3px solid rgba(0, 128, 0, 0.25);
+  background: rgba(220, 255, 220, 0.6);
+}
+.labels-edit-input {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+  padding: 8px;
+}
+
+/* Light gray background for all cards */
+.labels-card,
+.labels-grid-card,
+.top-left-card,
+.export-left-card {
+  background-color: #f5f6f7;
+}
+
+/* Ensure inner card body uses transparent background so padding shows the card color */
+.labels-card .card-body,
+.labels-grid-card .card-body {
+  background: transparent;
+}

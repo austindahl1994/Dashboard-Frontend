@@ -100,7 +100,7 @@ const Setup = () => {
             <div className="flex-fill video-placeholder d-flex align-items-center justify-content-center h-75">
               <video
                 className="setup-video"
-                src="https://cabbage-bounty.s3.us-east-2.amazonaws.com/bingo/eventInstructions.mp4"
+                src="https://cabbage-bounty.s3.us-east-2.amazonaws.com/bingo/Plugin+Setup+Vid.mp4"
                 controls
               />
             </div>
