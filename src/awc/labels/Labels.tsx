@@ -6,6 +6,7 @@ import React, {
   useContext,
 } from "react";
 import { Button, Form, Card } from "react-bootstrap";
+// @ts-ignore
 import Papa from "papaparse";
 import { useNavigate } from "react-router-dom";
 import "./labels.css";

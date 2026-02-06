@@ -58,8 +58,11 @@ const Highscores: React.FC = () => {
         >
           <Row className="g-0 w-100 justify-content-center">
             <Col xs={12} md={10} lg={8} className="p-3">
+              {/* <h1 className="text-white text-center p-1">Highscores</h1> */}
               <Card className="hs-main-card" style={{ height: "80vh" }}>
-                <Card.Header className="text-center">Highscores</Card.Header>
+                <Card.Header className="text-center">
+                  <h2>Point System</h2>
+                </Card.Header>
                 <Card.Body className="overflow-auto bg-black d-flex align-items-center justify-content-center">
                   <div className="hs-container d-flex h-100 w-100 align-items-center justify-content-around">
                     {highscoresEntries.map(([team, score]) => {
@@ -90,6 +93,17 @@ const Highscores: React.FC = () => {
                     })}
                   </div>
                 </Card.Body>
+                <Card.Footer className="text-center">
+                  <p>
+                    <strong>
+                      Points work as: Easy = 1 point per tile, Medium = 2 points
+                      per tile, Hard = 3 points per tile, Elite = 5 points per
+                      tile, Master = 8 points per tile. When completing a
+                      row/column you will receive 8 points, this works only
+                      horizontally and vertically.
+                    </strong>
+                  </p>
+                </Card.Footer>
               </Card>
             </Col>
           </Row>

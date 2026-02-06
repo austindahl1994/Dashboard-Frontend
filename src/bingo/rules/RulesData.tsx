@@ -15,7 +15,7 @@ export const rulesData: string[] = [
   "Non-constructive complaining or excessive negativity regarding the bingo event is not permitted. Such behavior may result in disciplinary action, which can include mandatory donation penalties or removal from the event.",
   "Participants must ensure that Dink is properly set up by following the instructions provided in the official setup video.",
   "This bingo forms part of the requirements for clan ranking. If this update affects your rank in any way, you are responsible for notifying the moderators. Please do so promptly, as moderators will be participating in the bingo event and may have limited availability to make adjustments during that time.",
-  "Bingo and RuneScape are games, and we recognize that real-life obligations may arise unexpectedly. Publicly criticizing or calling out inactive team members is unnecessary and disrespectful. Please let Vinny know of any issue with specific team members and we will resolve this as a team.",
+  "Bingo and RuneScape are games, and we recognize that real-life obligations may arise unexpectedly. Publicly criticizing or calling out inactive team members is unnecessary and disrespectful. Please let Milk know of any issue with specific team members and we will resolve this as a team.",
   "The bingo event will begin and end strictly according to the times posted in the Announcements channel on Discord. You may prep, but be warned in that there will be few prep tiles so think wisely.",
   "A rule from our end, no rule or tile will be adjusted throughout the event. We have tested specific tiles we thought were not going to work or cause issues so you don't have too.",
 ];
