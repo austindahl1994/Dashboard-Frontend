@@ -142,7 +142,7 @@ const Board: FC = () => {
     <>
       {/* Show spinner while board data is not yet available in the query cache */}
       {!boardArray || isLoadingBoard ? (
-        <div className="d-flex w-100 h-100 justify-content-center align-items-center">
+        <div className="d-flex w-100 h-100 justify-content-center align-items-center text-white">
           <Spinner animation="border" />
         </div>
       ) : (

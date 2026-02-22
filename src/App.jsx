@@ -1,4 +1,4 @@
-import { lazy } from "react"; //use suspense for lazy loading
+import { lazy, Suspense } from "react"; //use suspense for lazy loading
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./main-components/AuthContext";
 import { ToastProvider } from "./main-components/ToastContext";
@@ -8,6 +8,8 @@ import Dashboard from "./main-components/Dashboard";
 import Home from "./main-components/Home";
 import Login from "./main-components/Login";
 import Admin from "./bingo/admin/Admin";
+import NotFound from "./main-components/NotFound";
+
 // import Bingo from "./bingo/Bingo";
 const Bingo = lazy(() => import("./bingo/Bingo"));
 const Rules = lazy(() => import("./bingo/rules/Rules"));
@@ -20,6 +22,7 @@ const Highscores = lazy(() => import("./bingo/scores/Highscores"));
 const AWC = lazy(() => import("./awc/AWC"));
 const AWCHome = lazy(() => import("./awc/AWCHome"));
 const Labels = lazy(() => import("./awc/labels/Labels"));
+const BattleshipWrapper = lazy(() => import("./battleship/BattleshipWrapper"));
 /*
 // routes.js
 import WeatherWidget from './components/WeatherWidget';
@@ -40,36 +43,47 @@ function App() {
       <AuthProvider>
         <ToastProvider>
           <Toasts />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/awc" element={<AWC />}>
-              <Route index element={<AWCHome />} />
-              <Route path="labels" element={<Labels />} />
-              <Route path="*" element={<AWCHome />} />
-            </Route>
-            {/* map through allWidgets, each surrounded by ProtectedRoutes */}
-            <Route
-              path="/dashboard/*"
-              element={
-                <ProtectedRoutes>
-                  <Dashboard />
-                </ProtectedRoutes>
-              }
-            />
-            {/* <Route path="/bingo" element={<Bingo />} /> */}
-            <Route path="/bingo" element={<Bingo />}>
-              <Route index element={<BingoHome />} />
-              <Route path="rules" element={<Rules />} />
-              <Route path="login" element={<VingoLogin />} />
-              <Route path="setup" element={<Setup />} />
-              <Route path="board" element={<BoardPage />} />
-              <Route path="shame" element={<Shame />} />
-              <Route path="scores" element={<Highscores />} />
-              <Route path="admin" element={<Admin />} />
-              <Route path="*" element={<BingoHome />} />
-            </Route>
-          </Routes>
+          <Suspense
+            fallback={
+              <div style={{ padding: "2rem", textAlign: "center" }}>
+                Loading...
+              </div>
+            }
+          >
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              {/* ADVANCED WIRELESS PAGES */}
+              <Route path="/awc" element={<AWC />}>
+                <Route index element={<AWCHome />} />
+                <Route path="labels" element={<Labels />} />
+                <Route path="*" element={<AWCHome />} />
+              </Route>
+              {/* BATTLESHIP EVENT */}
+              <Route path="/battleship" element={<BattleshipWrapper />} />
+              <Route
+                path="/dashboard/*"
+                element={
+                  <ProtectedRoutes>
+                    <Dashboard />
+                  </ProtectedRoutes>
+                }
+              />
+              {/* <Route path="/bingo" element={<Bingo />} /> */}
+              <Route path="/bingo" element={<Bingo />}>
+                <Route index element={<BingoHome />} />
+                <Route path="rules" element={<Rules />} />
+                <Route path="login" element={<VingoLogin />} />
+                <Route path="setup" element={<Setup />} />
+                <Route path="board" element={<BoardPage />} />
+                <Route path="shame" element={<Shame />} />
+                <Route path="scores" element={<Highscores />} />
+                <Route path="admin" element={<Admin />} />
+                <Route path="*" element={<BingoHome />} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </ToastProvider>
       </AuthProvider>
     </BrowserRouter>

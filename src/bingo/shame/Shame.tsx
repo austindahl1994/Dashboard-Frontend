@@ -30,7 +30,8 @@ const Shame: React.FC = () => {
   });
 
   // Normalize API response to an array of ShameItem
-  const shameItems: ShameItem[] = (() => {
+  const shameItems: ShameItem[] | null = (() => {
+    if (data === null) return data as null;
     if (!data) return [];
     if (Array.isArray(data)) return data as ShameItem[];
     if (Array.isArray((data as any).data)) return (data as any).data;
@@ -55,6 +56,10 @@ const Shame: React.FC = () => {
         <div className="d-flex justify-content-center py-4">
           <Spinner animation="border" />
         </div>
+      ) : data === null ? (
+        <div className="text-white">
+          Your team has not commited any shameful acts... yet.
+        </div>
       ) : isError ? (
         <div className="text-danger">Failed to load shame data.</div>
       ) : (
@@ -70,7 +75,7 @@ const Shame: React.FC = () => {
             padding: 8,
           }}
         >
-          {shameItems.map((item: ShameItem, idx: number) => (
+          {shameItems?.map((item: ShameItem, idx: number) => (
             <Card
               key={idx}
               style={{

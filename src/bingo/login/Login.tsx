@@ -62,6 +62,10 @@ const Login = () => {
         queryClient
           .fetchQuery({ queryKey: ["board"], queryFn: getBoard })
           .then((data) => {
+            if (data === null) {
+              createToast("EVENT HAS NOT STARTED YET", 0);
+              navigate("/bingo/rules");
+            }
             if (data) {
               try {
                 localStorage.setItem("board", JSON.stringify(data));

@@ -173,7 +173,15 @@ export const adminDelete = async ({ passcode, url }) => {
 };
 
 // #endregion
+export const getBSBoard = async () => {
+  const response = await api.post(`/battleship/board`);
+  return response.data;
+};
 
+export const getBSData = async () => {
+  const response = await api.post(`/battleship/data`);
+  return response.data;
+};
 //get all the data, each month/year combination
 //allow user to save month year to database, overrides current
 //When user saves categories, will combine categories object and subcat object, this way we keep track of which categories have which subcategories, and what strings are a part of which subcategories

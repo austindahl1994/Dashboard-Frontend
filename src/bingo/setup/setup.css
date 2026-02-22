@@ -1,4 +1,8 @@
 /* Layout for the two stacked cards in Setup */
+.tab-title {
+  font-size: 2.5rem;
+}
+
 .setup-root {
   display: flex;
   flex-direction: column;
@@ -95,6 +99,7 @@
   color: #000;
   font-weight: 700;
   padding: 6px 10px;
+  font-size: 1.5rem;
   border-radius: 4px;
   height: 32px;
   display: flex;
@@ -118,6 +123,7 @@
   color: #fff; /* inactive tab text: white */
   font-weight: 700;
   padding: 6px 10px;
+  font-size: 1.5rem;
   border-radius: 4px;
   height: 32px;
   display: inline-flex;

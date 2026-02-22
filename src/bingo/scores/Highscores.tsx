@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getHighscores } from "../../api";
-import { Card, Col, Container, Row } from "react-bootstrap";
+import { Card, Col, Container, Row, Spinner } from "react-bootstrap";
 import "./highscores.css";
 
 const TEAM_COLORS = ["#1f7a1f", "#5599c5", "#7a3a8a"];
@@ -48,7 +48,13 @@ const Highscores: React.FC = () => {
   return (
     <>
       {isLoading ? (
-        <div>Loading highscores...</div>
+        <div className="d-flex justify-content-center py-4 text-white">
+          <Spinner animation="border" />
+        </div>
+      ) : data === null ? (
+        <div className="text-white">
+          These are not the scores you're looking for...
+        </div>
       ) : isError ? (
         <div className="text-danger">Failed to load highscores.</div>
       ) : (

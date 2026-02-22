@@ -60,16 +60,26 @@ const tempProfile = [
 //Add the ability to remove traits and remove properties
 //BETTER UNDERSTANDING OF USEEFFECT DEPENDENCIES and USECALLBACK for no inf renders
 const CharacterGeneration = () => {
+  // Safe localStorage parser to avoid JSON.parse on missing/invalid values
+  const safeParseLocalStorage = (key, fallback) => {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw || raw === "undefined" || raw === "null") return fallback;
+      const parsed = JSON.parse(raw);
+      return parsed === undefined || parsed === null ? fallback : parsed;
+    } catch (e) {
+      console.log(`Error creating safe localstorage data: ${e}`);
+      return fallback;
+    }
+  };
   const queryClient = useQueryClient();
   const { createToast } = useContext(ToastContext);
   const [loadedProfiles, setLoadedProfiles] = useState([]);
   const [table, setTable] = useState(() => {
-    const savedProfile = localStorage.getItem("profile");
-    return savedProfile ? JSON.parse(savedProfile) : tempProfile;
+    return safeParseLocalStorage("profile", tempProfile);
   });
   const [title, setTitle] = useState(() => {
-    const loadedTitle = localStorage.getItem("title");
-    return loadedTitle ? JSON.parse(loadedTitle) : "New Profile";
+    return safeParseLocalStorage("title", "New Profile");
   });
   const [editingTitle, setEditingTitle] = useState(false);
 
@@ -184,7 +194,11 @@ const CharacterGeneration = () => {
     setTable(data?.properties ? data.properties : data);
     setSaved(true);
     localStorage.setItem("title", JSON.stringify(title));
-    localStorage.setItem("profile", JSON.stringify(data.properties));
+    // store profile properties if present, otherwise store the data itself
+    localStorage.setItem(
+      "profile",
+      JSON.stringify(data?.properties ? data.properties : data),
+    );
   };
 
   //Deletes the profile from database
