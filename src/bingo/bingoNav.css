@@ -9,8 +9,17 @@
   height: 100%;
 }
 
-.bingo-nav .nav .nav-link + .nav-link {
+.bingo-nav .nav .nav-link + .nav-link,
+h3 {
   border-top: 1px solid rgba(0, 0, 0, 0.25);
   padding-left: 0.6rem;
   margin-left: 0.6rem;
+}
+
+h4 {
+  margin: 0;
+}
+
+h3 {
+  padding-top: 1%;
 }

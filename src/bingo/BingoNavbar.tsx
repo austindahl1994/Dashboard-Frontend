@@ -12,6 +12,9 @@ function BingoNavbar() {
   const [isAdmin, setIsAdmin] = useState<boolean>(
     () => localStorage.getItem("isAdmin") === "true",
   );
+  const [team, setTeam] = useState<string | null>(() =>
+    localStorage.getItem("team"),
+  );
 
   const queryClient = useQueryClient();
 
@@ -19,6 +22,16 @@ function BingoNavbar() {
     const onStorage = (e: StorageEvent) => {
       if (e.key === "passcode") setHasPasscode(!!e.newValue);
       if (e.key === "isAdmin") setIsAdmin(e.newValue === "true");
+      if (e.key === "team") setTeam(e.newValue);
+    };
+    const onTeamChanged = (e: Event) => {
+      try {
+        const custom = e as CustomEvent;
+        const incoming = custom?.detail?.team ?? localStorage.getItem("team");
+        setTeam(incoming ?? null);
+      } catch (err) {
+        setTeam(localStorage.getItem("team"));
+      }
     };
     const onPasscodeChanged = (e: Event) => {
       try {
@@ -50,6 +63,7 @@ function BingoNavbar() {
       "isAdminChanged",
       onIsAdminChanged as EventListener,
     );
+    window.addEventListener("teamChanged", onTeamChanged as EventListener);
     return () => {
       window.removeEventListener("storage", onStorage);
       window.removeEventListener(
@@ -60,6 +74,7 @@ function BingoNavbar() {
         "isAdminChanged",
         onIsAdminChanged as EventListener,
       );
+      window.removeEventListener("teamChanged", onTeamChanged as EventListener);
     };
   }, []);
 
@@ -68,14 +83,19 @@ function BingoNavbar() {
       localStorage.removeItem("passcode");
       localStorage.removeItem("board");
       localStorage.removeItem("isAdmin");
+      localStorage.removeItem("team");
       setHasPasscode(false);
       setIsAdmin(false);
+      setTeam(null);
       try {
         window.dispatchEvent(
           new CustomEvent("passcodeChanged", { detail: { passcode: null } }),
         );
         window.dispatchEvent(
           new CustomEvent("isAdminChanged", { detail: { isAdmin: null } }),
+        );
+        window.dispatchEvent(
+          new CustomEvent("teamChanged", { detail: { team: null } }),
         );
       } catch (err) {
         /* ignore */
@@ -136,7 +156,18 @@ function BingoNavbar() {
               </Nav.Link>
             )}
           </div>
-
+          {team && (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "0.25rem 0",
+                fontWeight: 700,
+                fontFamily: "'Pirata One', serif",
+              }}
+            >
+              <h3>{`Team ${team}`}</h3>
+            </div>
+          )}
           {hasPasscode && (
             <div className="mt-auto d-flex justify-content-center">
               <Button

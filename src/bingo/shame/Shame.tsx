@@ -30,8 +30,7 @@ const Shame: React.FC = () => {
   });
 
   // Normalize API response to an array of ShameItem
-  const shameItems: ShameItem[] | null = (() => {
-    if (data === null) return data as null;
+  const shameItems: ShameItem[] = (() => {
     if (!data) return [];
     if (Array.isArray(data)) return data as ShameItem[];
     if (Array.isArray((data as any).data)) return (data as any).data;

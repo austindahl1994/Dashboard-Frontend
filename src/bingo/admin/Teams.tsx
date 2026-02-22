@@ -1,5 +1,5 @@
-import React from "react";
-import { Table } from "react-bootstrap";
+import React, { useState } from "react";
+import { Table, Button } from "react-bootstrap";
 import { useQueryClient } from "@tanstack/react-query";
 
 type Player = {
@@ -28,20 +28,68 @@ const Teams: React.FC<{ data?: any }> = ({ data }) => {
 
   const teams = [1, 2, 3].map((t) => players.filter((p) => p.team === t));
 
+  const [selectedTeam, setSelectedTeam] = useState<number>(0);
+
+  const prevTeam = () => setSelectedTeam((s) => (s + 2) % 3);
+  const nextTeam = () => setSelectedTeam((s) => (s + 1) % 3);
+
+  const teamPlayers = teams[selectedTeam] || [];
+
   return (
-    <div style={{ display: "flex", gap: 12, padding: "20px 0" }}>
-      {teams.map((teamPlayers, idx) => (
-        <div key={idx} style={{ flex: 1, minWidth: 200 }}>
-          <h5 style={{ textAlign: "center" }}>{`Team ${idx + 1}`}</h5>
-          {teamPlayers.length === 0 ? (
-            <div style={{ textAlign: "center" }}>No players</div>
-          ) : (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        padding: "20px 0",
+        height: "100%",
+      }}
+    >
+      <div style={{ width: "100%", maxWidth: 900 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: 8,
+          }}
+        >
+          <Button
+            size="sm"
+            variant="primary"
+            onClick={prevTeam}
+            aria-label="previous team"
+          >
+            &lt;
+          </Button>
+          <h5
+            style={{ textAlign: "center", margin: 0 }}
+          >{`Team ${selectedTeam + 1}`}</h5>
+          <Button
+            size="sm"
+            variant="primary"
+            onClick={nextTeam}
+            aria-label="next team"
+          >
+            &gt;
+          </Button>
+        </div>
+
+        {teamPlayers.length === 0 ? (
+          <div style={{ textAlign: "center" }}>No players</div>
+        ) : (
+          <div
+            style={{
+              overflowY: "auto",
+              overflowX: "hidden",
+              height: "95%",
+            }}
+          >
             <Table size="sm" bordered hover>
               <thead>
                 <tr>
-                  <th style={{ width: "40%" }}>discord</th>
-                  <th style={{ width: "30%" }}>nickname</th>
-                  <th style={{ width: "30%" }}>rsn</th>
+                  <th style={{ width: "33%" }}>discord</th>
+                  <th style={{ width: "33%" }}>nickname</th>
+                  <th style={{ width: "33%" }}>rsn</th>
                 </tr>
               </thead>
               <tbody>
@@ -78,9 +126,9 @@ const Teams: React.FC<{ data?: any }> = ({ data }) => {
                 ))}
               </tbody>
             </Table>
-          )}
-        </div>
-      ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

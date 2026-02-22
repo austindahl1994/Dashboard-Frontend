@@ -48,29 +48,60 @@ export const getSettings = async (widgetName) => {
 // #endregion
 // #region Character Generation ----------------------------
 export const saveProfile = async (name, properties) => {
-  const response = await api.post(`/profile/save/${encodeURIComponent(name)}`, {
-    properties,
-  });
-  //console.log(response.data)
-  return response.data;
+  try {
+    const response = await api.post(
+      `/profile/save/${encodeURIComponent(name)}`,
+      {
+        properties,
+      },
+    );
+    return response.data;
+  } catch (err) {
+    const msg =
+      err?.response?.data?.message || err?.message || "saveProfile failed";
+    console.error("saveProfile error:", msg);
+    throw err;
+  }
 };
 
 export const getProfile = async (name) => {
-  const response = await api.get(`/profile/${encodeURIComponent(name)}`);
-  return response.data;
+  try {
+    const response = await api.get(`/profile/${encodeURIComponent(name)}`);
+    return response.data;
+  } catch (err) {
+    const msg =
+      err?.response?.data?.message || err?.message || "getProfile failed";
+    console.error("getProfile error:", msg);
+    throw err;
+  }
 };
 
 export const getRecentProfiles = async () => {
-  const response = await api.get("/profile/recent");
-  //console.log(response.data)
-  return response.data;
+  try {
+    const response = await api.get("/profile/recent");
+    return response.data;
+  } catch (err) {
+    const msg =
+      err?.response?.data?.message ||
+      err?.message ||
+      "getRecentProfiles failed";
+    console.error("getRecentProfiles error:", msg);
+    throw err;
+  }
 };
 
 export const deleteProfile = async (name) => {
-  const response = await api.delete(
-    `/profile/delete/${encodeURIComponent(name)}`,
-  );
-  return response.data;
+  try {
+    const response = await api.delete(
+      `/profile/delete/${encodeURIComponent(name)}`,
+    );
+    return response.data;
+  } catch (err) {
+    const msg =
+      err?.response?.data?.message || err?.message || "deleteProfile failed";
+    console.error("deleteProfile error:", msg);
+    throw err;
+  }
 };
 // #endregion
 // #region Expense Tracker ----------------------------

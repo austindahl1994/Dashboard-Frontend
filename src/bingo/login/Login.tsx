@@ -26,12 +26,32 @@ const Login = () => {
       return getTeam({ passcode });
     },
     onSuccess: (data, passcode: string) => {
+      const team = data.team;
       const rsn = data.rsn;
       const role = data.role;
       if (role.toLowerCase() === "admin") {
         localStorage.setItem("isAdmin", "true");
       } else {
         localStorage.removeItem("isAdmin");
+      }
+      // notify same-tab listeners that isAdmin changed
+      try {
+        const isAdminFlag = role && role.toString().toLowerCase() === "admin";
+        window.dispatchEvent(
+          new CustomEvent("isAdminChanged", {
+            detail: { isAdmin: isAdminFlag },
+          }),
+        );
+      } catch (err) {
+        console.warn("Could not dispatch isAdminChanged event:", err);
+      }
+      // persist team for other components (e.g. navbar)
+      try {
+        if (team !== undefined && team !== null) {
+          localStorage.setItem("team", String(team));
+        }
+      } catch (err) {
+        console.warn("Could not store team in localStorage:", err);
       }
       // Cache the logged-in user in TanStack Query so other components can read role
       try {
@@ -41,6 +61,14 @@ const Login = () => {
       }
       //{"team":2,"rsn":"ItzDubz","role":"admin"}
       localStorage.setItem("passcode", passcode);
+      // notify same-tab listeners that team changed
+      try {
+        window.dispatchEvent(
+          new CustomEvent("teamChanged", { detail: { team } }),
+        );
+      } catch (err) {
+        console.warn("Could not dispatch teamChanged event:", err);
+      }
       // Notify same-tab listeners that passcode changed
       try {
         window.dispatchEvent(
@@ -87,6 +115,7 @@ const Login = () => {
     onError: (error: any) => {
       console.error("Error fetching player data:", error);
       localStorage.removeItem("passcode");
+      localStorage.removeItem("team");
       createToast(`Login failed: ${error?.message ?? error}`, 0);
     },
   });
