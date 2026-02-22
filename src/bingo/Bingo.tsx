@@ -16,8 +16,8 @@ const Bingo = () => {
     if (isBeforeCutoff) return; // don't attempt to fetch board before event starts
     const passcode = localStorage.getItem("passcode");
     const board = localStorage.getItem("board");
-    if (!passcode || board) return; // do nothing unless a valid passcode is cached and board is not already cached
-
+    if (!passcode || board || isBeforeCutoff) return; // do nothing unless a valid passcode is cached and board is not already cached
+    console.log(`Board still getting called?`);
     // Fetch and cache the board when entering any bingo page
     queryClient
       .fetchQuery({ queryKey: ["board"], queryFn: getBoard })

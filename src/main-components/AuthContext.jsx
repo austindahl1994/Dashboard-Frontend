@@ -3,6 +3,7 @@ import { PropTypes } from "prop-types";
 import { useNavigate } from "react-router-dom";
 import { getSession, login, logout } from "../api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "react-router-dom";
 
 const AuthContext = createContext();
 
@@ -10,6 +11,10 @@ const AuthProvider = ({ children }) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const cachedUser = queryClient.getQueryData(["User"]);
+  const location = useLocation();
+  const shouldCheckSession = ["/dashboard", "/awc", "/battleship"].some((p) =>
+    location.pathname.startsWith(p),
+  );
 
   const loginMutation = useMutation({
     mutationFn: ({ email, password }) => login(email, password),
@@ -44,7 +49,7 @@ const AuthProvider = ({ children }) => {
     retry: false,
     staleTime: 600000,
     refetchOnWindowFocus: false,
-    enabled: !cachedUser,
+    enabled: !cachedUser && shouldCheckSession,
     initialData: cachedUser,
   });
 

@@ -111,7 +111,7 @@ const Board: FC = () => {
 
     // If we already have a board, nothing to do
     if (boardArray) return;
-
+    console.log(`Before cutoff but still calling`);
     const passcode = localStorage.getItem("passcode");
     // If there's no passcode and no board, route to bingo home
     if (!passcode) {

@@ -13,6 +13,10 @@ const Login = () => {
   const navigate = useNavigate();
   const { createToast } = useContext(ToastContext);
 
+  // Cutoff: Feb 28 2026 08:00 CST (CST = UTC-6) => 2026-02-28T14:00:00Z
+  const cutoff = new Date(Date.UTC(2026, 1, 28, 14, 0, 0));
+  const isBeforeCutoff = Date.now() < cutoff.getTime();
+
   useEffect(() => {
     const saved = localStorage.getItem("passcode");
     if (saved) {
@@ -86,6 +90,13 @@ const Login = () => {
       }
 
       // Otherwise fetch, cache, and navigate on success
+      // If the event hasn't started yet, don't call the board API — just navigate to rules
+      if (isBeforeCutoff) {
+        createToast("EVENT HAS NOT STARTED YET", 0);
+        navigate("/bingo/rules");
+        return;
+      }
+
       try {
         queryClient
           .fetchQuery({ queryKey: ["board"], queryFn: getBoard })
@@ -161,8 +172,9 @@ const Login = () => {
               onChange={(e) => setInputPasscode(e.target.value)}
             />
             <Form.Text className="text-muted text-center">
-              Run "/passcode" in ANY Cabbage Discord channel to get your unique
-              passcode.
+              Run <strong>"/passcode"</strong> in ANY Cabbage Discord channel to
+              get your unique passcode, followed by your RSN, which is{" "}
+              <strong>CASE SENSITIVE</strong>!
             </Form.Text>
           </Form.Group>
           <div className="d-flex justify-content-end">

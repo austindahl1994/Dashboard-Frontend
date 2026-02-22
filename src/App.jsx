@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react"; //use suspense for lazy loading
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Outlet } from "react-router-dom";
 import { AuthProvider } from "./main-components/AuthContext";
 import { ToastProvider } from "./main-components/ToastContext";
 import Toasts from "./main-components/Toasts";
@@ -38,28 +38,48 @@ export const allWidgets = {
 
 //Use and iterate ROUTES in protected routes
 function App() {
+  // Wrapper to mount AuthProvider only for routes that need it and render child routes via Outlet
+  const AuthWrapper = () => (
+    <AuthProvider>
+      <Outlet />
+    </AuthProvider>
+  );
+
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <ToastProvider>
-          <Toasts />
-          <Suspense
-            fallback={
-              <div style={{ padding: "2rem", textAlign: "center" }}>
-                Loading...
-              </div>
-            }
-          >
-            <Routes>
-              <Route path="/" element={<Home />} />
+      <ToastProvider>
+        <Toasts />
+        <Suspense
+          fallback={
+            <div style={{ padding: "2rem", textAlign: "center" }}>
+              Loading...
+            </div>
+          }
+        >
+          <Routes>
+            <Route path="/" element={<Home />} />
+
+            {/* Bingo routes (no AuthProvider) */}
+            <Route path="/bingo" element={<Bingo />}>
+              <Route index element={<BingoHome />} />
+              <Route path="rules" element={<Rules />} />
+              <Route path="login" element={<VingoLogin />} />
+              <Route path="setup" element={<Setup />} />
+              <Route path="board" element={<BoardPage />} />
+              <Route path="shame" element={<Shame />} />
+              <Route path="scores" element={<Highscores />} />
+              <Route path="admin" element={<Admin />} />
+              <Route path="*" element={<BingoHome />} />
+            </Route>
+
+            {/* Routes that require AuthProvider */}
+            <Route element={<AuthWrapper />}>
               <Route path="/login" element={<Login />} />
-              {/* ADVANCED WIRELESS PAGES */}
               <Route path="/awc" element={<AWC />}>
                 <Route index element={<AWCHome />} />
                 <Route path="labels" element={<Labels />} />
                 <Route path="*" element={<AWCHome />} />
               </Route>
-              {/* BATTLESHIP EVENT */}
               <Route path="/battleship" element={<BattleshipWrapper />} />
               <Route
                 path="/dashboard/*"
@@ -69,23 +89,11 @@ function App() {
                   </ProtectedRoutes>
                 }
               />
-              {/* <Route path="/bingo" element={<Bingo />} /> */}
-              <Route path="/bingo" element={<Bingo />}>
-                <Route index element={<BingoHome />} />
-                <Route path="rules" element={<Rules />} />
-                <Route path="login" element={<VingoLogin />} />
-                <Route path="setup" element={<Setup />} />
-                <Route path="board" element={<BoardPage />} />
-                <Route path="shame" element={<Shame />} />
-                <Route path="scores" element={<Highscores />} />
-                <Route path="admin" element={<Admin />} />
-                <Route path="*" element={<BingoHome />} />
-              </Route>
               <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </ToastProvider>
-      </AuthProvider>
+            </Route>
+          </Routes>
+        </Suspense>
+      </ToastProvider>
     </BrowserRouter>
   );
 }

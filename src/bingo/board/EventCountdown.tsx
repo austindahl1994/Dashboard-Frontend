@@ -52,6 +52,7 @@ const EventCountdown: FC<Props> = ({ cutoffDate = defaultCutoff }) => {
           year: "numeric",
           hour: "numeric",
           minute: "2-digit",
+          hour12: true,
         })}
       </small>
     </Container>
