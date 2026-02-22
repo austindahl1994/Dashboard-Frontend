@@ -1,0 +1,51 @@
+.ec-container {
+  color: white;
+}
+.ec-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.ec-digits {
+  display: flex;
+  gap: 8px;
+}
+.roll-digit {
+  width: 36px;
+  height: 40px;
+  overflow: hidden;
+  position: relative;
+}
+.roll-stack {
+  transition: transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.roll-frame {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #222;
+  color: #fff;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 20px;
+}
+.ec-label {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 12px;
+  margin-top: 6px;
+}
+.ec-root {
+  display: flex;
+  align-items: flex-end;
+}
+@media (max-width: 768px) {
+  .roll-digit {
+    width: 30px;
+    height: 34px;
+  }
+  .roll-frame {
+    font-size: 16px;
+    height: 34px;
+  }
+}

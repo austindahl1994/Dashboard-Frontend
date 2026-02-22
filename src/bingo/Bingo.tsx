@@ -8,7 +8,12 @@ import { getBoard } from "../api";
 const Bingo = () => {
   const queryClient = useQueryClient();
 
+  // Cutoff: Feb 28 2026 08:00 CST (UTC-6) => 2026-02-28T14:00:00Z
+  const cutoff = new Date(Date.UTC(2026, 1, 28, 14, 0, 0));
+  const isBeforeCutoff = Date.now() < cutoff.getTime();
+
   useEffect(() => {
+    if (isBeforeCutoff) return; // don't attempt to fetch board before event starts
     const passcode = localStorage.getItem("passcode");
     const board = localStorage.getItem("board");
     if (!passcode || board) return; // do nothing unless a valid passcode is cached and board is not already cached

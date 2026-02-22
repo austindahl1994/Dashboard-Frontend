@@ -4,20 +4,27 @@ import { useQuery } from "@tanstack/react-query";
 import { getHighscores } from "../../api";
 import { Card, Col, Container, Row, Spinner } from "react-bootstrap";
 import "./highscores.css";
+import EventCountdown from "../board/EventCountdown";
 
 const TEAM_COLORS = ["#1f7a1f", "#5599c5", "#7a3a8a"];
 
 const Highscores: React.FC = () => {
   const navigate = useNavigate();
 
+  // Cutoff: Feb 28 2026 08:00 CST (UTC-6) => 2026-02-28T14:00:00Z
+  const cutoff = new Date(Date.UTC(2026, 1, 28, 14, 0, 0));
+  const isBeforeCutoff = Date.now() < cutoff.getTime();
+
   useEffect(() => {
     const passcode = localStorage.getItem("passcode");
-    if (!passcode) navigate("/bingo/login", { replace: true });
+    if (!passcode && !isBeforeCutoff)
+      navigate("/bingo/login", { replace: true });
   }, [navigate]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["highscores"],
     queryFn: () => getHighscores(),
+    enabled: !isBeforeCutoff,
   });
 
   // Expect backend to return: { highscores, deathCounts, completions }
@@ -45,7 +52,9 @@ const Highscores: React.FC = () => {
   // Actual points - 444
   const MAX_POINTS = 444;
 
-  return (
+  return isBeforeCutoff ? (
+    <EventCountdown />
+  ) : (
     <>
       {isLoading ? (
         <div className="d-flex justify-content-center py-4 text-white">

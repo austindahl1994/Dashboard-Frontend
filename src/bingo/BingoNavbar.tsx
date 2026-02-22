@@ -160,12 +160,11 @@ function BingoNavbar() {
             <div
               style={{
                 textAlign: "center",
-                padding: "0.25rem 0",
                 fontWeight: 700,
                 fontFamily: "'Pirata One', serif",
               }}
             >
-              <h3>{`Team ${team}`}</h3>
+              <h3 className="nav-text">{`Team ${team}`}</h3>
             </div>
           )}
           {hasPasscode && (

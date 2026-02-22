@@ -3,6 +3,7 @@ import { Card, Image, Modal, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getShame } from "../../api";
+import EventCountdown from "../board/EventCountdown";
 
 type ShameItem = {
   playerName: string;
@@ -17,16 +18,21 @@ const Shame: React.FC = () => {
   const [modalCaption, setModalCaption] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  // Cutoff: Feb 28 2026 08:00 CST (UTC-6) => 2026-02-28T14:00:00Z
+  const cutoff = new Date(Date.UTC(2026, 1, 28, 14, 0, 0));
+  const isBeforeCutoff = Date.now() < cutoff.getTime();
+
   useEffect(() => {
     const passcode = localStorage.getItem("passcode");
-    if (!passcode) navigate("/bingo/login", { replace: true });
+    if (!passcode && !isBeforeCutoff)
+      navigate("/bingo/login", { replace: true });
   }, [navigate]);
 
   const passcode = localStorage.getItem("passcode") || undefined;
   const { data, isLoading, isError } = useQuery({
     queryKey: ["shame", passcode],
     queryFn: () => getShame({ passcode }),
-    enabled: !!passcode,
+    enabled: !!passcode && !isBeforeCutoff,
   });
 
   // Normalize API response to an array of ShameItem
@@ -37,6 +43,10 @@ const Shame: React.FC = () => {
     if (Array.isArray((data as any).shame)) return (data as any).shame;
     return [];
   })();
+
+  if (isBeforeCutoff) {
+    return <EventCountdown />;
+  }
 
   const openModal = (item: ShameItem) => {
     setModalUrl(fixUrl(item.url));

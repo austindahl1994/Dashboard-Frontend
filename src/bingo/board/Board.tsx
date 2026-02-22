@@ -2,6 +2,7 @@ import { FC, useEffect, useState } from "react";
 import { Col, Container, Row, Spinner, ListGroup, Form } from "react-bootstrap";
 import Tile from "./Tile";
 import TileModal from "./TileModal";
+import EventCountdown from "./EventCountdown";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { getBoard, getCompletions } from "../../api";
@@ -38,13 +39,17 @@ const Board: FC = () => {
 
   const passcode = localStorage.getItem("passcode") || "";
 
+  // Cutoff: Feb 28 2026 08:00 CST (CST = UTC-6) => 2026-02-28T14:00:00Z
+  const cutoff = new Date(Date.UTC(2026, 1, 28, 14, 0, 0));
+  const isBeforeCutoff = Date.now() < cutoff.getTime();
+
   // Fetch completions when we have a board cached/loaded
   const { data: completions, isLoading: isLoadingCompletions } = useQuery({
     queryKey: ["completions", passcode],
     queryFn: () => getCompletions({ passcode }),
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
-    enabled: !!boardArray && !!passcode,
+    enabled: !!boardArray && !!passcode && !isBeforeCutoff,
   });
 
   // useEffect(() => {
@@ -101,6 +106,9 @@ const Board: FC = () => {
     : [];
 
   useEffect(() => {
+    // If event countdown is active, skip fetching the board
+    if (isBeforeCutoff) return;
+
     // If we already have a board, nothing to do
     if (boardArray) return;
 
@@ -137,6 +145,10 @@ const Board: FC = () => {
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
+
+  if (isBeforeCutoff) {
+    return <EventCountdown />;
+  }
 
   return (
     <>
