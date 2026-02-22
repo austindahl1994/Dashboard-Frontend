@@ -72,15 +72,15 @@ function App() {
               <Route path="*" element={<BingoHome />} />
             </Route>
 
+            <Route path="/awc" element={<AWC />}>
+              <Route index element={<AWCHome />} />
+              <Route path="labels" element={<Labels />} />
+              <Route path="*" element={<AWCHome />} />
+            </Route>
+            <Route path="/battleship" element={<BattleshipWrapper />} />
             {/* Routes that require AuthProvider */}
             <Route element={<AuthWrapper />}>
               <Route path="/login" element={<Login />} />
-              <Route path="/awc" element={<AWC />}>
-                <Route index element={<AWCHome />} />
-                <Route path="labels" element={<Labels />} />
-                <Route path="*" element={<AWCHome />} />
-              </Route>
-              <Route path="/battleship" element={<BattleshipWrapper />} />
               <Route
                 path="/dashboard/*"
                 element={
