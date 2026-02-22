@@ -44,7 +44,7 @@ const Teams: React.FC<{ data?: any }> = ({ data }) => {
         height: "100%",
       }}
     >
-      <div style={{ width: "100%", maxWidth: 900 }}>
+      <div style={{ width: "100%" }}>
         <div
           style={{
             display: "flex",
@@ -84,7 +84,17 @@ const Teams: React.FC<{ data?: any }> = ({ data }) => {
               height: "95%",
             }}
           >
-            <Table size="sm" bordered hover>
+            <Table
+              size="sm"
+              bordered
+              hover
+              style={{
+                width: "90%",
+                maxWidth: 760,
+                margin: "0 auto",
+                tableLayout: "auto",
+              }}
+            >
               <thead>
                 <tr>
                   <th style={{ width: "33%" }}>discord</th>
