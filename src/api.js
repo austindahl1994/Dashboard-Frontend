@@ -2,6 +2,15 @@ import axios from "axios";
 import { convertForFrontendSettings } from "./widgets/ExpenseTracker/dataConversion";
 const apiUrl = import.meta.env.VITE_API_URL;
 
+// Runtime diagnostic: print resolved API base URL so deployed builds show which
+// backend they're targeting (useful for Amplify builds where VITE_* vars are baked at build time)
+try {
+  console.log("VITE_API_URL:", apiUrl);
+} catch (err) {
+  /* ignore */
+  console.log(err);
+}
+
 const api = axios.create({
   baseURL: apiUrl,
   withCredentials: true,
