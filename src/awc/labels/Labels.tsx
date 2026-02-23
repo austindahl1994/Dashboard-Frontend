@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useContext,
 } from "react";
-import { Button, Form, Card } from "react-bootstrap";
+import { Button, Form, Card, Modal } from "react-bootstrap";
 // @ts-ignore
 import Papa from "papaparse";
 import { useNavigate } from "react-router-dom";
@@ -16,6 +16,17 @@ const ROWS = 10;
 const COLS = 5;
 const TOTAL = ROWS * COLS;
 
+// dropdown options for Device (update this array to change the select options)
+const DEVICE_OPTIONS: string[] = [
+  "EN1941",
+  "EN1221S",
+  "EN1221W",
+  "EN1223S",
+  "AWR4100W",
+  "Fallfighter",
+  "4 Button Placard",
+];
+
 // styles moved to labels.css
 
 const Labels: React.FC = () => {
@@ -24,9 +35,20 @@ const Labels: React.FC = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editingValue, setEditingValue] = useState("");
-  const [delimiter, setDelimiter] = useState(", ");
+  const [delimiter, setDelimiter] = useState(" | ");
   const { createToast } = useContext(ToastContext);
   const [autoSave, setAutoSave] = useState(false);
+  const [salesOrder, setSalesOrder] = useState("");
+  const [device, setDevice] = useState("test1");
+  const [showModal, setShowModal] = useState(false);
+  const [duplicateLabel, setDuplicateLabel] = useState("");
+  const [completedDate, setCompletedDate] = useState(() => {
+    const d = new Date();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    const yy = String(d.getFullYear()).slice(-2);
+    return `${mm}/${dd}/${yy}`;
+  });
 
   function findNextIndexVertical(): number | null {
     for (let col = 0; col < COLS; col++) {
@@ -72,6 +94,13 @@ const Labels: React.FC = () => {
     if (!trimmed) return;
     const label = extractBetweenUnderscores(trimmed);
     if (!label) return;
+
+    // if label already exists, show modal warning and do not add
+    if (cells.some((c) => c === label)) {
+      setDuplicateLabel(label);
+      setShowModal(true);
+      return;
+    }
 
     const nextIndex =
       targetIndex !== null ? targetIndex : findNextIndexVertical();
@@ -268,9 +297,39 @@ const Labels: React.FC = () => {
     <div className="labels-root">
       <h3>EN1941 Labels</h3>
 
+      <Modal
+        show={showModal}
+        onHide={() => {
+          setShowModal(false);
+          setDuplicateLabel("");
+        }}
+        centered
+      >
+        <Modal.Body style={{ textAlign: "center", padding: "20px 16px" }}>
+          <div style={{ fontWeight: 700, fontSize: 20, color: "#c0392b" }}>
+            ERROR
+          </div>
+          {duplicateLabel ? (
+            <div
+              style={{ marginTop: 8 }}
+            >{`Label already exists: ${duplicateLabel}`}</div>
+          ) : null}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            onClick={() => {
+              setShowModal(false);
+              setDuplicateLabel("");
+            }}
+          >
+            OK
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
       <div className="labels-main">
         <div className="labels-left">
-          <Card className="labels-card">
+          <Card className="labels-card small-card">
             <Card.Body className="labels-card-body">
               <Form onSubmit={handleSubmit} className="mb-3">
                 <div className="labels-input-row">
@@ -300,6 +359,7 @@ const Labels: React.FC = () => {
                       setTargetIndex(0);
                       setEditingIndex(null);
                       setEditingValue("");
+                      setSalesOrder("");
                       try {
                         localStorage.removeItem("labels");
                       } catch (err) {
@@ -351,7 +411,7 @@ const Labels: React.FC = () => {
             </Card.Body>
           </Card>
 
-          <Card className="labels-card">
+          <Card className="labels-card small-card">
             <Card.Body className="labels-card-body export-card-body">
               <div className="export-buttons">
                 <div className="export-pair">
@@ -396,6 +456,93 @@ const Labels: React.FC = () => {
                     Export XML w/ filler
                   </Button>
                 </div>
+              </div>
+            </Card.Body>
+          </Card>
+
+          <Card className="labels-card large-card">
+            <Card.Body className="labels-card-body">
+              <div className="inline-field">
+                <Form.Label style={{ minWidth: 120, marginBottom: 0 }}>
+                  Sales Order:
+                </Form.Label>
+                <Form.Control
+                  type="text"
+                  value={salesOrder}
+                  onChange={(e: any) => setSalesOrder(e.target.value)}
+                  placeholder="Enter sales order"
+                  style={{ flex: 1 }}
+                />
+              </div>
+
+              <div className="inline-field" style={{ marginTop: 8 }}>
+                <Form.Label style={{ minWidth: 120, marginBottom: 0 }}>
+                  Device:
+                </Form.Label>
+                <Form.Select
+                  value={device}
+                  onChange={(e: any) => setDevice(e.target.value)}
+                  style={{ width: 160 }}
+                >
+                  {DEVICE_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </Form.Select>
+              </div>
+
+              <div className="inline-field" style={{ marginTop: 8 }}>
+                <Form.Label style={{ minWidth: 120, marginBottom: 0 }}>
+                  Completed:
+                </Form.Label>
+                <Form.Control
+                  type="text"
+                  value={completedDate}
+                  onChange={(e: any) => setCompletedDate(e.target.value)}
+                  style={{ width: 140 }}
+                />
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  marginTop: 8,
+                }}
+              >
+                <Button
+                  onClick={async () => {
+                    try {
+                      const values: string[] = [];
+                      for (let col = 0; col < COLS; col++) {
+                        for (let row = 0; row < ROWS; row++) {
+                          const idx = row * COLS + col;
+                          const v = cells[idx];
+                          if (v && v !== "") values.push(v);
+                        }
+                      }
+
+                      const serialsText = values.join(delimiter);
+                      const serialLabel =
+                        values.length <= 1 ? "Serial number" : "Serial numbers";
+                      const payload =
+                        `Sales Order: ${salesOrder}\n` +
+                        `Device: ${device}\n` +
+                        `Completed: ${completedDate}\n` +
+                        `AD\n\n` +
+                        `Sent new; Not programmed;\n` +
+                        `${serialLabel}: ${serialsText}`;
+
+                      await navigator.clipboard.writeText(payload);
+                      createToast("Form copied to clipboard", 1);
+                    } catch (err) {
+                      createToast("Failed to copy form to clipboard", 0);
+                    }
+                  }}
+                >
+                  Copy to clipboard
+                </Button>
               </div>
             </Card.Body>
           </Card>

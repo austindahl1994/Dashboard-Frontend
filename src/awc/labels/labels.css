@@ -15,17 +15,41 @@
   overflow: hidden;
 }
 .labels-left {
-  flex: 1;
+  /* allocate roughly one-third of available width to the left column */
+  flex: 0 0 33%;
+  max-width: 480px;
+  min-width: 240px;
   display: flex;
   flex-direction: column;
-  min-width: 0;
+  min-height: 0;
   gap: 8px;
 }
 .labels-card {
-  flex: 1;
+  /* make each left-card grow equally to split the left column vertically */
+  flex: 1 1 0;
   display: flex;
   flex-direction: column;
   min-width: 0;
+  min-height: 0;
+}
+
+/* Inline form field layout for labels form */
+.inline-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.inline-field > label,
+.inline-field .form-label {
+  margin-bottom: 0;
+}
+
+/* Size variants for left column cards */
+.labels-left .small-card {
+  flex: 0 0 25%;
+}
+.labels-left .large-card {
+  flex: 0 0 50%;
 }
 
 .labels-top {
