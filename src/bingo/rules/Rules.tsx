@@ -5,7 +5,7 @@ import "./rules.css";
 
 const Rules: React.FC = () => {
   return (
-    <div style={{ marginTop: 20, overflowY: "auto", width: "100%" }}>
+    <div style={{ marginTop: 20, overflowY: "auto", width: "95%" }}>
       <Container fluid className="p-0">
         <Row>
           {rulesHeaders.map((header, idx) => (
