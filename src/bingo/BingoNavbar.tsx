@@ -111,6 +111,32 @@ function BingoNavbar() {
     navigate("/bingo");
   };
 
+  const getTeam = (teamNum: number): string => {
+    switch (teamNum) {
+      case 1:
+        return "Team <3";
+      case 2:
+        return "Team 3";
+      case 3:
+        return "Team :3";
+      default:
+        return teamNum.toString();
+    }
+  };
+
+  const getColor = (teamNum: number): string => {
+    switch (teamNum) {
+      case 1:
+        return "chartreuse"; //chartreuse color
+      case 2:
+        return "fuchsia";
+      case 3:
+        return "green";
+      default:
+        return "black";
+    }
+  };
+
   return (
     <div className="bingo-nav">
       <Nav className="d-flex h-100 m-0 p-0">
@@ -162,9 +188,12 @@ function BingoNavbar() {
                 textAlign: "center",
                 fontWeight: 700,
                 fontFamily: "'Pirata One', serif",
+                textShadow:
+                  "1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000",
+                color: getColor(Number(team)),
               }}
             >
-              <h3 className="nav-text">{`Team ${team}`}</h3>
+              <h1 className="nav-text">{getTeam(Number(team))}</h1>
             </div>
           )}
           {hasPasscode && (

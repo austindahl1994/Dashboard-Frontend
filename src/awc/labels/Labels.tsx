@@ -18,11 +18,16 @@ const TOTAL = ROWS * COLS;
 
 // dropdown options for Device (update this array to change the select options)
 const DEVICE_OPTIONS: string[] = [
+  "",
   "EN1941",
   "EN1221S",
-  "EN1221W",
+  "EN1221S-W",
   "EN1223S",
-  "AWR4100W",
+  "ASM 4100 Callbox 1 Pull chord/2 Caps",
+  "ASM 4100 Callbox 2 Caps",
+  "ASM 4100 Callbox 1 RJ45/1 Cap",
+  "ASM 4100 Callbox 2 RJ45",
+  "EN5040 w/ housing",
   "Fallfighter",
   "4 Button Placard",
 ];

@@ -6,7 +6,7 @@ import { Card, Col, Container, Row, Spinner } from "react-bootstrap";
 import "./highscores.css";
 import EventCountdown from "../board/EventCountdown";
 
-const TEAM_COLORS = ["#1f7a1f", "#5599c5", "#7a3a8a"];
+const TEAM_COLORS = ["chartreuse", "fuchsia", "green"];
 
 const Highscores: React.FC = () => {
   const navigate = useNavigate();
@@ -51,6 +51,19 @@ const Highscores: React.FC = () => {
 
   // Actual points - 444
   const MAX_POINTS = 444;
+
+  const getTeam = (teamNum: number): string => {
+    switch (teamNum) {
+      case 1:
+        return "Team <3";
+      case 2:
+        return "Team 3";
+      case 3:
+        return "Team :3";
+      default:
+        return teamNum.toString();
+    }
+  };
 
   return isBeforeCutoff ? (
     <EventCountdown />
@@ -101,7 +114,7 @@ const Highscores: React.FC = () => {
                           </div>
                           <div className="hs-score">{score}</div>
                           <div className="hs-team mt-2 text-white">
-                            <strong>Team {team}</strong>
+                            <strong>{getTeam(Number(team))}</strong>
                           </div>
                         </div>
                       );
