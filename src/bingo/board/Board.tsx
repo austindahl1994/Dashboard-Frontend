@@ -6,6 +6,7 @@ import EventCountdown from "./EventCountdown";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { getBoard, getCompletions } from "../../api";
+import FakeBoard from "./FakeBoard";
 
 export interface BoardTile {
   id: number;
@@ -147,7 +148,12 @@ const Board: FC = () => {
   }, []);
 
   if (isBeforeCutoff) {
-    return <EventCountdown />;
+    return (
+      <>
+        {/* <EventCountdown /> */}
+        <FakeBoard />
+      </>
+    );
   }
 
   return (
