@@ -13,25 +13,38 @@ const BingoHome = () => {
     <div className="d-flex w-100 h-100 m-0 p-0 justify-content-center align-items-center">
       <div
         style={{
-          width: "90vw",
-          height: "90vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
+            width: "90vw",
+            height: "90vh",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            position: "relative",
         }}
       >
-        <Image
-          src={src}
-          alt="Bingo homescreen"
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "contain",
-            cursor: "pointer",
-          }}
-          onMouseEnter={() => setSrc(ALT)}
-          onMouseLeave={() => setSrc(ORIGINAL)}
-        />
+          <Image
+            src={src}
+            alt="Bingo homescreen"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+            }}
+          />
+
+          {/* Invisible vertical hover zone between 20% and 40% from left */}
+          <div
+            onMouseEnter={() => setSrc(ALT)}
+            onMouseLeave={() => setSrc(ORIGINAL)}
+            style={{
+              position: "absolute",
+              left: "20%",
+              top: 0,
+              bottom: 0,
+              width: "20%",
+              cursor: "pointer",
+              background: "transparent",
+            }}
+          />
       </div>
     </div>
   );
