@@ -1,31 +1,13 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Image } from "react-bootstrap";
 
-const DEFAULT_SRC =
+const ORIGINAL =
   "https://cabbage-bounty.s3.us-east-2.amazonaws.com/bingo/BingoHomescreen.png";
-const ALT_SRC =
+const ALT =
   "https://cabbage-bounty.s3.us-east-2.amazonaws.com/bingo/BingoHomeAlt.png";
 
-const BingoHome: React.FC = () => {
-  const [showAlt, setShowAlt] = useState(false);
-  const hoverTimer = useRef<number | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (hoverTimer.current) window.clearTimeout(hoverTimer.current);
-    };
-  }, []);
-
-  const startHoverTimer = () => {
-    if (hoverTimer.current) window.clearTimeout(hoverTimer.current);
-    hoverTimer.current = window.setTimeout(() => setShowAlt(true), 3000);
-  };
-
-  const clearHoverTimer = () => {
-    if (hoverTimer.current) window.clearTimeout(hoverTimer.current);
-    hoverTimer.current = null;
-    setShowAlt(false);
-  };
+const BingoHome = () => {
+  const [src, setSrc] = useState<string>(ORIGINAL);
 
   return (
     <div className="d-flex w-100 h-100 m-0 p-0 justify-content-center align-items-center">
@@ -37,16 +19,18 @@ const BingoHome: React.FC = () => {
           justifyContent: "center",
           alignItems: "center",
         }}
-        onMouseEnter={startHoverTimer}
-        onMouseLeave={clearHoverTimer}
-        onFocus={startHoverTimer}
-        onBlur={clearHoverTimer}
-        tabIndex={0}
       >
         <Image
-          src={showAlt ? ALT_SRC : DEFAULT_SRC}
+          src={src}
           alt="Bingo homescreen"
-          style={{ width: "100%", height: "100%", objectFit: "contain" }}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+            cursor: "pointer",
+          }}
+          onMouseEnter={() => setSrc(ALT)}
+          onMouseLeave={() => setSrc(ORIGINAL)}
         />
       </div>
     </div>
