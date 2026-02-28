@@ -118,6 +118,11 @@ const Shame: React.FC = () => {
                   <p className="text-center mb-0">What a dumbass</p>
                 </Card.Body>
               )}
+              {item.playerName.toLowerCase() === "gimp yzero" && (
+                <Card.Body>
+                  <p className="text-center mb-0">Fuck Yzero right?</p>
+                </Card.Body>
+              )}
             </Card>
           ))}
         </div>
