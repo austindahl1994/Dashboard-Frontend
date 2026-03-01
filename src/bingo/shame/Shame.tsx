@@ -44,6 +44,39 @@ const Shame: React.FC = () => {
     return [];
   })();
 
+  // Persist aggregated death/shame counts to localStorage whenever shame data updates
+  useEffect(() => {
+    try {
+      const counts: Record<string, number> = {};
+      shameItems.forEach((item) => {
+        const name = (item.playerName || "Unknown").trim();
+        if (!name) return;
+        counts[name] = (counts[name] || 0) + 1;
+      });
+
+      localStorage.setItem("deathCounts", JSON.stringify(counts));
+    } catch (err) {
+      // non-fatal: log but don't break UI
+      // eslint-disable-next-line no-console
+      console.error("Failed to persist deathCounts to localStorage", err);
+    }
+  }, [shameItems]);
+
+  // Filter control: selected player name ("All" shows everyone)
+  const [selectedPlayer, setSelectedPlayer] = useState<string>("All");
+
+  // Build list of unique player names from shameItems for the dropdown
+  const playerNames: string[] = Array.from(
+    new Set(shameItems.map((s) => (s.playerName || "").trim()).filter(Boolean)),
+  ).sort((a, b) => a.localeCompare(b));
+
+  const displayedItems =
+    selectedPlayer === "All"
+      ? shameItems
+      : shameItems.filter(
+          (s) => (s.playerName || "").trim() === selectedPlayer,
+        );
+
   if (isBeforeCutoff) {
     return <EventCountdown />;
   }
@@ -72,60 +105,81 @@ const Shame: React.FC = () => {
       ) : isError ? (
         <div className="text-danger">Failed to load shame data.</div>
       ) : (
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 16,
-            alignContent: "flex-start",
-            alignItems: "flex-start",
-            flex: 1,
-            overflow: "auto",
-            padding: 8,
-          }}
-        >
-          {shameItems?.map((item: ShameItem, idx: number) => (
-            <Card
-              key={idx}
-              style={{
-                width: "12rem",
-                height: "15rem",
-                border: "1px solid #ccc",
-                cursor: "pointer",
-              }}
-              onClick={() => openModal(item)}
+        <>
+          <div className="d-flex justify-content-end p-2">
+            <label className="text-white me-2" htmlFor="shame-filter">
+              Filter:
+            </label>
+            <select
+              id="shame-filter"
+              className="form-select w-auto"
+              value={selectedPlayer}
+              onChange={(e) => setSelectedPlayer(e.target.value)}
             >
-              <Card.Title className="text-center mt-1">
-                {idx + 1 + ". "}
-                {item.playerName}
-              </Card.Title>
-              <div style={{ overflow: "hidden", borderRadius: 8 }}>
-                <Image
-                  src={fixUrl(item.url) || undefined}
-                  alt={`${item.playerName} shame`}
-                  fluid
-                  style={{
-                    width: "100%",
-                    height: "10rem",
-                    objectFit: "cover",
-                    padding: "5px",
-                  }}
-                  rounded
-                />
-              </div>
-              {item.playerName.toLowerCase() === "kirk iron" && (
-                <Card.Body>
-                  <p className="text-center mb-0">What a dumbass</p>
-                </Card.Body>
-              )}
-              {item.playerName.toLowerCase() === "gimp yzero" && (
-                <Card.Body>
-                  <p className="text-center mb-0">Fuck Yzero right?</p>
-                </Card.Body>
-              )}
-            </Card>
-          ))}
-        </div>
+              <option value="All">All</option>
+              {playerNames.map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 16,
+              alignContent: "flex-start",
+              alignItems: "flex-start",
+              flex: 1,
+              overflow: "auto",
+              padding: 8,
+            }}
+          >
+            {displayedItems?.map((item: ShameItem, idx: number) => (
+              <Card
+                key={idx}
+                style={{
+                  width: "12rem",
+                  height: "15rem",
+                  border: "1px solid #ccc",
+                  cursor: "pointer",
+                }}
+                onClick={() => openModal(item)}
+              >
+                <Card.Title className="text-center mt-1">
+                  {idx + 1 + ". "}
+                  {item.playerName}
+                </Card.Title>
+                <div style={{ overflow: "hidden", borderRadius: 8 }}>
+                  <Image
+                    src={fixUrl(item.url) || undefined}
+                    alt={`${item.playerName} shame`}
+                    fluid
+                    style={{
+                      width: "100%",
+                      height: "10rem",
+                      objectFit: "cover",
+                      padding: "5px",
+                    }}
+                    rounded
+                  />
+                </div>
+                {item.playerName.toLowerCase() === "kirk iron" && (
+                  <Card.Body>
+                    <p className="text-center mb-0">What a dumbass</p>
+                  </Card.Body>
+                )}
+                {item.playerName.toLowerCase() === "gimp yzero" && (
+                  <Card.Body>
+                    <p className="text-center mb-0">Fuck Yzero</p>
+                  </Card.Body>
+                )}
+              </Card>
+            ))}
+          </div>
+        </>
       )}
 
       <Modal

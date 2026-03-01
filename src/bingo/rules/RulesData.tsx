@@ -7,6 +7,8 @@ export const rulesHeaders: string[] = [
   "Inactive or low-participation team members",
   "Bingo time frame",
   "Our obligations to you",
+  "Alt Accounts",
+  "Point System",
 ];
 
 export const rulesData: string[] = [
@@ -18,6 +20,8 @@ export const rulesData: string[] = [
   "Bingo and RuneScape are games, and we recognize that real-life obligations may arise unexpectedly. Publicly criticizing or calling out inactive team members is unnecessary and disrespectful. Please let Milk know of any issue with specific team members and we will resolve this as a team.",
   "The bingo event will begin and end strictly according to the times posted in the Announcements channel on Discord. You may prep, but be warned in that there will be few prep tiles so think wisely.",
   "A rule from our end, no rule or tile will be adjusted throughout the event. We have tested specific tiles we thought were not going to work or cause issues so you don't have too.",
+  "Are we able to use alt accounts? Answer in short, no - to gain progression towards a tile you will need to use your signed up account. Scouting in the wilderness is our only exception to this rule.",
+  "Points work as: Easy = 1 point per tile, Medium = 2 points per tile, Hard = 3 points per tile, Elite = 5 points per tile, Master = 8 points per tile. When completing a row/column you will receive 8 points; this applies only horizontally and vertically.",
 ];
 
 export default { rulesHeaders, rulesData };
