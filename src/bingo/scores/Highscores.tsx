@@ -252,10 +252,49 @@ const Highscores: React.FC = () => {
 
               <Card className="other-card">
                 <Card.Header className="text-center">
-                  <h2>Other Stats</h2>
+                  <h2>Top deaths (players)</h2>
                 </Card.Header>
-                <Card.Body className="overflow-auto bg-black text-white">
-                  <TopDeaths />
+                <Card.Body className="overflow-auto bg-black d-flex align-items-center justify-content-center">
+                  <div className="hs-container d-flex h-100 w-100 align-items-center justify-content-around">
+                    {
+                      (() => {
+                        try {
+                          const raw = localStorage.getItem("deathCounts");
+                          if (!raw) return null;
+                          const obj = JSON.parse(raw || "{}");
+                          const arr: [string, number][] = Object.entries(obj || {}).map(([k, v]) => [k, Number(v || 0)]);
+                          arr.sort((a, b) => b[1] - a[1]);
+                          const top = arr.slice(0, 5);
+                          const max = top.length ? Math.max(...top.map(([, c]) => c)) : 1;
+
+                          return top.map(([name, count]) => {
+                            const pct = max ? Math.max(0, Math.min(1, count / max)) : 0;
+                            const fillPct = Math.round(pct * 100);
+                            return (
+                              <div key={name} className="hs-card text-center">
+                                <div className="hs-bar-outer">
+                                  <div className="hs-bar-track">
+                                    <div
+                                      className="hs-bar-fill"
+                                      style={{ height: `${fillPct}%`, background: "#888" }}
+                                    />
+                                  </div>
+                                </div>
+                                <div className="hs-score">{count}</div>
+                                <div className="hs-team mt-2 text-white">
+                                  <strong>{name}</strong>
+                                </div>
+                              </div>
+                            );
+                          });
+                        } catch (err) {
+                          // eslint-disable-next-line no-console
+                          console.error("Failed to read local deathCounts", err);
+                          return null;
+                        }
+                      })()
+                    }
+                  </div>
                 </Card.Body>
               </Card>
             </div>
