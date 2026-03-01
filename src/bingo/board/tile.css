@@ -7,6 +7,7 @@
   height: 95%;
   /* max-width: 90px;
   max-height: 90px; */
+  position: relative;
 }
 
 .tile-img {
@@ -16,6 +17,105 @@
   max-height: 50px;
   object-fit: contain;
   overflow: hidden;
+}
+
+/* Hover info box shown when `Hover` is enabled and the user mouses over a tile */
+.tile-hover-box {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 180px;
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 8px;
+  border-radius: 6px;
+  z-index: 20;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  font-size: 12px;
+}
+.tile-hover-img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  float: left;
+  margin-right: 8px;
+  border-radius: 4px;
+}
+.tile-hover-title {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.tile-hover-items {
+  margin: 0;
+  padding-left: 18px;
+}
+.tile-hover-items li {
+  list-style: disc;
+  margin: 0 0 4px 0;
+}
+
+/* Popup rendered outside tile so it's not clipped */
+.tile-hover-popup {
+  position: fixed;
+  width: 280px;
+  max-width: calc(100vw - 24px);
+  background: rgba(0, 0, 0, 0.92);
+  color: #fff;
+  padding: 12px;
+  border-radius: 8px;
+  z-index: 9999;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  font-size: 14px;
+}
+.tile-hover-popup .tile-hover-img {
+  width: 64px;
+  height: 64px;
+  margin-right: 12px;
+  float: left;
+}
+.tile-hover-popup .tile-hover-title {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+.tile-hover-popup .tile-hover-items {
+  margin-top: 8px;
+  padding-left: 18px;
+}
+
+/* removed unused .rave-check and gradient-bounce animation */
+
+/* Scrolling rainbow background for completed tiles (bottom-right -> top-left) */
+.rave-tile {
+  /* start at a solid green and cycle through rainbow colors */
+  background-color: green;
+  animation: rave-tile-color 6s linear infinite;
+}
+
+@keyframes rave-tile-color {
+  0% {
+    background-color: green;
+  }
+  14% {
+    background-color: lime;
+  }
+  28% {
+    background-color: yellow;
+  }
+  42% {
+    background-color: orange;
+  }
+  56% {
+    background-color: red;
+  }
+  70% {
+    background-color: magenta;
+  }
+  84% {
+    background-color: blue;
+  }
+  100% {
+    background-color: green;
+  }
 }
 
 .card-text {

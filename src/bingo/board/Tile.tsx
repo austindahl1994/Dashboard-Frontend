@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Card, ProgressBar } from "react-bootstrap";
 import "./tile.css"; // optional external styles
 import { BoardTile } from "./Board";
@@ -43,6 +43,70 @@ const Tile: FC<TileProps> = ({
 }) => {
   // completed > quantity ? "green" :
   const completionCount = completions ? completions.length : completed || 0;
+  const [checkEnabled, setCheckEnabled] = useState<boolean>(false);
+  const [raveEnabled, setRaveEnabled] = useState<boolean>(false);
+  const [hoverEnabled, setHoverEnabled] = useState<boolean>(false);
+  const [isHovered, setIsHovered] = useState<boolean>(false);
+  const [hoverPos, setHoverPos] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 0,
+  });
+  const [hoverRect, setHoverRect] = useState<DOMRect | null>(null);
+
+  useEffect(() => {
+    try {
+      setCheckEnabled(localStorage.getItem("bingo_check") === "true");
+    } catch (err) {
+      setCheckEnabled(false);
+    }
+    try {
+      setRaveEnabled(localStorage.getItem("bingo_rave") === "true");
+    } catch (err) {
+      setRaveEnabled(false);
+    }
+    try {
+      setHoverEnabled(localStorage.getItem("bingo_hover") === "true");
+    } catch (err) {
+      setHoverEnabled(false);
+    }
+
+    const onCheck = (e: Event) => {
+      try {
+        const custom = e as CustomEvent;
+        setCheckEnabled(!!custom?.detail?.value);
+      } catch (err) {
+        setCheckEnabled(localStorage.getItem("bingo_check") === "true");
+      }
+    };
+
+    const onRave = (e: Event) => {
+      try {
+        const custom = e as CustomEvent;
+        setRaveEnabled(!!custom?.detail?.value);
+      } catch (err) {
+        setRaveEnabled(localStorage.getItem("bingo_rave") === "true");
+      }
+    };
+
+    const onHover = (e: Event) => {
+      try {
+        const custom = e as CustomEvent;
+        setHoverEnabled(!!custom?.detail?.value);
+      } catch (err) {
+        setHoverEnabled(localStorage.getItem("bingo_hover") === "true");
+      }
+    };
+
+    window.addEventListener("bingoCheckChanged", onCheck as EventListener);
+    window.addEventListener("bingoRaveChanged", onRave as EventListener);
+    window.addEventListener("bingoHoverChanged", onHover as EventListener);
+
+    return () => {
+      window.removeEventListener("bingoCheckChanged", onCheck as EventListener);
+      window.removeEventListener("bingoRaveChanged", onRave as EventListener);
+      window.removeEventListener("bingoHoverChanged", onHover as EventListener);
+    };
+  }, []);
   const getOpaqueColor = (colorStr: string): string => {
     const m = colorStr.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([0-9.]+)\)/);
     if (m) return `rgba(${m[1]}, ${m[2]}, ${m[3]}, 1)`;
@@ -76,11 +140,35 @@ const Tile: FC<TileProps> = ({
   const left: number =
     completionCount === 0 ? 100 : Math.max(100 - completionPercent, 0);
 
+  const capitalize = (s: string) =>
+    s && s.length ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+
+  const cardClass = `tile-card m-0 p-0 d-flex flex-column justify-content-between align-items-center ${
+    raveEnabled && completionCount >= quantity ? "rave-tile" : ""
+  }`;
+
+  const cardStyle =
+    raveEnabled && completionCount >= quantity
+      ? {}
+      : { backgroundColor: color };
+
   return (
     <>
       <Card
-        className="tile-card m-0 p-0 d-flex flex-column justify-content-between align-items-center"
-        style={{ backgroundColor: color }}
+        className={cardClass}
+        style={cardStyle}
+        onMouseEnter={(e) => {
+          setIsHovered(true);
+          const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+          setHoverPos({ x: rect.right + 12, y: rect.top });
+          setHoverRect(rect);
+        }}
+        onMouseMove={(e) => {
+          const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+          setHoverPos({ x: rect.right + 12, y: rect.top });
+          setHoverRect(rect);
+        }}
+        onMouseLeave={() => setIsHovered(false)}
         onClick={() =>
           setSelectedTile({
             id,
@@ -96,22 +184,40 @@ const Tile: FC<TileProps> = ({
       >
         <Card.Body className="w-100 h-50 m-0 p-1 d-flex flex-column justify-content-evenly align-items-center">
           {/* Apply grayscale filter if completed */}
-          <Card.Img
-            src={
-              completionCount >= quantity
-                ? "https://cabbage-bounty.s3.us-east-2.amazonaws.com/bingo/Tick.png"
-                : url
-            }
-            alt={title}
-            className="tile-img"
-            variant="top"
-            style={{
-              filter:
-                completionCount >= quantity
-                  ? "brightness(0) saturate(100%)"
-                  : undefined,
-            }}
-          />
+          {completionCount >= quantity ? (
+            // when completed
+            checkEnabled ? (
+              // show original full-size checkmark image (no rave)
+              <Card.Img
+                src={
+                  "https://cabbage-bounty.s3.us-east-2.amazonaws.com/bingo/Tick.png"
+                }
+                alt={title}
+                className="tile-img"
+                variant="top"
+                style={{
+                  filter: raveEnabled
+                    ? undefined
+                    : "brightness(0) saturate(100%)",
+                }}
+              />
+            ) : (
+              // check disabled -> show original url
+              <Card.Img
+                src={url}
+                alt={title}
+                className="tile-img"
+                variant="top"
+              />
+            )
+          ) : (
+            <Card.Img
+              src={url}
+              alt={title}
+              className="tile-img"
+              variant="top"
+            />
+          )}
           <ProgressBar className="w-100">
             <ProgressBar
               label={completedLabel}
@@ -124,6 +230,69 @@ const Tile: FC<TileProps> = ({
           </ProgressBar>
         </Card.Body>
       </Card>
+
+      {hoverEnabled &&
+        isHovered &&
+        (() => {
+          // compute popup positioning and maxHeight to fit viewport
+          const itemHeight = 20; // approx per-item height in px
+          const baseHeight = 24; // padding/title space
+          const desiredHeight = baseHeight + items.length * itemHeight;
+          const viewportH =
+            typeof window !== "undefined" ? window.innerHeight : 800;
+          let top = hoverPos.y;
+          let left = hoverPos.x;
+          let maxHeight: number | undefined = undefined;
+          let overflowY: "auto" | "visible" = "visible";
+          if (hoverRect) {
+            const spaceBelow = viewportH - hoverRect.bottom - 12; // space below tile
+            const spaceAbove = hoverRect.top - 12; // space above tile
+            if (desiredHeight <= spaceBelow) {
+              top = hoverRect.bottom + 12;
+            } else if (desiredHeight <= spaceAbove) {
+              top = Math.max(8, hoverRect.top - desiredHeight - 12);
+            } else {
+              // not enough space either side — fit into larger side with scrolling
+              if (spaceBelow >= spaceAbove) {
+                top = hoverRect.bottom + 12;
+                maxHeight = Math.max(40, spaceBelow - 8);
+              } else {
+                // place above
+                top = Math.max(
+                  8,
+                  hoverRect.top - Math.max(40, spaceAbove) - 12,
+                );
+                maxHeight = Math.max(40, spaceAbove - 8);
+              }
+              overflowY = "auto";
+            }
+            // ensure left fits in viewport
+            const viewportW =
+              typeof window !== "undefined" ? window.innerWidth : 1200;
+            if (left + 300 > viewportW) {
+              left = Math.max(8, viewportW - 320);
+            }
+          }
+
+          const style: React.CSSProperties = {
+            top,
+            left,
+            position: "fixed",
+            zIndex: 9999,
+          };
+          if (maxHeight) style.maxHeight = maxHeight;
+          if (overflowY === "auto") style.overflowY = "auto";
+
+          return (
+            <div className="tile-hover-popup" style={style} role="dialog">
+              <ul className="tile-hover-items">
+                {items.map((it, i) => (
+                  <li key={i}>{capitalize(String(it))}</li>
+                ))}
+              </ul>
+            </div>
+          );
+        })()}
     </>
   );
 };

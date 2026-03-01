@@ -1,4 +1,4 @@
-import { Button, Container, Image, Nav, Navbar } from "react-bootstrap";
+import { Button, Container, Image, Nav, Navbar, Form } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -14,6 +14,16 @@ function BingoNavbar() {
   );
   const [team, setTeam] = useState<string | null>(() =>
     localStorage.getItem("team"),
+  );
+
+  const [checkSwitch, setCheckSwitch] = useState<boolean>(
+    () => localStorage.getItem("bingo_check") === "true",
+  );
+  const [raveSwitch, setRaveSwitch] = useState<boolean>(
+    () => localStorage.getItem("bingo_rave") === "true",
+  );
+  const [hoverSwitch, setHoverSwitch] = useState<boolean>(
+    () => localStorage.getItem("bingo_hover") === "true",
   );
 
   const queryClient = useQueryClient();
@@ -194,6 +204,96 @@ function BingoNavbar() {
               }}
             >
               <h1 className="nav-text">{getTeam(Number(team))}</h1>
+            </div>
+          )}
+          {team && hasPasscode && (
+            <div className="d-flex flex-column align-items-center mb-3 gap-3 px-2">
+              <div className="d-flex align-items-center">
+                <span className="me-2">Check</span>
+                <Form>
+                  <Form.Check
+                    type="switch"
+                    id="check-switch"
+                    label={""}
+                    checked={checkSwitch}
+                    onChange={(e) => {
+                      const v = e.currentTarget.checked;
+                      setCheckSwitch(v);
+                      try {
+                        localStorage.setItem(
+                          "bingo_check",
+                          v ? "true" : "false",
+                        );
+                        window.dispatchEvent(
+                          new CustomEvent("bingoCheckChanged", {
+                            detail: { value: v },
+                          }),
+                        );
+                      } catch (err) {
+                        /* ignore */
+                      }
+                    }}
+                  />
+                </Form>
+              </div>
+
+              <div className="d-flex align-items-center">
+                <span className="me-2">Rave</span>
+                <Form>
+                  <Form.Check
+                    type="switch"
+                    id="rave-switch"
+                    label={""}
+                    checked={raveSwitch}
+                    onChange={(e) => {
+                      const v = e.currentTarget.checked;
+                      setRaveSwitch(v);
+                      try {
+                        localStorage.setItem(
+                          "bingo_rave",
+                          v ? "true" : "false",
+                        );
+                        window.dispatchEvent(
+                          new CustomEvent("bingoRaveChanged", {
+                            detail: { value: v },
+                          }),
+                        );
+                      } catch (err) {
+                        /* ignore */
+                      }
+                    }}
+                  />
+                </Form>
+              </div>
+
+              <div className="d-flex align-items-center">
+                <span className="me-2">Hover</span>
+                <Form>
+                  <Form.Check
+                    type="switch"
+                    id="hover-switch"
+                    label={""}
+                    checked={hoverSwitch}
+                    onChange={(e) => {
+                      const v = e.currentTarget.checked;
+                      setHoverSwitch(v);
+                      try {
+                        localStorage.setItem(
+                          "bingo_hover",
+                          v ? "true" : "false",
+                        );
+                        window.dispatchEvent(
+                          new CustomEvent("bingoHoverChanged", {
+                            detail: { value: v },
+                          }),
+                        );
+                      } catch (err) {
+                        /* ignore */
+                      }
+                    }}
+                  />
+                </Form>
+              </div>
             </div>
           )}
           {hasPasscode && (
