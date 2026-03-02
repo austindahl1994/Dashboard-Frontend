@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, Image, Modal, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -17,8 +17,6 @@ const Shame: React.FC = () => {
   const [modalUrl, setModalUrl] = useState<string | null>(null);
   const [modalCaption, setModalCaption] = useState<string | null>(null);
   const navigate = useNavigate();
-  // Container ref for scrolling
-  const containerRef = useRef<HTMLDivElement | null>(null);
 
   // Cutoff: Feb 28 2026 08:00 CST (UTC-6) => 2026-02-28T14:00:00Z
   const cutoff = new Date(Date.UTC(2026, 1, 28, 14, 0, 0));
@@ -78,30 +76,6 @@ const Shame: React.FC = () => {
       : shameItems.filter(
           (s) => (s.playerName || "").trim() === selectedPlayer,
         );
-
-  // Scroll to bottom on load / when displayed items change
-  useEffect(() => {
-    if (!displayedItems) return;
-    if (isLoading) return;
-
-    const scrollToBottom = () => {
-      try {
-        if (containerRef.current) {
-          containerRef.current.scrollTop = containerRef.current.scrollHeight;
-        } else if (typeof window !== "undefined") {
-          window.scrollTo({
-            top: document.body.scrollHeight,
-            behavior: "auto",
-          });
-        }
-      } catch (err) {
-        // ignore
-      }
-    };
-
-    const t = setTimeout(scrollToBottom, 50);
-    return () => clearTimeout(t);
-  }, [isLoading, displayedItems?.length]);
 
   if (isBeforeCutoff) {
     return <EventCountdown />;
