@@ -7,18 +7,9 @@ import ProtectedRoutes from "./main-components/ProtectedRoutes";
 import Dashboard from "./main-components/Dashboard";
 import Home from "./main-components/Home";
 import Login from "./main-components/Login";
-import Admin from "./bingo/admin/Admin";
 import NotFound from "./main-components/NotFound";
 
 // import Bingo from "./bingo/Bingo";
-const Bingo = lazy(() => import("./bingo/Bingo"));
-const Rules = lazy(() => import("./bingo/rules/Rules"));
-const Setup = lazy(() => import("./bingo/setup/Setup"));
-const BoardPage = lazy(() => import("./bingo/board/BoardPage"));
-const BingoHome = lazy(() => import("./bingo/home/BingoHome"));
-const VingoLogin = lazy(() => import("./bingo/login/Login"));
-const Shame = lazy(() => import("./bingo/shame/Shame"));
-const Highscores = lazy(() => import("./bingo/scores/Highscores"));
 const AWC = lazy(() => import("./awc/AWC"));
 const AWCHome = lazy(() => import("./awc/AWCHome"));
 const Labels = lazy(() => import("./awc/labels/Labels"));
@@ -58,20 +49,6 @@ function App() {
         >
           <Routes>
             <Route path="/" element={<Home />} />
-
-            {/* Bingo routes (no AuthProvider) */}
-            <Route path="/bingo" element={<Bingo />}>
-              <Route index element={<BingoHome />} />
-              <Route path="rules" element={<Rules />} />
-              <Route path="login" element={<VingoLogin />} />
-              <Route path="setup" element={<Setup />} />
-              <Route path="board" element={<BoardPage />} />
-              <Route path="shame" element={<Shame />} />
-              <Route path="scores" element={<Highscores />} />
-              <Route path="admin" element={<Admin />} />
-              <Route path="*" element={<BingoHome />} />
-            </Route>
-
             <Route path="/awc" element={<AWC />}>
               <Route index element={<AWCHome />} />
               <Route path="labels" element={<Labels />} />
