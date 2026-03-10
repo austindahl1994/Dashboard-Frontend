@@ -1,0 +1,107 @@
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
+/* Battleship board styles */
+.bs-layout-container {
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 12px;
+}
+
+.bs-layout-card {
+  width: min(96vw, calc(100dvh - 24px));
+  aspect-ratio: 1 / 1;
+  max-width: 100%;
+  max-height: calc(100dvh - 24px);
+  overflow: hidden;
+  padding: 6px;
+  background-color: #1f4f8c;
+  border-color: #184072;
+}
+
+.bs-board-matrix {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(11, minmax(0, 1fr));
+  grid-template-rows: repeat(11, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.bs-axis-corner {
+  width: 100%;
+  height: 100%;
+}
+
+.bs-axis-cell {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #e6e6e6;
+  font-weight: 600;
+  font-size: clamp(0.65rem, 1.2vw, 0.95rem);
+  user-select: none;
+}
+
+.bs-axis-cell h1 {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-size: clamp(1.25rem, 2.6vw, 2.2rem);
+  font-weight: 700;
+}
+
+.bs-axis-top,
+.bs-axis-left {
+  background: #3a78c2;
+  border-radius: 4px;
+}
+
+.bs-axis-corner {
+  background: #3a78c2;
+  border-radius: 4px;
+}
+
+.bs-grid-item {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.bs-grid-item .bs-cell,
+.bs-cell {
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+}
+
+.bs-shot-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  color: #ffffff;
+  font-family: "Press Start 2P", "Courier New", monospace;
+  font-size: 1.2rem;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-shadow:
+    -1px -1px 0 rgba(0, 0, 0, 0.45),
+    1px -1px 0 rgba(0, 0, 0, 0.45),
+    -1px 1px 0 rgba(0, 0, 0, 0.45),
+    1px 1px 0 rgba(0, 0, 0, 0.45);
+}

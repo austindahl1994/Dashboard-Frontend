@@ -2,9 +2,8 @@ import React from "react";
 import BattleshipBoard from "./BattleshipBoard";
 import { useQuery } from "@tanstack/react-query";
 import { getBSBoard } from "../api";
-
-const letterArr = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
-const numArr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+import { Container, Row, Col } from "react-bootstrap";
+import BattleshipInfo from "./BattleshipInfo";
 
 const BattleshipWrapper: React.FC = () => {
   const cachedBSBoard = localStorage.getItem("battleshipBoard");
@@ -18,19 +17,38 @@ const BattleshipWrapper: React.FC = () => {
     retry: false,
     staleTime: 600000,
     refetchOnWindowFocus: false,
-    enabled: !cachedBSBoard,
+    enabled: false, // !cachedBSBoard,
     initialData: cachedBSBoard ? JSON.parse(cachedBSBoard) : undefined,
   });
 
   return (
     <>
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : isError ? (
-        <div>Error loading board</div>
-      ) : (
-        <BattleshipBoard board={board} />
-      )}
+      <Container
+        fluid
+        className="p-0"
+        style={{
+          backgroundColor: "#000674",
+          height: "100dvh",
+          width: "100%",
+          overflow: "hidden",
+        }}
+      >
+        {isLoading ? (
+          <div>Loading...</div>
+        ) : isError ? (
+          <div>Error loading board</div>
+        ) : (
+          <Row className="g-0 h-100 m-0 p-0">
+            <Col xs={12} md={4} className="p-2">
+              <BattleshipInfo />
+            </Col>
+
+            <Col xs={12} md={8}>
+              <BattleshipBoard board={board} />
+            </Col>
+          </Row>
+        )}
+      </Container>
     </>
   );
 };
